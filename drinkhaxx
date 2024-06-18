@@ -280,7 +280,7 @@ end)
  
 Tab1Section:NewButton("Auto Equip","Auto Equips For You",function(v)
 getgenv().equipdrink = v
-while wait(0.5) do
+while wait(0.8) do
     AutoEquipDrink()
     end
 end)
