@@ -247,7 +247,7 @@ function AutoEquipDrink()
 end
  
 local kavoUi = loadstring(game:HttpGet("https://pastebin.com/raw/vff1bQ9F"))()
-local window = kavoUi.CreateLib("Rikos-DrinkHax Premium V1.0.2","BloodTheme")
+local window = kavoUi.CreateLib("Rikos-DrinkHax Premium V1.2","BloodTheme")
  
 local Tab1 = window:NewTab("Auto Drink")
 local Tab1Section = Tab1:NewSection("Auto Drinks Tab")
@@ -269,10 +269,7 @@ while wait(1) do
 		game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
 	end
 end)
-
-Tab1Section:NewButton("Auto Rebirth","Auto Drink",function()
-(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('UaCalChkwmbsSUGNQKKgbYvZcpzRTXppxmtVCfnBkmUmKbeymgaQBMaQXV0byBEcmluaw=='), function()
-	while wait(2.34) do
+ 
 Tab1Section:NewButton("Auto Gems","Auto Collect Gems for you",function()
 while wait() do
 		local gem = game.Workspace.Diamonds:WaitForChild("Diamond")
@@ -288,20 +285,95 @@ while wait(0.8) do
     end
 end)
  
-game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('RlvHtNzJkTYYyIchlNBBKnoPjlJnCOioseZjYpgKVcQwjwEgZErSuBhU3RhcnRlciBEcmluaw=='))
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('VyMyxYNExdgvDDQjwZqXXadOQAhSouAIjUHhPpTAJJQitIyQmllnmiUU2Vjb25kIERyaW5r'))
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('mAknGMfXdTBmPeYurYGixAydKBpGOwWcHnjwORQeKiekBunanxtwbVJVGhpcmQgRHJpbms='))
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('NkjfmZedEoovTjUNNGWfKVFCkqsJdkuCaWwnTKfCrMdNXHdOhVqxOaRRm91cnRoIERyaW5r'))
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('mehucfvZDHJucKTXXQMLNrhgjcJeREfUiAzfLiIBTqDQFQcKWjYKNxqRmlmdGggRHJpbms='))
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('UKEmsubuMrXgLYchRbdasQiZrWnQnrToThbLVIUYVPqSFxtuDxduZGoU2l4dGggRHJpbms='))
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('OpDDJOcKiDmOkqXLARwlWWcrETKORIUfYmnCWAMRxGZHpmSACMwRSVzU2V2ZW50aCBEcmluaw=='))
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('QoGjtYbyZTALJRAMrEROKfHQcyvUwweLyIAYScLrLQOzgaOjpjAaoGQRWlnaHRoIERyaW5r'))
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('gLfwyYBqSPUdFisidIfntQDvZPgLhbLjWewcjUgJVNTQnUVFQSIuMguTmludGggRHJpbms='))
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('JnwXWlfWIkfryAzVeLZMUGCubnTDpdFgNvzFsbBgMBnhtcksuYLiyKFQXRvbWljIERyaW5r'))
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('iBDhAHJlznaVhICWRgjvzSsmObURMxhNORtLCAJLgfSCQUTvBxGLfesT21lZ2EgQnVycCBKdWljZQ=='))
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('iAjVwpFasoBiQitKEMjdzacaewSFNXXiujLGDDpndgNDEdnjnNqNlanVGh1bmRlciBGaXp6'))
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('dmJcGUxDnahDdLvZGIoqTlXbwetVZwkEbttKjCyNzAmFpZsEmiTAdMQR2FybGljIEp1aWNl'))
+Tab1Section:NewToggle("Starter Drink","Auto Drink For You",function(v)
+getgenv().autodrink = v
+while getgenv().autodrink do wait(2.34)
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
+	end
+end)
  
+Tab1Section:NewToggle("Second Drink","Auto Drink For You",function(v)
+getgenv().autodrink = v
+while getgenv().autodrink do wait(2.34)
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
+	end
+end)
+ 
+Tab1Section:NewToggle("Third Drink","Auto Drink For You",function(v)
+getgenv().autodrink = v
+while getgenv().autodrink do wait(2.34)
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
+	end
+end)
+ 
+Tab1Section:NewToggle("Fourth Drink","Auto Drink For You",function(v)
+getgenv().autodrink = v
+while getgenv().autodrink do wait(2.34)
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
+	end
+end)
+ 
+Tab1Section:NewToggle("Fifth Drink","Auto Drink For You",function(v)
+getgenv().autodrink = v
+while getgenv().autodrink do wait(2.34)
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
+	end
+end)
+ 
+Tab1Section:NewToggle("Sixth Drink","Auto Drink For You",function(v)
+getgenv().autodrink = v
+while getgenv().autodrink do wait(2.34)
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
+	end
+end)
+ 
+Tab1Section:NewToggle("Seventh Drink","Auto Drink For You",function(v)
+getgenv().autodrink = v
+while getgenv().autodrink do wait(2.34)
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
+	end
+end)
+ 
+Tab1Section:NewToggle("Eighth Drink","Auto Drink For You",function(v)
+getgenv().autodrink = v
+while getgenv().autodrink do wait(2.34)
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
+	end
+end)
+ 
+Tab1Section:NewToggle("Ninth Drink","Auto Drink For You",function(v)
+getgenv().autodrink = v
+while getgenv().autodrink do wait(2.34)
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
+	end
+end)
+ 
+Tab1Section:NewToggle("Atomic Drink","Auto Drink For You",function(v)
+getgenv().autodrink = v
+while getgenv().autodrink do wait(2.34)
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
+	end
+end)
+ 
+Tab1Section:NewToggle("Omega Burp Juice","Auto Drink For You",function(v)
+getgenv().autodrink = v
+while getgenv().autodrink do wait(2.34)
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
+	end
+end)
+ 
+Tab1Section:NewToggle("Thunder Fizz","Auto Drink For You",function(v)
+getgenv().autodrink = v
+while getgenv().autodrink do wait(2.34)
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
+	end
+end)
+ 
+Tab1Section:NewToggle("Garlic Juice","Auto Drink For You",function(v)
+getgenv().autodrink = v
+while getgenv().autodrink do wait(2.34)
+ 
+game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
 	end
 end)
  
