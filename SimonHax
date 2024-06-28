@@ -332,12 +332,13 @@ local Credits =
 CreditsTab:Section(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('hgLhMPHztackxHtCcPRKOHamAWWijwRHfTEqdCxEkBiwkkNreggOZiPQ3JlZGl0cw=='))
  
 function AutoEquip()
-	spawn(function(v)
-		getgenv().equipdrink = v 
+	spawn(function(tool)
+		getgenv().equipdrink = tool
 while wait(0.8) do
     AutoEquipDrink()
  
-
+	end
+end)
 			if not game.Players.LocalPlayer.Backpack:FindFirstChild(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('ixBNXjguSMFWPZMWzzDyLikbuEqEolVqOVNaaDoJaIJRjEaONCpukKEU3RhcnRlciBEcmluaw==')) then
 				if not game.Players.LocalPlayer.Character:FindFirstChild(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('xVySDqVBtWMTFEuoAUHiCcxEgjpbGeaicogsyjONudOHaLxdDBceMGeU3RhcnRlciBEcmluaw==')) then
 					game.Players.LocalPlayer.Character:BreakJoints()
