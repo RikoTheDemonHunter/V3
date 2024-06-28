@@ -488,4 +488,5 @@ end)
 
 Tab3Section:NewButton("Discord","Server Link",function()
 https://discord.gg/e4jE6NQFGF
-end
+
+end)
