@@ -332,8 +332,8 @@ local Credits =
 CreditsTab:Section(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('hgLhMPHztackxHtCcPRKOHamAWWijwRHfTEqdCxEkBiwkkNreggOZiPQ3JlZGl0cw=='))
  
 function AutoEquip()
-	spawn(function()
-		getgenv().equipdrink = 
+	spawn(function(v)
+		getgenv().equipdrink = v 
 while wait(0.8) do
     AutoEquipDrink()
  
@@ -576,9 +576,9 @@ AutoFarm:Button(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('Jxd
 	end
 end)
  
-AutoFarm:Toggle(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('vQQCVFELTgDkOIwakACRzoqhoSIahQjGoYFtJOxWpPfhQpYBTcUVoyJQXV0byBFcXVpcA=='), function(bool)
-	getgenv().equip = bool
-	if bool then
+AutoFarm:Toggle(ZrEHUoniRKufdHXoiVMAmIHevffurdEgsTvvHJKiAhMeCfuGREOssNhGNFa('vQQCVFELTgDkOIwakACRzoqhoSIahQjGoYFtJOxWpPfhQpYBTcUVoyJQXV0byBFcXVpcA=='), function(tool)
+	getgenv().equip = tool
+	if tool then
 		AutoEquip()
 	end
 end)
