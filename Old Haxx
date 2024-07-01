@@ -1,5 +1,5 @@
 function AutoEquipDrink()
-	spawn(function()
+	spawn(function(v)
 			if not game.Players.LocalPlayer.Backpack:FindFirstChild("Starter Drink") then
 				if not game.Players.LocalPlayer.Character:FindFirstChild("Starter Drink") then
 					game.Players.LocalPlayer.Character:BreakJoints()
