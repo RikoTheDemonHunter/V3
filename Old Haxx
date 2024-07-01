@@ -265,7 +265,7 @@ local Tab5Section = Tab5:NewSection("Made By Simon")
 local Tab5Section = Tab5:NewSection("For. Kagan")
 
 Tab1Section:NewToggle("Auto Rebirth","Auto Pestiges for you",function(v)
-while wait(2.0) do
+while wait(0.8) do
 		game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
 	end
 end)
