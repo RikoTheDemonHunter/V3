@@ -247,7 +247,7 @@ function AutoEquipDrink()
 end
 
 local kavoUi = loadstring(game:HttpGet("https://pastebin.com/raw/vff1bQ9F"))()
-local window = kavoUi.CreateLib("Kagan Hax","GrapeTheme")
+local window = kavoUi.CreateLib("Kagan Hax V1.0","GrapeTheme")
 
 local Tab1 = window:NewTab("Auto Drink")
 local Tab1Section = Tab1:NewSection("Auto Drink")
