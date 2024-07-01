@@ -243,11 +243,11 @@ function AutoEquipDrink()
 					end
 				end
 			end
-	end)   DarkTheme
+	end)
 end
 
 local kavoUi = loadstring(game:HttpGet("https://pastebin.com/raw/vff1bQ9F"))()
-local window = kavoUi.CreateLib("Simon Hax","BloodTheme")
+local window = kavoUi.CreateLib("Simon Haxx","Ocean")
 
 local Tab1 = window:NewTab("Auto Drink")
 local Tab1Section = Tab1:NewSection("Auto Drink")
@@ -255,14 +255,14 @@ local Tab2 = window:NewTab("Utilities")
 local Tab2Section = Tab2:NewSection("Afk Tool")
 local Tab3 = window:NewTab("Teleport Tab")
 local Tab3Section = Tab3:NewSection("Teleport Menu")
-local Tab4 = window:NewTab("Logs")
+local Tab4 = window:NewTab("Update Logs")
 local Tab4Section = Tab4:NewSection("Added Teleports")
 local Tab4Section = Tab4:NewSection("Updated for better scripting")
 local Tab4Section = Tab4:NewSection("Running")
 local Tab4Section = Tab4:NewSection("Auto Drink is now stable")
 local Tab5 = window:NewTab("Credits")
 local Tab5Section = Tab5:NewSection("Made By Simon")
-local Tab5Section = Tab5:NewSection("Owner Simon")
+local Tab5Section = Tab5:NewSection("New owner. Simon")
 
 Tab1Section:NewButton("Auto Rebirth","Auto Pestiges for you",function()
 while wait(2.0) do
