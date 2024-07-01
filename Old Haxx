@@ -264,7 +264,7 @@ local Tab5 = window:NewTab("Credits")
 local Tab5Section = Tab5:NewSection("Made By Simon")
 local Tab5Section = Tab5:NewSection("For. Kagan")
 
-Tab1Section:NewButton("Auto Rebirth","Auto Pestiges for you",function(v)
+Tab1Section:NewToggle("Auto Rebirth","Auto Pestiges for you",function(v)
 while wait(2.0) do
 		game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
 	end
@@ -278,91 +278,91 @@ while wait() do
 	end
 end)
 
-Tab1Section:NewButton("Auto Equip","Auto Equips For You",function(v)
+Tab1Section:NewToggle("Auto Equip","Auto Equips For You",function(v)
 while wait(0.8) do
     AutoEquipDrink()
     end
 end)
 
-Tab1Section:NewButton("Starter Drink","Auto Drink For You",function(v)
+Tab1Section:NewToggle("Starter Drink","Auto Drink For You",function(v)
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
 	end
 end)
 
-Tab1Section:NewButton("Second Drink","Auto Drink For You",function(v)
+Tab1Section:NewToggle("Second Drink","Auto Drink For You",function(v)
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
 	end
 end)
 
-Tab1Section:NewButton("Third Drink","Auto Drink For You",function(v)
+Tab1Section:NewToggle("Third Drink","Auto Drink For You",function(v)
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
 	end
 end)
 
-Tab1Section:NewButton("Fourth Drink","Auto Drink For You",function(v)
+Tab1Section:NewToggle("Fourth Drink","Auto Drink For You",function(v)
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
 	end
 end)
 
-Tab1Section:NewButton("Fifth Drink","Auto Drink For You",function(v)
+Tab1Section:NewToggle("Fifth Drink","Auto Drink For You",function(v)
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
 	end
 end)
 
-Tab1Section:NewButton("Sixth Drink","Auto Drink For You",function(v)
+Tab1Section:NewToggle("Sixth Drink","Auto Drink For You",function(v)
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
 	end
 end)
 
-Tab1Section:NewButton("Seventh Drink","Auto Drink For You",function(v)
+Tab1Section:NewToggle("Seventh Drink","Auto Drink For You",function(v)
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
 	end
 end)
 
-Tab1Section:NewButton("Eighth Drink","Auto Drink For You",function(v)
+Tab1Section:NewToggle("Eighth Drink","Auto Drink For You",function(v)
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
 	end
 end)
 
-Tab1Section:NewButton("Ninth Drink","Auto Drink For You",function(v)
-while wait(2.33) do
+Tab1Section:NewToggle("Ninth Drink","Auto Drink For You",function(v)
+while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
 	end
 end)
 
-Tab1Section:NewButton("Atomic Drink","Auto Drink For You",function(v)
+Tab1Section:NewToggle("Atomic Drink","Auto Drink For You",function(v)
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
 	end
 end)
 
-Tab1Section:NewButton("Omega Burp Juice","Auto Drink For You",function(v)
+Tab1Section:NewToggle("Omega Burp Juice","Auto Drink For You",function(v)
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
 	end
 end)
 
-Tab1Section:NewButton("Thunder Fizz","Auto Drink For You",function(v)
+Tab1Section:NewToggle("Thunder Fizz","Auto Drink For You",function(v)
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
 	end
 end)
 
-Tab1Section:NewButton("Garlic Juice","Auto Drink For You",function(v)
+Tab1Section:NewToggle("Garlic Juice","Auto Drink For You",function(v)
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
 	end
 end)
 
-Tab2Section:NewButton("Anti Kick","Prevents You From Being Timer Kick",function()
+Tab2Section:NewToggle("Anti Kick","Prevents You From Being Timer Kick",function()
 local mt = getrawmetatable(game)
 	local old = mt.__namecall
 	local protect = newcclosure or protect_function
@@ -379,7 +379,7 @@ local mt = getrawmetatable(game)
 	hookfunction(game.Players.LocalPlayer.Kick,protect(function() wait(9e9) end))
 end)
 
-Tab2Section:NewButton("Anti Afk","Prevents You From Being Afk Kick",function()
+Tab2Section:NewToggle("Anti Afk","Prevents You From Being Afk Kick",function()
 loadstring(game:HttpGet("https://pastebin.com/raw/KHZ8pYx9", true))()
 end)
 
