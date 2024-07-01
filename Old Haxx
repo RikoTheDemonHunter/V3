@@ -247,7 +247,7 @@ function AutoEquipDrink()
 end
 
 local kavoUi = loadstring(game:HttpGet("https://pastebin.com/raw/vff1bQ9F"))()
-local window = kavoUi.CreateLib("Simon Haxx","BloodTheme")
+local window = kavoUi.CreateLib("Kagan Haxx","GrapeTheme")
 
 local Tab1 = window:NewTab("Auto Drink")
 local Tab1Section = Tab1:NewSection("Auto Drink")
@@ -262,7 +262,7 @@ local Tab4Section = Tab4:NewSection("Running")
 local Tab4Section = Tab4:NewSection("Auto Drink is now stable")
 local Tab5 = window:NewTab("Credits")
 local Tab5Section = Tab5:NewSection("Made By Simon")
-local Tab5Section = Tab5:NewSection("New owner. Simon")
+local Tab5Section = Tab5:NewSection("For. Kagan")
 
 Tab1Section:NewButton("Auto Rebirth","Auto Pestiges for you",function()
 while wait(2.0) do
@@ -278,7 +278,7 @@ while wait() do
 	end
 end)
 
-Tab1Section:NewButton("Auto Equip","Auto Equips For You",function()
+Tab1Section:NewButton("Auto Equip","Auto Equips For You",function(v)
 while wait(0.8) do
     AutoEquipDrink()
     end
