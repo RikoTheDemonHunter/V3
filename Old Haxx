@@ -285,79 +285,79 @@ while wait(0.8) do
 end)
 
 Tab1Section:NewToggle("Starter Drink","Auto Drink For You",function(v)
-while wait(2.34) do
+while wait(2.33) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
 	end
 end)
 
 Tab1Section:NewToggle("Second Drink","Auto Drink For You",function(v)
-while wait(2.34) do
+while wait(2.33) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
 	end
 end)
 
 Tab1Section:NewToggle("Third Drink","Auto Drink For You",function(v)
-while wait(2.34) do
+while wait(2.33) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
 	end
 end)
 
 Tab1Section:NewToggle("Fourth Drink","Auto Drink For You",function(v)
-while wait(2.34) do
+while wait(2.33) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
 	end
 end)
 
 Tab1Section:NewToggle("Fifth Drink","Auto Drink For You",function(v)
-while wait(2.34) do
+while wait(2.33) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
 	end
 end)
 
 Tab1Section:NewToggle("Sixth Drink","Auto Drink For You",function(v)
-while wait(2.34) do
+while wait(2.33) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
 	end
 end)
 
 Tab1Section:NewToggle("Seventh Drink","Auto Drink For You",function(v)
-while wait(2.34) do
+while wait(2.33) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
 	end
 end)
 
 Tab1Section:NewToggle("Eighth Drink","Auto Drink For You",function(v)
-while wait(2.34) do
+while wait(2.33) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
 	end
 end)
 
 Tab1Section:NewToggle("Ninth Drink","Auto Drink For You",function(v)
-while wait(2.34) do
+while wait(2.33) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
 	end
 end)
 
 Tab1Section:NewToggle("Atomic Drink","Auto Drink For You",function(v)
-while wait(2.34) do
+while wait(2.33) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
 	end
 end)
 
 Tab1Section:NewToggle("Omega Burp Juice","Auto Drink For You",function(v)
-while wait(2.34) do
+while wait(2.33) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
 	end
 end)
 
 Tab1Section:NewToggle("Thunder Fizz","Auto Drink For You",function(v)
-while wait(2.34) do
+while wait(2.33) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
 	end
 end)
 
 Tab1Section:NewToggle("Garlic Juice","Auto Drink For You",function(v)
-while wait(2.34) do
+while wait(2.3) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
 	end
 end)
