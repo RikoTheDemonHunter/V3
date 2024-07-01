@@ -284,25 +284,25 @@ while wait(0.8) do
     end
 end)
 
-Tab1Section:NewButton("Starter Drink","Auto Drink For You",function(v)
+Tab1Section:NewButton("Starter Drink","Auto Drink For You",function()
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
 	end
 end)
 
-Tab1Section:NewButton("Second Drink","Auto Drink For You",function(v)
+Tab1Section:NewButton("Second Drink","Auto Drink For You",function()
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
 	end
 end)
 
-Tab1Section:NewButton("Third Drink","Auto Drink For You",function(v)
+Tab1Section:NewButton("Third Drink","Auto Drink For You",function()
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
 	end
 end)
 
-Tab1Section:NewButton("Fourth Drink","Auto Drink For You",function(v)
+Tab1Section:NewButton("Fourth Drink","Auto Drink For You",function()
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
 	end
@@ -314,7 +314,7 @@ while wait(2.34) do
 	end
 end)
 
-Tab1Section:NewButton("Sixth Drink","Auto Drink For You",function(v)
+Tab1Section:NewButton("Sixth Drink","Auto Drink For You",function()
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
 	end
@@ -326,37 +326,37 @@ while wait(2.34) do
 	end
 end)
 
-Tab1Section:NewButton("Eighth Drink","Auto Drink For You",function(v)
+Tab1Section:NewButton("Eighth Drink","Auto Drink For You",function()
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
 	end
 end)
 
-Tab1Section:NewButton("Ninth Drink","Auto Drink For You",function(v)
+Tab1Section:NewButton("Ninth Drink","Auto Drink For You",function()
 while wait(2.33) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
 	end
 end)
 
-Tab1Section:NewButton("Atomic Drink","Auto Drink For You",function(v)
+Tab1Section:NewButton("Atomic Drink","Auto Drink For You",function()
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
 	end
 end)
 
-Tab1Section:NewButton("Omega Burp Juice","Auto Drink For You",function(v)
+Tab1Section:NewButton("Omega Burp Juice","Auto Drink For You",function()
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
 	end
 end)
 
-Tab1Section:NewButton("Thunder Fizz","Auto Drink For You",function(v)
+Tab1Section:NewButton("Thunder Fizz","Auto Drink For You",function()
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
 	end
 end)
 
-Tab1Section:NewButton("Garlic Juice","Auto Drink For You",function(v)
+Tab1Section:NewButton("Garlic Juice","Auto Drink For You",function()
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
 	end
