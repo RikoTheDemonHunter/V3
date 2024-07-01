@@ -247,7 +247,7 @@ function AutoEquipDrink()
 end
 
 local kavoUi = loadstring(game:HttpGet("https://pastebin.com/raw/vff1bQ9F"))()
-local window = kavoUi.CreateLib("Kagan Haxx","GrapeTheme")
+local window = kavoUi.CreateLib("Kagan Hax","GrapeTheme")
 
 local Tab1 = window:NewTab("Auto Drink")
 local Tab1Section = Tab1:NewSection("Auto Drink")
@@ -264,7 +264,7 @@ local Tab5 = window:NewTab("Credits")
 local Tab5Section = Tab5:NewSection("Made By Simon")
 local Tab5Section = Tab5:NewSection("For. Kagan")
 
-Tab1Section:NewButton("Auto Rebirth","Auto Pestiges for you",function()
+Tab1Section:NewButton("Auto Rebirth","Auto Pestiges for you",function(v)
 while wait(2.0) do
 		game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
 	end
@@ -393,13 +393,13 @@ while wait() do
 	end
 end)
 
-Tab2Section:NewButton("Infinity Jump","You Can Jump Unlimited Times",function()
+Tab2Section:NewButton("Infinite Jump","You Can Jump Unlimited Times",function()
 game:GetService("UserInputService").JumpRequest:connect(function()
 		game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
 	end)
 end)
 
-Tab3Section:NewButton("Safe Zone","Teleports You To Safe Zone",function()
+Tab3Section:NewButton("Safe","Teleports You To Safe Zone",function()
 local New_CFrame = CFrame.new(-46, 48, -15)
 
 	local ts = game:GetService("TweenService")
@@ -411,7 +411,7 @@ local New_CFrame = CFrame.new(-46, 48, -15)
 	ts:Create(part, ti, tp):Play()
 end)
 
-Tab3Section:NewButton("Pet Shop","Teleports You To Pet Shop",function()
+Tab3Section:NewButton(" Shop","Teleports You To Pet Shop",function()
 local New_CFrame = CFrame.new(311, 52, 103)
 
 	local ts = game:GetService("TweenService")
@@ -423,7 +423,7 @@ local New_CFrame = CFrame.new(311, 52, 103)
 	ts:Create(part, ti, tp):Play()
 end)
 
-Tab3Section:NewButton("Disco Island","Teleports You To Disco Island",function()
+Tab3Section:NewButton("Disco","Teleports You To Disco Island",function()
 local New_CFrame = CFrame.new(63, 48, 636)
 
 	local ts = game:GetService("TweenService")
@@ -459,7 +459,7 @@ local New_CFrame = CFrame.new(-1224, 557, -318)
 	ts:Create(part, ti, tp):Play()
 end)
 
-Tab3Section:NewButton("Sky Island","Teleports You To Sky Island",function()
+Tab3Section:NewButton("Sky","Teleports You To Sky Island",function()
 local New_CFrame = CFrame.new(2132, 1456, -1034)
 
 	local ts = game:GetService("TweenService")
