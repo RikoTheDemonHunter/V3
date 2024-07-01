@@ -247,7 +247,7 @@ function AutoEquipDrink()
 end
 
 local kavoUi = loadstring(game:HttpGet("https://pastebin.com/raw/vff1bQ9F"))()
-local window = kavoUi.CreateLib("Simon Haxx","Ocean")
+local window = kavoUi.CreateLib("Simon Haxx","DarkTheme")
 
 local Tab1 = window:NewTab("Auto Drink")
 local Tab1Section = Tab1:NewSection("Auto Drink")
