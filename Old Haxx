@@ -262,7 +262,7 @@ local Tab4Section = Tab4:NewSection("Running")
 local Tab4Section = Tab4:NewSection("Auto Drink is now stable")
 local Tab5 = window:NewTab("Credits")
 local Tab5Section = Tab5:NewSection("Made By Simon")
-local Tab5Section = Tab5:NewSection("Owner. Simon")
+local Tab5Section = Tab5:NewSection("Owner Simon")
 
 Tab1Section:NewButton("Auto Rebirth","Auto Pestiges for you",function()
 while wait(2.0) do
@@ -278,7 +278,7 @@ while wait() do
 	end
 end)
 
-Tab1Section:NewButton("Auto Equip","Auto Equips For You",function(v)
+Tab1Section:NewButton("Auto Equip","Auto Equips For You",function()
 while wait(0.8) do
     AutoEquipDrink()
     end
@@ -308,7 +308,7 @@ while wait(2.34) do
 	end
 end)
 
-Tab1Section:NewButton("Fifth Drink","Auto Drink For You",function(v)
+Tab1Section:NewButton("Fifth Drink","Auto Drink For You",function()
 while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
 	end
