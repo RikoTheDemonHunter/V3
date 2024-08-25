@@ -57,7 +57,7 @@ equipdrink()
 
 autofarm:Toggle(mNIzsSHuMkPMqfTbFOyZmZrTZFYMsOxHgAmJGFffYdHbsAJgkdUmDAbLIZxsRzhDGu('TpeoIejkLgIiCcylSjQKnFFXLRVlMbyhmGCZkvltWvXXdRNRwyiiClmQXV0byBFcXVpcCBEcmluaw=='), function(v)
 getgenv().equipdrink = v
-while getgenv().equipdrink do wait(0.5)
+while getgenv().equipdrink do wait(0.8)
 AutoEquipDrink()
 end
 end)
