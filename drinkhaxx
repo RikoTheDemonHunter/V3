@@ -298,7 +298,7 @@ function lib:Gui(title)
 	return Tabs
 end
 
-local Library = lib:Gui("Riko's Drinkhax")
+local Library = lib:Gui("Riko's Drinkhax Beta Release")
 
 local AutoFarmTab = Library:Tab("AutoDrink")
 
