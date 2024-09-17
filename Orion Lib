@@ -13,15 +13,15 @@ local OrionLib = loadstring(game:HttpGet(("https://raw.githubusercontent.com/shl
 OrionLib:MakeNotification(
     {
         Name = "Welcome!",
-        Content = "Some features may be added in the future, or Updated.",
+        Content = "Some features may be added in the future, or removed.",
         Image = "rbxassetid://4483345998",
-        Time = 2
+        Time = 1
     }
 )
 
 local Window =
     OrionLib:MakeWindow(
-    {Name = "Premium Hax [v1.0 Beta Release]", HidePremium = false, SaveConfig = true, ConfigFolder = "Orion"}
+    {Name = "Burping Simulator [v1.04.1 GUI release]", HidePremium = false, SaveConfig = true, ConfigFolder = "Orion"}
 )
 
 function AutoEquip()
@@ -312,7 +312,7 @@ local FunStuffSection =
 
 FunStuffTab:AddButton(
     {
-        Name = "Spam BURPS",
+        Name = "Spam the BURPS",
         Callback = function()
             while true do
                 task.wait()
@@ -795,7 +795,7 @@ FarmingTab:AddTextbox(
 FarmingTab:AddBind(
     {
         Name = "Unequip drink [for PC users]",
-        Default = Enum.KeyCode.E,
+        Default = Enum.KeyCode.U,
         Hold = false,
         Callback = function()
             local Players = game:GetService("Players")
@@ -906,7 +906,7 @@ ExtrasTab:AddToggle(
 --})
 ExtrasTab:AddButton(
     {
-        Name = "BP Counter",
+        Name = "UrMom Ui",
         Callback = function()
             OrionLib:MakeNotification(
                 {
