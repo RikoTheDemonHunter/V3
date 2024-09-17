@@ -1,26 +1,29 @@
- wait()
+-- DO NOT STEAL THIS SCRIPT.
+
+repeat
+    wait()
 until game:IsLoaded()
- 
+
 -- Making sure the game is Burping Simulator.
 if game.PlaceId ~= 1747207098 then
     game.Players.LocalPlayer:Kick("This script only works on Burping Simulator.")
 end
 local OrionLib = loadstring(game:HttpGet(("https://raw.githubusercontent.com/shlexware/Orion/main/source")))()
- 
+
 OrionLib:MakeNotification(
     {
-        Name = "Welcome to Premuim-DrinkHax!",
-        Content = "Some features may be added in the future, or removed.",
+        Name = "Welcome to Premium DrinkHax!",
+        Content = "Some features may be added in the future,  or updated.",
         Image = "rbxassetid://4483345998",
         Time = 5
     }
 )
- 
+
 local Window =
     OrionLib:MakeWindow(
-    {Name = "Rikos Premium Drinkhax [v1.0.0 Beta Realease]", HidePremium = false, SaveConfig = true, ConfigFolder = "Orion"}
+    {Name = "Riko's Drinkhax  [v1.0 Beta Realease]", HidePremium = false, SaveConfig = true, ConfigFolder = "Orion"}
 )
- 
+
 function AutoEquip()
     spawn(
         function()
@@ -33,7 +36,7 @@ function AutoEquip()
                 end
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value == 0 then
                     local Players = game:GetService("Players")
- 
+
                     local player = Players:FindFirstChildOfClass("Player")
                     if player and player.Character then
                         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -45,10 +48,10 @@ function AutoEquip()
                         end
                     end
                 end
- 
+
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 0 then
                     local Players = game:GetService("Players")
- 
+
                     local player = Players:FindFirstChildOfClass("Player")
                     if player and player.Character then
                         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -60,10 +63,10 @@ function AutoEquip()
                         end
                     end
                 end
- 
+
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 150 then
                     local Players = game:GetService("Players")
- 
+
                     local player = Players:FindFirstChildOfClass("Player")
                     if player and player.Character then
                         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -77,7 +80,7 @@ function AutoEquip()
                 end
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 500 then
                     local Players = game:GetService("Players")
- 
+
                     local player = Players:FindFirstChildOfClass("Player")
                     if player and player.Character then
                         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -89,10 +92,10 @@ function AutoEquip()
                         end
                     end
                 end
- 
+
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 1600 then
                     local Players = game:GetService("Players")
- 
+
                     local player = Players:FindFirstChildOfClass("Player")
                     if player and player.Character then
                         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -104,10 +107,10 @@ function AutoEquip()
                         end
                     end
                 end
- 
+
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 3500 then
                     local Players = game:GetService("Players")
- 
+
                     local player = Players:FindFirstChildOfClass("Player")
                     if player and player.Character then
                         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -119,10 +122,10 @@ function AutoEquip()
                         end
                     end
                 end
- 
+
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 10000 then
                     local Players = game:GetService("Players")
- 
+
                     local player = Players:FindFirstChildOfClass("Player")
                     if player and player.Character then
                         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -134,10 +137,10 @@ function AutoEquip()
                         end
                     end
                 end
- 
+
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 25000 then
                     local Players = game:GetService("Players")
- 
+
                     local player = Players:FindFirstChildOfClass("Player")
                     if player and player.Character then
                         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -149,10 +152,10 @@ function AutoEquip()
                         end
                     end
                 end
- 
+
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 60000 then
                     local Players = game:GetService("Players")
- 
+
                     local player = Players:FindFirstChildOfClass("Player")
                     if player and player.Character then
                         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -164,10 +167,10 @@ function AutoEquip()
                         end
                     end
                 end
- 
+
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 150000 then
                     local Players = game:GetService("Players")
- 
+
                     local player = Players:FindFirstChildOfClass("Player")
                     if player and player.Character then
                         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -179,10 +182,10 @@ function AutoEquip()
                         end
                     end
                 end
- 
+
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 230000 then
                     local Players = game:GetService("Players")
- 
+
                     local player = Players:FindFirstChildOfClass("Player")
                     if player and player.Character then
                         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -194,10 +197,10 @@ function AutoEquip()
                         end
                     end
                 end
- 
+
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 500000 then
                     local Players = game:GetService("Players")
- 
+
                     local player = Players:FindFirstChildOfClass("Player")
                     if player and player.Character then
                         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -209,10 +212,10 @@ function AutoEquip()
                         end
                     end
                 end
- 
+
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 1000000 then
                     local Players = game:GetService("Players")
- 
+
                     local player = Players:FindFirstChildOfClass("Player")
                     if player and player.Character then
                         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -226,7 +229,7 @@ function AutoEquip()
                 end
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 2000000 then
                     local Players = game:GetService("Players")
- 
+
                     local player = Players:FindFirstChildOfClass("Player")
                     if player and player.Character then
                         local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
@@ -242,7 +245,7 @@ function AutoEquip()
         end
     )
 end
- 
+
 --Player Tab--
 local PlayerTab =
     Window:MakeTab(
@@ -252,14 +255,14 @@ local PlayerTab =
         PremiumOnly = false
     }
 )
- 
+
 local PlayerSection =
     PlayerTab:AddSection(
     {
         Name = "Player"
     }
 )
- 
+
 PlayerSection:AddSlider(
     {
         Name = "Walkspeed",
@@ -274,7 +277,7 @@ PlayerSection:AddSlider(
         end
     }
 )
- 
+
 PlayerSection:AddSlider(
     {
         Name = "Jump Power",
@@ -290,7 +293,7 @@ PlayerSection:AddSlider(
     }
 )
 --Player Tab End--
- 
+
 --Fun Stuff Tab
 local FunStuffTab =
     Window:MakeTab(
@@ -306,10 +309,10 @@ local FunStuffSection =
         Name = "Fun Stuff"
     }
 )
- 
+
 FunStuffTab:AddButton(
     {
-        Name = "Spam Burp",
+        Name = "Spam BURP",
         Callback = function()
             while true do
                 task.wait()
@@ -318,7 +321,7 @@ FunStuffTab:AddButton(
         end
     }
 )
- 
+
 FunStuffTab:AddButton(
     {
         Name = "Remove FPS cap",
@@ -340,16 +343,16 @@ local FunStuffSection =
         Name = "Teleport options"
     }
 )
- 
+
 FunStuffTab:AddButton(
     {
         Name = "Teleport to Safe Zone",
         Callback = function()
             local New_CFrame = CFrame.new(-46, 48, -15)
- 
+
             local ts = game:GetService("TweenService")
             local char = game.Players.LocalPlayer.Character
- 
+
             local part = char.HumanoidRootPart
             local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
             local tp = {CFrame = New_CFrame}
@@ -357,16 +360,16 @@ FunStuffTab:AddButton(
         end
     }
 )
- 
+
 FunStuffTab:AddButton(
     {
         Name = "Teleport to Pet Shop",
         Callback = function()
             local New_CFrame = CFrame.new(311, 52, 103)
- 
+
             local ts = game:GetService("TweenService")
             local char = game.Players.LocalPlayer.Character
- 
+
             local part = char.HumanoidRootPart
             local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
             local tp = {CFrame = New_CFrame}
@@ -374,16 +377,16 @@ FunStuffTab:AddButton(
         end
     }
 )
- 
+
 FunStuffTab:AddButton(
     {
         Name = "Teleport to Disco Island",
         Callback = function()
             local New_CFrame = CFrame.new(63, 48, 636)
- 
+
             local ts = game:GetService("TweenService")
             local char = game.Players.LocalPlayer.Character
- 
+
             local part = char.HumanoidRootPart
             local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
             local tp = {CFrame = New_CFrame}
@@ -396,10 +399,10 @@ FunStuffTab:AddButton(
         Name = "Teleport to Hotel",
         Callback = function()
             local New_CFrame = CFrame.new(-1198.279052734375, 44.315752029418945, -5.583522319793701)
- 
+
             local ts = game:GetService("TweenService")
             local char = game.Players.LocalPlayer.Character
- 
+
             local part = char.HumanoidRootPart
             local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
             local tp = {CFrame = New_CFrame}
@@ -407,16 +410,16 @@ FunStuffTab:AddButton(
         end
     }
 )
- 
+
 FunStuffTab:AddButton(
     {
         Name = "Teleport to First Cloud",
         Callback = function()
             local New_CFrame = CFrame.new(296, 566, 689)
- 
+
             local ts = game:GetService("TweenService")
             local char = game.Players.LocalPlayer.Character
- 
+
             local part = char.HumanoidRootPart
             local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
             local tp = {CFrame = New_CFrame}
@@ -424,16 +427,16 @@ FunStuffTab:AddButton(
         end
     }
 )
- 
+
 FunStuffTab:AddButton(
     {
         Name = "Teleport to Second Cloud",
         Callback = function()
             local New_CFrame = CFrame.new(-1224, 557, -318)
- 
+
             local ts = game:GetService("TweenService")
             local char = game.Players.LocalPlayer.Character
- 
+
             local part = char.HumanoidRootPart
             local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
             local tp = {CFrame = New_CFrame}
@@ -441,16 +444,16 @@ FunStuffTab:AddButton(
         end
     }
 )
- 
+
 FunStuffTab:AddButton(
     {
         Name = "Teleport to Sky Island",
         Callback = function()
             local New_CFrame = CFrame.new(2117.87109375, 1470.884765625, -1050.54296875)
- 
+
             local ts = game:GetService("TweenService")
             local char = game.Players.LocalPlayer.Character
- 
+
             local part = char.HumanoidRootPart
             local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
             local tp = {CFrame = New_CFrame}
@@ -459,12 +462,12 @@ FunStuffTab:AddButton(
     }
 )
 --Fun Stuff Tab End--
- 
+
 --Farming Tab
 local FarmingTab =
     Window:MakeTab(
     {
-        Name = "Auto Drinks Tab",
+        Name = "Farming",
         Icon = "rbxassetid://4483345998",
         PremiumOnly = false
     }
@@ -475,7 +478,7 @@ local FarmingSection =
         Name = "Drinks"
     }
 )
- 
+
 FarmingTab:AddToggle(
     {
         Name = "Starter Drink",
@@ -496,7 +499,7 @@ FarmingTab:AddToggle(
         end
     }
 )
- 
+
 FarmingTab:AddToggle(
     {
         Name = "Second Drink",
@@ -517,7 +520,7 @@ FarmingTab:AddToggle(
         end
     }
 )
- 
+
 FarmingTab:AddToggle(
     {
         Name = "Third Drink",
@@ -538,7 +541,7 @@ FarmingTab:AddToggle(
         end
     }
 )
- 
+
 FarmingTab:AddToggle(
     {
         Name = "Fourth Drink",
@@ -559,7 +562,7 @@ FarmingTab:AddToggle(
         end
     }
 )
- 
+
 FarmingTab:AddToggle(
     {
         Name = "Fifth Drink",
@@ -580,7 +583,7 @@ FarmingTab:AddToggle(
         end
     }
 )
- 
+
 FarmingTab:AddToggle(
     {
         Name = "Sixth Drink",
@@ -601,7 +604,7 @@ FarmingTab:AddToggle(
         end
     }
 )
- 
+
 FarmingTab:AddToggle(
     {
         Name = "Seventh Drink",
@@ -622,7 +625,7 @@ FarmingTab:AddToggle(
         end
     }
 )
- 
+
 FarmingTab:AddToggle(
     {
         Name = "Eighth Drink",
@@ -643,7 +646,7 @@ FarmingTab:AddToggle(
         end
     }
 )
- 
+
 FarmingTab:AddToggle(
     {
         Name = "Ninth Drink",
@@ -664,7 +667,7 @@ FarmingTab:AddToggle(
         end
     }
 )
- 
+
 FarmingTab:AddToggle(
     {
         Name = "Atomic Drink",
@@ -685,7 +688,7 @@ FarmingTab:AddToggle(
         end
     }
 )
- 
+
 FarmingTab:AddToggle(
     {
         Name = "Omega Burp Juice",
@@ -706,10 +709,10 @@ FarmingTab:AddToggle(
         end
     }
 )
- 
+
 FarmingTab:AddToggle(
     {
-        Name = "Thunder Fizz",
+        Name = "Thunder FIZZ",
         Default = false,
         Save = false,
         Callback = function(Value)
@@ -727,7 +730,7 @@ FarmingTab:AddToggle(
         end
     }
 )
- 
+
 FarmingTab:AddToggle(
     {
         Name = "Garlic Juice",
@@ -748,26 +751,26 @@ FarmingTab:AddToggle(
         end
     }
 )
- 
+
 local FarmingSection =
     FarmingTab:AddSection(
     {
         Name = "Others"
     }
 )
- 
+
 FarmingTab:AddButton(
     {
         Name = "Auto Prestige",
         Callback = function()
             while true do
-                task.wait(0.075)
+                task.wait(1)
                 game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
             end
         end
     }
 )
- 
+
 FarmingTab:AddTextbox(
     {
         Name = "Select a drink",
@@ -788,7 +791,7 @@ FarmingTab:AddTextbox(
         end
     }
 )
- 
+
 FarmingTab:AddBind(
     {
         Name = "Unequip drink [for PC users]",
@@ -797,9 +800,9 @@ FarmingTab:AddBind(
         Callback = function()
             local Players = game:GetService("Players")
             local ContextActionService = game:GetService("ContextActionService")
- 
+
             local player = Players.LocalPlayer
- 
+
             ContextActionService:BindAction(
                 "unequipTools",
                 function(_, userInputState)
@@ -819,7 +822,7 @@ FarmingTab:AddBind(
         end
     }
 )
- 
+
 FarmingTab:AddButton(
     {
         Name = "Unequip drink [for mobile users]",
@@ -829,7 +832,7 @@ FarmingTab:AddButton(
     }
 )
 --Farming Tab End--
- 
+
 --Extras Tab
 local ExtrasTab =
     Window:MakeTab(
@@ -845,7 +848,7 @@ local ExtrasSection =
         Name = "Extras"
     }
 )
- 
+
 ExtrasTab:AddButton(
     {
         Name = "Auto-collect Gems",
@@ -861,7 +864,7 @@ ExtrasTab:AddButton(
         end
     }
 )
- 
+
 ExtrasTab:AddToggle(
     {
         Name = "Auto Equip",
@@ -903,12 +906,12 @@ ExtrasTab:AddToggle(
 --})
 ExtrasTab:AddButton(
     {
-        Name = "Burp Points Counter",
+        Name = "UrMom Ui",
         Callback = function()
             OrionLib:MakeNotification(
                 {
-                    Name = "Burp points Counter",
-                    Content = "Here ya go",
+                    Name = "Need help to read smol numbers?",
+                    Content = "Here ya go lmao",
                     Image = "rbxassetid://4483345998",
                     Time = 5
                 }
@@ -917,7 +920,7 @@ ExtrasTab:AddButton(
         end
     }
 )
- 
+
 ExtrasTab:AddButton(
     {
         Name = "SafePlace",
@@ -932,12 +935,12 @@ ExtrasTab:AddButton(
     }
 )
 --Extras Tab End--
- 
+
 --"Admin Tab"--
 local AdminScriptsTab =
     Window:MakeTab(
     {
-        Name = " ”Personal Scripts”",
+        Name = " ”Admin scripts”",
         Icon = "rbxassetid://4483345998",
         PremiumOnly = false
     }
@@ -945,10 +948,10 @@ local AdminScriptsTab =
 local AdminScriptsSection =
     AdminScriptsTab:AddSection(
     {
-        Name = "”Personal Tools” <-- Pick & choose"
+        Name = "”Admin” <-- Pick & choose"
     }
 )
- 
+
 AdminScriptsTab:AddButton(
     {
         Name = "Load Fate's Admin",
@@ -958,7 +961,7 @@ AdminScriptsTab:AddButton(
         end
     }
 )
- 
+
 AdminScriptsTab:AddButton(
     {
         Name = "Load IY FE",
@@ -968,7 +971,7 @@ AdminScriptsTab:AddButton(
         end
     }
 )
- 
+
 AdminScriptsTab:AddButton(
     {
         Name = "Load Reviz v2",
@@ -978,7 +981,7 @@ AdminScriptsTab:AddButton(
         end
     }
 )
- 
+
 AdminScriptsTab:AddButton(
     {
         Name = "Load CMD-X",
@@ -989,7 +992,7 @@ AdminScriptsTab:AddButton(
     }
 )
 --"Admin" Tab End--
- 
+
 --Settings Tab--
 local SettingsTab =
     Window:MakeTab(
@@ -999,23 +1002,23 @@ local SettingsTab =
         PremiumOnly = false
     }
 )
- 
+
 local SettingsSection =
     SettingsTab:AddSection(
     {
         Name = "Settings"
     }
 )
- 
+
 SettingsSection:AddButton(
     {
-        Name = "Destroy Lib",
+        Name = "Destroy UI",
         Callback = function()
             OrionLib:Destroy()
         end
     }
 )
- 
+
 SettingsSection:AddButton(
     {
         Name = "Anti Kick",
@@ -1031,7 +1034,7 @@ SettingsSection:AddButton(
             local mt = getrawmetatable(game)
             local old = mt.__namecall
             local protect = newcclosure or protect_function
- 
+
             setreadonly(mt, false)
             mt.__namecall =
                 protect(
@@ -1055,7 +1058,7 @@ SettingsSection:AddButton(
         end
     }
 )
- 
+
 SettingsSection:AddButton(
     {
         Name = "Anti AFK",
@@ -1077,7 +1080,7 @@ SettingsSection:AddButton(
         end
     }
 )
- 
+
 SettingsTab:AddButton(
     {
         Name = "Rejoin",
@@ -1096,7 +1099,7 @@ SettingsTab:AddButton(
     }
 )
 --Settings End--
- 
+
 --Info Tab--
 local InfoTab =
     Window:MakeTab(
@@ -1112,11 +1115,11 @@ local InfoSection =
         Name = "Info"
     }
 )
- 
-InfoTab:AddLabel("Updated to Orion Lib.")
+
+InfoTab:AddLabel("Script is in work in progress.")
 InfoTab:AddParagraph(
-    "Important:",
-    "•  This script is, in work in progress future updates will come 'Sincerly Rikoplayz' . "
+    "Important:"I'm Worling on the script so be patient asd it takes time to  Update,"
+    
 )
 local InfoSection =
     InfoTab:AddSection(
@@ -1125,5 +1128,5 @@ local InfoSection =
     }
 )
 InfoTab:AddLabel("Rikoplayz")
- 
+
 OrionLib:Init()
