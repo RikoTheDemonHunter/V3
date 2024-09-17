@@ -246,8 +246,9 @@ function AutoEquipDrink()
 	end)
 end
  
-local kavoUi = loadstring(game:HttpGet("https://pastebin.com/raw/vff1bQ9F"))()
-local window = kavoUi.CreateLib("Rikos-DrinkHax Premium V1.2","BloodTheme")
+local OrionLIb = loadstring(game:HttpGet(("https://raw.githubusercontent.com/shlexware/Orion/main/source")))()
+local Window =
+    OrionLib:MakeWindow(("Rikos-DrinkHax Premium V1.2","BloodTheme")
  
 local Tab1 = window:NewTab("Auto Drink")
 local Tab1Section = Tab1:NewSection("Auto Drinks Tab")
