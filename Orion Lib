@@ -15,7 +15,7 @@ OrionLib:MakeNotification(
         Name = "Welcome!",
         Content = "Some features may be added in the future, or removed.",
         Image = "rbxassetid://4483345998",
-        Time = 1
+        Time = 5
     }
 )
 
@@ -764,7 +764,7 @@ FarmingTab:AddButton(
         Name = "Auto Prestige",
         Callback = function()
             while true do
-                task.wait(0.8)
+                task.wait(1)
                 game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
             end
         end
@@ -1127,6 +1127,6 @@ local InfoSection =
         Name = "Credits"
     }
 )
-InfoTab:AddLabel("Made by Rikoplayz")
+InfoTab:AddLabel("Made by 01_pink")
 
 OrionLib:Init()
