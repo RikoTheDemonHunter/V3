@@ -250,7 +250,7 @@ end
 local PlayerTab =
     Window:MakeTab(
     {
-        Name = "Player",
+        Name = "Tools",
         Icon = "rbxassetid://4483345998",
         PremiumOnly = false
     }
@@ -259,11 +259,11 @@ local PlayerTab =
 local PlayerSection =
     PlayerTab:AddSection(
     {
-        Name = "Player"
+        Name = "Tools"
     }
 )
 
-PlayerSection:AddSlider(
+PlayerSection:AddButton(
     {
         Name = "Walkspeed",
         Min = 16,
@@ -278,7 +278,7 @@ PlayerSection:AddSlider(
     }
 )
 
-PlayerSection:AddSlider(
+PlayerSection:AddButton(
     {
         Name = "Jump Power",
         Min = 50,
