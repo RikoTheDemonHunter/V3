@@ -1,0 +1,1308 @@
+local ScreenGui = Instance.new("ScreenGui")
+local Frame = Instance.new("TextButton")
+local Title = Instance.new("TextButton")
+local Menu = Instance.new("TextLabel")
+local Close = Instance.new("TextButton")
+local Minimize = Instance.new("TextButton")
+
+--Speed Drink Characters
+
+local StarterDrink = Instance.new("TextButton")
+local SecondDrink = Instance.new("TextButton")
+local ThirdDrink = Instance.new("TextButton")
+local FourthDrink = Instance.new("TextButton")
+local FifthDrink = Instance.new("TextButton")
+local SixthDrink = Instance.new("TextButton")
+local SeventhDrink = Instance.new("TextButton")
+local EighthDrink = Instance.new("TextButton")
+local NinthDrink = Instance.new("TextButton")
+local AtomicDrink = Instance.new("TextButton")
+local OmegaBurpJuice = Instance.new("TextButton")
+local ThunderFizz = Instance.new("TextButton")
+local SpeedDrink = Instance.new("TextButton")
+
+--Auto Prestige Characters
+
+local AutoPrestige = Instance.new("TextButton")
+local AutoPrestige2 = Instance.new("TextButton")
+
+--Spam Burp Characters
+
+local SpamBurp = Instance.new("TextButton")
+local SpamBurp2 = Instance.new("TextButton")
+
+--Drink Settings Characters
+
+local DrinkSettings = Instance.new("TextButton")
+local AutoDrinkSwitcher = Instance.new("TextButton")
+local SwitcherBackup = Instance.new("TextButton")
+
+--OP Scripts Characters
+
+local OPScripts = Instance.new("TextButton")
+local InfiniteYield = Instance.new("TextButton")
+local OwlHub = Instance.new("TextButton")
+local RevizAdmin = Instance.new("TextButton")
+local DarkDex = Instance.new("TextButton")
+local UnnamedESP = Instance.new("TextButton")
+local WarningWindow = Instance.new("TextButton")
+local WarningWindow2 = Instance.new("TextButton")
+local Yes = Instance.new("TextButton")
+local No = Instance.new("TextButton")
+local Yes2 = Instance.new("TextButton")
+local No2 = Instance.new("TextButton")
+
+--Misc Characters
+
+local Misc = Instance.new("TextButton")
+local AntiAfk = Instance.new("TextButton")
+local AntiAfk2 = Instance.new("TextButton")
+local GiveDrink = Instance.new("TextButton")
+local DiamondAutoFarm = Instance.new("TextButton")
+
+--User Interface Properties
+
+ScreenGui.Name = "ScreenGui"
+ScreenGui.Parent = game.CoreGui
+
+Frame.Name = "Frame"
+Frame.Parent = ScreenGui
+Frame.Style = 3
+Frame.BackgroundColor3 = Color3.new(0, 0, 0)
+Frame.Position = UDim2.new(0.15, 0, 0.307, 0)
+Frame.Size = UDim2.new(0, 470, 0, 283)
+Frame.TextColor3 = Color3.new(0, 0, 0)
+Frame.Text = ""
+Frame.TextSize = 0
+Frame.Selectable = false
+Frame.Active = false
+
+Title.Name = "Title"
+Title.Parent = ScreenGui
+Title.Style = 3
+Title.BackgroundColor3 = Color3.new(0, 0, 0)
+Title.Position = UDim2.new(0.15, 0, 0.307, 0)
+Title.Size = UDim2.new(0, 470, 0, 28)
+Title.Font = Enum.Font.GothamBlack
+Title.Text = "Riko's Drinkhax V 1.0"
+Title.TextColor3 = Color3.new(255, 0, 0)
+Title.TextSize = 16
+Title.Selectable = false
+Title.Active = false
+
+Menu.Name = "Menu"
+Menu.Parent = ScreenGui
+Menu.BackgroundColor3 = Color3.new(0, 0, 0)
+Menu.Position = UDim2.new(0.154, 0, 0.342, 0)
+Menu.Size = UDim2.new(0, 92, 0, 249)
+Menu.Font = Enum.Font.GothamBlack
+Menu.Text = ""
+Menu.TextColor3 = Color3.new(0, 0, 0)
+Menu.TextSize = 0
+
+Close.Name = "Close"
+Close.Parent = ScreenGui
+Close.BackgroundColor3 = Color3.new(0, 0, 0)
+Close.BorderSizePixel = 0
+Close.Position = UDim2.new(0.800, 0, 0.50, 0)
+Close.Size = UDim2.new(0, 17, 0, 17)
+Close.Font = Enum.Font.GothamBlack
+Close.Text = "X"
+Close.TextColor3 = Color3.new(255, 0, 0)
+Close.TextSize = 14
+Close.MouseButton1Down:connect(function()
+Frame.Visible = false
+Title.Visible = false
+Menu.Visible = false
+Close.Visible = false
+Minimize.Visible = false
+SpeedDrink.Visible = false
+AutoPrestige.Visible = false
+AutoPrestige2.Visible = false
+StarterDrink.Visible = false
+SecondDrink.Visible = false
+ThirdDrink.Visible = false
+FourthDrink.Visible = false
+FifthDrink.Visible = false
+SixthDrink.Visible = false
+SeventhDrink.Visible = false
+EighthDrink.Visible = false
+NinthDrink.Visible = false
+AtomicDrink.Visible = false
+OmegaBurpJuice.Visible = false
+ThunderFizz.Visible = false
+SpamBurp.Visible = false
+SpamBurp2.Visible = false
+DrinkSettings.Visible = false
+AutoDrinkSwitcher.Visible = false
+OPScripts.Visible = false
+Misc.Visible = false
+AntiAfk.Visible = false
+AntiAfk2.Visible = false
+GiveDrink.Visible = false
+DiamondAutoFarm.Visible = false
+InfiniteYield.Visible = false
+OwlHub.Visible = false
+
+end)
+
+Minimize.Name = "Minimize"
+Minimize.Parent = ScreenGui
+Minimize.BorderSizePixel = 0
+Minimize.BackgroundColor3 = Color3.new(0, 0, 0)
+Minimize.Position = UDim2.new(0.414, 0, 0.314, 0)
+Minimize.Size = UDim2.new(0, 17, 0, 17)
+Minimize.Font = Enum.Font.GothamBlack
+Minimize.Text = "-"
+Minimize.TextColor3 = Color3.new(255, 0, 0)
+Minimize.TextSize = 16
+
+--Speed Drink Properties
+
+SpeedDrink.Name = "SpeedDrink"
+SpeedDrink.Parent = ScreenGui
+SpeedDrink.Style = 1
+SpeedDrink.BackgroundColor3 = Color3.new(0, 0, 0)
+SpeedDrink.Position = UDim2.new(0.1588, 0, 0.365, 0)
+SpeedDrink.Size = UDim2.new(0, 76, 0, 21)
+SpeedDrink.Font = Enum.Font.GothamBlack
+SpeedDrink.Text = "Speed Drink"
+SpeedDrink.TextColor3 = Color3.new(255, 0, 0)
+SpeedDrink.TextSize = 14
+SpeedDrink.MouseButton1Down:connect(function()
+AutoPrestige2.Visible = false
+SpamBurp2.Visible = false
+AutoDrinkSwitcher.Visible = false
+AntiAfk.Visible = false
+AntiAfk2.Visible = false
+GiveDrink.Visible = false
+DiamondAutoFarm.Visible = false
+InfiniteYield.Visible = false
+OwlHub.Visible = false
+
+local Arguments = {
+        [1] = 1
+}
+
+SpeedDrink.TextTransparency = 0
+while wait (0.01) do
+SpeedDrink.TextTransparency = 0.1
+while wait (0.01) do
+SpeedDrink.TextTransparency = 0.5
+while wait (0.01) do
+SpeedDrink.TextTransparency = 0.75
+while wait (0.01) do
+SpeedDrink.TextTransparency = 1
+SpeedDrink.Text = "Wait..."
+
+
+SpeedDrink.TextTransparency = 1
+while wait (0.01) do
+SpeedDrink.TextTransparency = 0.75
+while wait (0.01) do
+SpeedDrink.TextTransparency = 0.5
+while wait (0.01) do
+SpeedDrink.TextTransparency = 0.1
+while wait (0.01) do
+SpeedDrink.TextTransparency = 0
+
+SpeedDrink.TextTransparency = 0
+while wait (0.01) do
+SpeedDrink.TextTransparency = 0.1
+while wait (0.01) do
+SpeedDrink.TextTransparency = 0.5
+while wait (0.01) do
+SpeedDrink.TextTransparency = 0.75
+while wait (0.01) do
+SpeedDrink.TextTransparency = 1
+SpeedDrink.Text = "Auto Drink"
+
+SpeedDrink.TextTransparency = 1
+while wait (0.01) do
+SpeedDrink.TextTransparency = 0.75
+while wait (0.01) do
+SpeedDrink.TextTransparency = 0.5
+while wait (0.01) do
+SpeedDrink.TextTransparency = 0.1
+while wait (0.01) do
+SpeedDrink.TextTransparency = 0
+
+
+StarterDrink.Visible = true
+StarterDrink.BackgroundTransparency = 1
+while wait (0.01) do
+StarterDrink.BackgroundTransparency = 0.75
+while wait (0.01) do
+StarterDrink.BackgroundTransparency = 0.5
+while wait (0.01) do
+StarterDrink.BackgroundTransparency = 0.1
+while wait (0.01) do
+StarterDrink.BackgroundTransparency = 0
+
+SecondDrink.Visible = true
+SecondDrink.BackgroundTransparency = 1
+while wait (0.01) do
+SecondDrink.BackgroundTransparency = 0.75
+while wait (0.01) do
+SecondDrink.BackgroundTransparency = 0.5
+while wait (0.01) do
+SecondDrink.BackgroundTransparency = 0.1
+while wait (0.01) do
+SecondDrink.BackgroundTransparency = 0
+
+ThirdDrink.Visible = true
+ThirdDrink.BackgroundTransparency = 1
+while wait (0.01) do
+ThirdDrink.BackgroundTransparency = 0.75
+while wait (0.01) do
+ThirdDrink.BackgroundTransparency = 0.5
+while wait (0.01) do
+ThirdDrink.BackgroundTransparency = 0.1
+while wait (0.01) do
+ThirdDrink.BackgroundTransparency = 0
+
+FourthDrink.Visible = true
+FourthDrink.BackgroundTransparency = 1
+while wait (0.01) do
+FourthDrink.BackgroundTransparency = 0.75
+while wait (0.01) do
+FourthDrink.BackgroundTransparency = 0.5
+while wait (0.01) do
+FourthDrink.BackgroundTransparency = 0.1
+while wait (0.01) do
+FourthDrink.BackgroundTransparency = 0
+
+FifthDrink.Visible = true
+FifthDrink.BackgroundTransparency = 1
+while wait (0.01) do
+FifthDrink.BackgroundTransparency = 0.75
+while wait (0.01) do
+FifthDrink.BackgroundTransparency = 0.5
+while wait (0.01) do
+FifthDrink.BackgroundTransparency = 0.1
+while wait (0.01) do
+FifthDrink.BackgroundTransparency = 0
+
+SixthDrink.Visible = true
+SixthDrink.BackgroundTransparency = 1
+while wait (0.01) do
+SixthDrink.BackgroundTransparency = 0.75
+while wait (0.01) do
+SixthDrink.BackgroundTransparency = 0.5
+while wait (0.01) do
+SixthDrink.BackgroundTransparency = 0.1
+while wait (0.01) do
+SixthDrink.BackgroundTransparency = 0
+
+SeventhDrink.Visible = true
+SeventhDrink.BackgroundTransparency = 1
+while wait (0.01) do
+SeventhDrink.BackgroundTransparency = 0.75
+while wait (0.01) do
+SeventhDrink.BackgroundTransparency = 0.5
+while wait (0.01) do
+SeventhDrink.BackgroundTransparency = 0.1
+while wait (0.01) do
+SeventhDrink.BackgroundTransparency = 0
+
+EighthDrink.Visible = true
+EighthDrink.BackgroundTransparency = 1
+while wait (0.01) do
+EighthDrink.BackgroundTransparency = 0.75
+while wait (0.01) do
+EighthDrink.BackgroundTransparency = 0.5
+while wait (0.01) do
+EighthDrink.BackgroundTransparency = 0.1
+while wait (0.01) do
+EighthDrink.BackgroundTransparency = 0
+
+NinthDrink.Visible = true
+NinthDrink.BackgroundTransparency = 1
+while wait (0.01) do
+NinthDrink.BackgroundTransparency = 0.75
+while wait (0.01) do
+NinthDrink.BackgroundTransparency = 0.5
+while wait (0.01) do
+NinthDrink.BackgroundTransparency = 0.1
+while wait (0.01) do
+NinthDrink.BackgroundTransparency = 0
+
+AtomicDrink.Visible = true
+AtomicDrink.BackgroundTransparency = 1
+while wait (0.01) do
+AtomicDrink.BackgroundTransparency = 0.75
+while wait (0.01) do
+AtomicDrink.BackgroundTransparency = 0.5
+while wait (0.01) do
+AtomicDrink.BackgroundTransparency = 0.1
+while wait (0.01) do
+AtomicDrink.BackgroundTransparency = 0
+
+OmegaBurpJuice.Visible = true
+OmegaBurpJuice.BackgroundTransparency = 1
+while wait (0.01) do
+OmegaBurpJuice.BackgroundTransparency = 0.75
+while wait (0.01) do
+OmegaBurpJuice.BackgroundTransparency = 0.5
+while wait (0.01) do
+OmegaBurpJuice.BackgroundTransparency = 0.1
+while wait (0.01) do
+OmegaBurpJuice.BackgroundTransparency = 0
+
+ThunderFizz.Visible = true
+ThunderFizz.BackgroundTransparency = 1
+while wait (0.01) do
+ThunderFizz.BackgroundTransparency = 0.75
+while wait (0.01) do
+ThunderFizz.BackgroundTransparency = 0.5
+while wait (0.01) do
+ThunderFizz.BackgroundTransparency = 0.1
+while wait (0.01) do
+ThunderFizz.BackgroundTransparency = 0
+
+Remote:FireServer(unpack(Arguments))
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end)
+
+StarterDrink.Name = "Starter Drink"
+StarterDrink.Parent = ScreenGui
+StarterDrink.Style = 1
+StarterDrink.BackgroundColor3 = Color3.new(0, 0, 0)
+StarterDrink.Position = UDim2.new(0.219, 0, 0.365, 0)
+StarterDrink.Size = UDim2.new(0, 95, 0, 21)
+StarterDrink.Font = Enum.Font.GothamBlack
+StarterDrink.Text = "Starter Drink"
+StarterDrink.TextColor3 = Color3.new(255, 0, 0)
+StarterDrink.TextSize = 14
+StarterDrink.Visible = false 
+StarterDrink.MouseButton1Down:connect(function()
+StarterDrink.Text = "Executed"
+while wait (2.34) do
+local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
+ 
+local Arguments = {
+        [1] = "Starter Drink"
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+SecondDrink.Name = "SecondDrink"
+SecondDrink.Parent = ScreenGui
+SecondDrink.Style = 1
+SecondDrink.BackgroundColor3 = Color3.new(0, 0, 0)
+SecondDrink.Position = UDim2.new(0.293, 0, 0.365, 0)
+SecondDrink.Size = UDim2.new(0, 95, 0, 21)
+SecondDrink.Font = Enum.Font.GothamBlack
+SecondDrink.Text = "Second Drink"
+SecondDrink.TextColor3 = Color3.new(255, 0, 0)
+SecondDrink.TextSize = 14
+SecondDrink.Visible = false
+SecondDrink.MouseButton1Down:connect(function()
+SecondDrink.Text = "Executed"
+while wait (2.34) do
+local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
+ 
+local Arguments = {
+        [1] = "Second Drink"
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+ThirdDrink.Name = "ThirdDrink"
+ThirdDrink.Parent = ScreenGui
+ThirdDrink.Style = 1
+ThirdDrink.BackgroundColor3 = Color3.new(0, 0, 0)
+ThirdDrink.Position = UDim2.new(0.37, 0, 0.365, 0)
+ThirdDrink.Size = UDim2.new(0, 95, 0, 21)
+ThirdDrink.Font = Enum.Font.GothamBlack
+ThirdDrink.Text = "Third Drink"
+ThirdDrink.TextColor3 = Color3.new(255, 0, 0)
+ThirdDrink.TextSize = 14
+ThirdDrink.Visible = false
+ThirdDrink.MouseButton1Down:connect(function()
+ThirdDrink.Text = "Executed"
+while wait (2.34) do
+local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
+ 
+local Arguments = {
+        [1] = "Third Drink"
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+FourthDrink.Name = "FourthDrink"
+FourthDrink.Parent = ScreenGui
+FourthDrink.Style = 1
+FourthDrink.BackgroundColor3 = Color3.new(0, 0, 0)
+FourthDrink.Position = UDim2.new(0.219, 0, 0.446, 0)
+FourthDrink.Size = UDim2.new(0, 95, 0, 21)
+FourthDrink.Font = Enum.Font.GothamBlack
+FourthDrink.Text = "Fourth Drink"
+FourthDrink.TextColor3 = Color3.new(255, 0, 0)
+FourthDrink.TextSize = 14
+FourthDrink.Visible = false
+FourthDrink.MouseButton1Down:connect(function()
+FourthDrink.Text = "Executed"
+while wait (2.34) do
+local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
+ 
+local Arguments = {
+        [1] = "Fourth Drink"
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+FifthDrink.Name = "FifthDrink"
+FifthDrink.Parent = ScreenGui
+FifthDrink.Style = 1
+FifthDrink.BackgroundColor3 = Color3.new(0, 0, 0)
+FifthDrink.Position = UDim2.new(0.293, 0, 0.446, 0)
+FifthDrink.Size = UDim2.new(0, 95, 0, 21)
+FifthDrink.Font = Enum.Font.GothamBlack
+FifthDrink.Text = "Fifth Drink"
+FifthDrink.TextColor3 = Color3.new(255, 0, 0)
+FifthDrink.TextSize = 14
+FifthDrink.Visible = false
+FifthDrink.MouseButton1Down:connect(function()
+FifthDrink.Text = "Executed"
+while wait (2.34) do
+local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
+ 
+local Arguments = {
+        [1] = "Fifth Drink"
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+SixthDrink.Name = "Sixth Drink"
+SixthDrink.Parent = ScreenGui
+SixthDrink.Style = 1
+SixthDrink.BackgroundColor3 = Color3.new(0, 0, 0)
+SixthDrink.Position = UDim2.new(0.37, 0, 0.446, 0)
+SixthDrink.Size = UDim2.new(0, 95, 0, 21)
+SixthDrink.Font = Enum.Font.GothamBlack
+SixthDrink.Text = "Sixth Drink"
+SixthDrink.TextColor3 = Color3.new(255, 0, 0)
+SixthDrink.TextSize = 14
+SixthDrink.Visible = false
+SixthDrink.MouseButton1Down:connect(function()
+SixthDrink.Text = "Executed"
+while wait (2.34) do
+local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
+ 
+local Arguments = {
+        [1] = "Sixth Drink"
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+SeventhDrink.Name = "SeventhDrink"
+SeventhDrink.Parent = ScreenGui
+SeventhDrink.Style = 1
+SeventhDrink.BackgroundColor3 = Color3.new(0, 0, 0)
+SeventhDrink.Position = UDim2.new(0.219, 0, 0.529, 0)
+SeventhDrink.Size = UDim2.new(0, 95, 0, 21)
+SeventhDrink.Font = Enum.Font.GothamBlack
+SeventhDrink.Text = "Seventh Drink"
+SeventhDrink.TextColor3 = Color3.new(255, 0, 0)
+SeventhDrink.TextSize = 14
+SeventhDrink.Visible = false
+SeventhDrink.MouseButton1Down:connect(function()
+SeventhDrink.Text = "Executed"
+while wait (2.34) do
+local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
+ 
+local Arguments = {
+        [1] = "Seventh Drink"
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+EighthDrink.Name = "EighthDrink"
+EighthDrink.Parent = ScreenGui
+EighthDrink.Style = 1
+EighthDrink.Position = UDim2.new(0.293, 0, 0.529, 0)
+EighthDrink.Size = UDim2.new(0, 95, 0, 21)
+EighthDrink.Font = Enum.Font.GothamBlack
+EighthDrink.Text = "Eighth Drink"
+EighthDrink.TextColor3 = Color3.new(255, 0, 0)
+EighthDrink.TextSize = 14
+EighthDrink.Visible = false
+EighthDrink.MouseButton1Down:connect(function()
+EighthDrink.Text = "Executed"
+while wait (2.34) do
+local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
+ 
+local Arguments = {
+        [1] = "Eighth Drink"
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+NinthDrink.Name = "NinthDrink"
+NinthDrink.Parent = ScreenGui
+NinthDrink.Style = 1
+NinthDrink.BackgroundColor3 = Color3.new(0, 0, 0)
+NinthDrink.Position = UDim2.new(0.37, 0, 0.529, 0)
+NinthDrink.Size = UDim2.new(0, 95, 0, 21)
+NinthDrink.Font = Enum.Font.GothamBlack
+NinthDrink.Text = "Ninth Drink"
+NinthDrink.TextColor3 = Color3.new(255, 0, 0)
+NinthDrink.TextSize = 14
+NinthDrink.Visible = false
+NinthDrink.MouseButton1Down:connect(function()
+NinthDrink.Text = "Executed"
+while wait (2.34) do
+local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
+ 
+local Arguments = {
+        [1] = "Ninth Drink"
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+AtomicDrink.Name = "AtomicDrink"
+AtomicDrink.Parent = ScreenGui
+AtomicDrink.Style = 1
+AtomicDrink.BackgroundColor3 = Color3.new(0, 0, 0)
+AtomicDrink.Position = UDim2.new(0.219, 0, 0.611, 0)
+AtomicDrink.Size = UDim2.new(0, 95, 0, 21)
+AtomicDrink.Font = Enum.Font.GothamBlack
+AtomicDrink.Text = "Atomic Drink"
+AtomicDrink.TextColor3 = Color3.new(255, 0, 0)
+AtomicDrink.TextSize = 14
+AtomicDrink.Visible = false
+AtomicDrink.MouseButton1Down:connect(function()
+AtomicDrink.Text = "Executed"
+while wait (2.34) do
+local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
+ 
+local Arguments = {
+        [1] = "Atomic Drink"
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+OmegaBurpJuice.Name = "OmegaBurpJuice"
+OmegaBurpJuice.Parent = ScreenGui
+OmegaBurpJuice.Style = 1
+OmegaBurpJuice.BackgroundColor3 = Color3.new(0, 0, 0)
+OmegaBurpJuice.Position = UDim2.new(0.293, 0, 0.611, 0)
+OmegaBurpJuice.Size = UDim2.new(0, 95, 0, 21)
+OmegaBurpJuice.Font = Enum.Font.GothamBlack
+OmegaBurpJuice.Text = "Omega Burp Juice"
+OmegaBurpJuice.TextColor3 = Color3.new(255, 0, 0)
+OmegaBurpJuice.TextSize = 10
+OmegaBurpJuice.Visible = false
+OmegaBurpJuice.MouseButton1Down:connect(function()
+OmegaBurpJuice.Text = "Executed"
+while wait (2.34) do
+local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
+ 
+local Arguments = {
+        [1] = "Omega Burp Juice"
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+ThunderFizz.Name = "Thunder Fizz"
+ThunderFizz.Parent = ScreenGui
+ThunderFizz.Style = 1
+ThunderFizz.BackgroundColor3 = Color3.new(0, 0, 0)
+ThunderFizz.Position = UDim2.new(0.37, 0, 0.611, 0)
+ThunderFizz.Size = UDim2.new(0, 95, 0, 21)
+ThunderFizz.Font = Enum.Font.GothamBlack
+ThunderFizz.Text = "Thunder Fizz"
+ThunderFizz.TextColor3 = Color3.new(255, 0, 0)
+ThunderFizz.TextSize = 14
+ThunderFizz.Visible = false
+ThunderFizz.MouseButton1Down:connect(function()
+ThunderFizz.Text = "Executed"
+while wait (2.34) do
+local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
+ 
+local Arguments = {
+        [1] = "Thunder Fizz"
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+ThunderFizz.Name = "Thunder Fizz"
+ThunderFizz.Parent = ScreenGui
+ThunderFizz.Style = 1
+ThunderFizz.BackgroundColor3 = Color3.new(0, 0, 0)
+ThunderFizz.Position = UDim2.new(0.37, 0, 0.611, 0)
+ThunderFizz.Size = UDim2.new(0, 95, 0, 21)
+ThunderFizz.Font = Enum.Font.GothamBlack
+ThunderFizz.Text = "Thunder Fizz"
+ThunderFizz.TextColor3 = Color3.new(255, 0, 0)
+ThunderFizz.TextSize = 14
+ThunderFizz.Visible = false
+ThunderFizz.MouseButton1Down:connect(function()
+ThunderFizz.Text = "Executed"
+while wait (2.34) do
+local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
+ 
+local Arguments = {
+        [1] = "Thunder Fizz"
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+--Auto Prestige Properties
+
+AutoPrestige.Name = "AutoPrestige"
+AutoPrestige.Parent = ScreenGui
+AutoPrestige.Style = 1
+AutoPrestige.BackgroundColor3 = Color3.new(0, 0, 0)
+AutoPrestige.Position = UDim2.new(0.1588, 0, 0.42, 0)
+AutoPrestige.Size = UDim2.new(0, 76, 0, 21)
+AutoPrestige.Font = Enum.Font.GothamBlack
+AutoPrestige.Text = "Auto Prestige"
+AutoPrestige.TextColor3 = Color3.new(255, 0, 0)
+AutoPrestige.TextSize = 11
+AutoPrestige.MouseButton1Down:connect(function()
+AutoPrestige2.Visible = true
+StarterDrink.Visible = false
+SecondDrink.Visible = false
+ThirdDrink.Visible = false
+FourthDrink.Visible = false
+FifthDrink.Visible = false
+SixthDrink.Visible = false
+SeventhDrink.Visible = false
+EighthDrink.Visible = false
+NinthDrink.Visible = false
+AtomicDrink.Visible = false
+OmegaBurpJuice.Visible = false
+ThunderFizz.Visible = false
+SpamBurp2.Visible = false
+AutoDrinkSwitcher.Visible = false
+AntiAfk.Visible = false
+AntiAfk2.Visible = false
+GiveDrink.Visible = false
+DiamondAutoFarm.Visible = false
+InfiniteYield.Visible = false
+OwlHub.Visible = false
+
+
+end)
+
+AutoPrestige2.Name = "AutoPrestige2"
+AutoPrestige2.Parent = ScreenGui
+AutoPrestige2.Style = 1
+AutoPrestige2.BackgroundColor3 = Color3.new(0, 0, 0)
+AutoPrestige2.Position = UDim2.new(0.219, 0, 0.365, 0)
+AutoPrestige2.Size = UDim2.new(0, 95, 0, 21)
+AutoPrestige2.Font = Enum.Font.GothamBlack
+AutoPrestige2.Text = "Auto Prestige"
+AutoPrestige2.TextColor3 = Color3.new(255, 0, 0)
+AutoPrestige2.TextSize = 11
+AutoPrestige2.Visible = false
+AutoPrestige2.MouseButton1Down:connect(function()
+while wait (1) do
+local Remote = game.ReplicatedStorage.RemoteEvents['PrestigeEvent']
+ 
+local Arguments = {
+        [1] = 30
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+--Spam Burp Properties
+
+SpamBurp.Name = "SpamBurp"
+SpamBurp.Parent = ScreenGui
+SpamBurp.Style = 1
+SpamBurp.BackgroundColor3 = Color3.new(0, 0, 0)
+SpamBurp.Position = UDim2.new(0.1588, 0, 0.475, 0)
+SpamBurp.Size = UDim2.new(0, 76, 0, 21)
+SpamBurp.Font = Enum.Font.GothamBlack
+SpamBurp.Text = "Spam Burp"
+SpamBurp.TextColor3 = Color3.new(255, 0, 0)
+SpamBurp.TextSize = 11
+SpamBurp.Visible = true
+SpamBurp.MouseButton1Down:connect(function()
+SpamBurp2.Visible = true
+StarterDrink.Visible = false
+SecondDrink.Visible = false
+ThirdDrink.Visible = false
+FourthDrink.Visible = false
+FifthDrink.Visible = false
+SixthDrink.Visible = false
+SeventhDrink.Visible = false
+EighthDrink.Visible = false
+NinthDrink.Visible = false
+AtomicDrink.Visible = false
+OmegaBurpJuice.Visible = false
+ThunderFizz.Visible = false
+AutoPrestige2.Visible = false
+AutoDrinkSwitcher.Visible = false
+AntiAfk.Visible = false
+AntiAfk2.Visible = false
+GiveDrink.Visible = false
+DiamondAutoFarm.Visible = false
+InfiniteYield.Visible = false
+OwlHub.Visible = false
+
+
+end)
+
+SpamBurp2.Name = "SpamBurp"
+SpamBurp2.Parent = ScreenGui
+SpamBurp2.Style = 1
+SpamBurp2.BackgroundColor3 = Color3.new(0, 0, 0)
+SpamBurp2.Position = UDim2.new(0.219, 0, 0.365, 0)
+SpamBurp2.Size = UDim2.new(0, 95, 0, 21)
+SpamBurp2.Font = Enum.Font.GothamBlack
+SpamBurp2.Text = "Spam Burp"
+SpamBurp2.TextColor3 = Color3.new(255, 0, 0)
+SpamBurp2.TextSize = 11
+SpamBurp2.Visible = false
+SpamBurp2.MouseButton1Down:connect(function()
+while wait (1) do
+local Remote = game.ReplicatedStorage.RemoteEvents['BurpEvent']
+ 
+local Arguments = {
+        [1] = 9999
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+--Drink Settings Properties
+
+DrinkSettings.Name = "DrinkSettings"
+DrinkSettings.Parent = ScreenGui
+DrinkSettings.Style = 1
+DrinkSettings.BackgroundColor3 = Color3.new(0, 0, 0)
+DrinkSettings.Position = UDim2.new(0.1588, 0, 0.528, 0)
+DrinkSettings.Size = UDim2.new(0, 76, 0, 21)
+DrinkSettings.Font = Enum.Font.GothamBlack
+DrinkSettings.Text = "Auto Drink Misc"
+DrinkSettings.TextColor3 = Color3.new(255, 0, 0)
+DrinkSettings.TextSize = 10
+DrinkSettings.Visible = true
+DrinkSettings.MouseButton1Down:connect(function()
+AutoDrinkSwitcher.Visible = true
+StarterDrink.Visible = false
+SecondDrink.Visible = false
+ThirdDrink.Visible = false
+FourthDrink.Visible = false
+FifthDrink.Visible = false
+SixthDrink.Visible = false
+SeventhDrink.Visible = false
+EighthDrink.Visible = false
+NinthDrink.Visible = false
+AtomicDrink.Visible = false
+OmegaBurpJuice.Visible = false
+ThunderFizz.Visible = false
+AutoPrestige2.Visible = false
+SpamBurp2.Visible = false
+AntiAfk.Visible = false
+AntiAfk2.Visible = false
+GiveDrink.Visible = false
+DiamondAutoFarm.Visible = false
+InfiniteYield.Visible = false
+OwlHub.Visible = false
+
+
+end)
+
+AutoDrinkSwitcher.Name = "Auto Equip"
+AutoDrinkSwitcher.Parent = ScreenGui
+AutoDrinkSwitcher.Style = 1
+AutoDrinkSwitcher.BackgroundColor3 = Color3.new(0, 0, 0)
+AutoDrinkSwitcher.Position = UDim2.new(0.219, 0, 0.365, 0)
+AutoDrinkSwitcher.Size = UDim2.new(0, 95, 0, 21)
+AutoDrinkSwitcher.Font = Enum.Font.GothamBlack
+AutoDrinkSwitcher.Text = "Auto Drink Switcher"
+AutoDrinkSwitcher.TextColor3 = Color3.new(255, 0, 0)
+AutoDrinkSwitcher.TextSize = 8
+AutoDrinkSwitcher.Visible = false
+AutoDrinkSwitcher.MouseButton1Down:connect(function()
+while true do
+wait(0.8)
+if game.Players.LocalPlayer.leaderstats["Burp points"].Value == 0 then
+local Players = game:GetService("Players")
+ 
+local player = Players:FindFirstChildOfClass("Player")
+if player and player.Character then
+	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		local tool = Players.LocalPlayer.Backpack:FindFirstChild("Starter Drink")
+		if tool then
+			humanoid:EquipTool(tool)
+end
+end
+end
+end
+
+if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 150 then
+local Players = game:GetService("Players")
+ 
+local player = Players:FindFirstChildOfClass("Player")
+if player and player.Character then
+	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		local tool = Players.LocalPlayer.Backpack:FindFirstChild("Second Drink")
+		if tool then
+			humanoid:EquipTool(tool)
+end
+end
+end
+end
+if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 600 then
+local Players = game:GetService("Players")
+ 
+local player = Players:FindFirstChildOfClass("Player")
+if player and player.Character then
+	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		local tool = Players.LocalPlayer.Backpack:FindFirstChild("Third Drink")
+		if tool then
+			humanoid:EquipTool(tool)
+end
+end
+end
+end
+
+if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 1600 then
+local Players = game:GetService("Players")
+ 
+local player = Players:FindFirstChildOfClass("Player")
+if player and player.Character then
+	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		local tool = Players.LocalPlayer.Backpack:FindFirstChild("Fourth Drink")
+		if tool then
+			humanoid:EquipTool(tool)
+end
+end
+end
+end
+
+if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 3500 then
+local Players = game:GetService("Players")
+ 
+local player = Players:FindFirstChildOfClass("Player")
+if player and player.Character then
+	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		local tool = Players.LocalPlayer.Backpack:FindFirstChild("Fifth Drink")
+		if tool then
+			humanoid:EquipTool(tool)
+end
+end
+end
+end
+
+if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 10000 then
+local Players = game:GetService("Players")
+ 
+local player = Players:FindFirstChildOfClass("Player")
+if player and player.Character then
+	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		local tool = Players.LocalPlayer.Backpack:FindFirstChild("Sixth Drink")
+		if tool then
+			humanoid:EquipTool(tool)
+end
+end
+end
+end
+
+if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 25000 then
+local Players = game:GetService("Players")
+ 
+local player = Players:FindFirstChildOfClass("Player")
+if player and player.Character then
+	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		local tool = Players.LocalPlayer.Backpack:FindFirstChild("Seventh Drink")
+		if tool then
+			humanoid:EquipTool(tool)
+end
+end
+end
+end
+
+if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 60000 then
+local Players = game:GetService("Players")
+ 
+local player = Players:FindFirstChildOfClass("Player")
+if player and player.Character then
+	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		local tool = Players.LocalPlayer.Backpack:FindFirstChild("Eighth Drink")
+		if tool then
+			humanoid:EquipTool(tool)
+end
+end
+end
+end
+
+if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 150000 then
+local Players = game:GetService("Players")
+ 
+local player = Players:FindFirstChildOfClass("Player")
+if player and player.Character then
+	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		local tool = Players.LocalPlayer.Backpack:FindFirstChild("Ninth Drink")
+		if tool then
+			humanoid:EquipTool(tool)
+end
+end
+end
+end
+
+if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 230000 then
+local Players = game:GetService("Players")
+ 
+local player = Players:FindFirstChildOfClass("Player")
+if player and player.Character then
+	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		local tool = Players.LocalPlayer.Backpack:FindFirstChild("Atomic Drink")
+		if tool then
+			humanoid:EquipTool(tool)
+end
+end
+end
+end
+
+if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 500000 then
+local Players = game:GetService("Players")
+ 
+local player = Players:FindFirstChildOfClass("Player")
+if player and player.Character then
+	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		local tool = Players.LocalPlayer.Backpack:FindFirstChild("Omega Burp Juice")
+		if tool then
+			humanoid:EquipTool(tool)
+
+
+if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 1000000 then
+local Players = game:GetService("Players")
+ 
+local player = Players:FindFirstChildOfClass("Player")
+if player and player.Character then
+	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		local tool = Players.LocalPlayer.Backpack:FindFirstChild("Thunder Fizz")
+		if tool then
+			humanoid:EquipTool(tool)
+			
+			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 2000000 then
+local Players = game:GetService("Players")
+ 
+local player = Players:FindFirstChildOfClass("Player")
+if player and player.Character then
+	local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		local tool = Players.LocalPlayer.Backpack:FindFirstChild("Garlic Juice")
+		if tool then
+			humanoid:EquipTool(tool)
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end
+end)
+
+--OP Scripts Properties
+
+OPScripts.Name = "AdminScripts"
+OPScripts.Parent = ScreenGui
+OPScripts.Style = 1
+OPScripts.BackgroundColor3 = Color3.new(0, 0, 0)
+OPScripts.Position = UDim2.new(0.1588, 0, 0.58, 0)
+OPScripts.Size = UDim2.new(0, 76, 0, 21)
+OPScripts.Font = Enum.Font.GothamBlack
+OPScripts.Text = "OP Scripts"
+OPScripts.TextColor3 = Color3.new(255, 0, 0)
+OPScripts.TextSize = 10
+OPScripts.Visible = true
+OPScripts.MouseButton1Down:connect(function()
+OPScripts.Visible = true
+StarterDrink.Visible = false
+SecondDrink.Visible = false
+ThirdDrink.Visible = false
+FourthDrink.Visible = false
+FifthDrink.Visible = false
+SixthDrink.Visible = false
+SeventhDrink.Visible = false
+EighthDrink.Visible = false
+NinthDrink.Visible = false
+AtomicDrink.Visible = false
+OmegaBurpJuice.Visible = false
+ThunderFizz.Visible = false
+AutoPrestige2.Visible = false
+SpamBurp2.Visible = false
+AutoDrinkSwitcher.Visible = false
+AntiAfk.Visible = false
+AntiAfk2.Visible = false
+GiveDrink.Visible = false
+DiamondAutoFarm.Visible = false
+InfiniteYield.Visible = true
+OwlHub.Visible = true
+
+end)
+
+InfiniteYield.Name = "InfiniteYield"
+InfiniteYield.Parent = ScreenGui
+InfiniteYield.Style = 1
+InfiniteYield.BackgroundColor3 = Color3.new(0, 0, 0)
+InfiniteYield.Position = UDim2.new(0.219, 0, 0.365, 0)
+InfiniteYield.Size = UDim2.new(0, 95, 0, 21)
+InfiniteYield.Font = Enum.Font.GothamBlack
+InfiniteYield.Text = "Infinite Yield"
+InfiniteYield.TextColor3 = Color3.new(255, 0, 0)
+InfiniteYield.TextSize = 10
+InfiniteYield.Visible = false
+InfiniteYield.MouseButton1Down:connect(function()
+loadstring(game:HttpGet(('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'),true))()
+
+end)
+
+OwlHub.Name = "OwlHub"
+OwlHub.Parent = ScreenGui
+OwlHub.Style = 1
+OwlHub.BackgroundColor3 = Color3.new(0, 0, 0)
+OwlHub.Position = UDim2.new(0.293, 0, 0.365, 0)
+OwlHub.Size = UDim2.new(0, 95, 0, 21)
+OwlHub.Font = Enum.Font.GothamBlack
+OwlHub.Text = "Owl Hub"
+OwlHub.TextColor3 = Color3.new(255, 0, 0)
+OwlHub.TextSize = 10
+OwlHub.Visible = false
+OwlHub.MouseButton1Down:connect(function()
+loadstring(game:HttpGet("https://athoi21.xyz/owlhub"))();
+
+end)
+
+
+--Misc Properties
+
+Misc.Name = "Misc"
+Misc.Parent = ScreenGui
+Misc.Style = 1
+Misc.BackgroundColor3 = Color3.new(0, 0, 0)
+Misc.Position = UDim2.new(0.1588, 0, 0.63, 0)
+Misc.Size = UDim2.new(0, 76, 0, 21)
+Misc.Font = Enum.Font.GothamBlack
+Misc.Text = "Misc"
+Misc.TextColor3 = Color3.new(255, 0, 0)
+Misc.TextSize = 10
+Misc.Visible = true
+Misc.MouseButton1Down:connect(function()
+AntiAfk.Visible = true
+AntiAfk2.Visible = true
+GiveDrink.Visible = true
+DiamondAutoFarm.Visible = true
+StarterDrink.Visible = false
+SecondDrink.Visible = false
+ThirdDrink.Visible = false
+FourthDrink.Visible = false
+FifthDrink.Visible = false
+SixthDrink.Visible = false
+SeventhDrink.Visible = false
+EighthDrink.Visible = false
+NinthDrink.Visible = false
+AtomicDrink.Visible = false
+OmegaBurpJuice.Visible = false
+ThunderFizz.Visible = false
+AutoPrestige2.Visible = false
+SpamBurp2.Visible = false
+AutoDrinkSwitcher.Visible = false
+InfiniteYield.Visible = false
+OwlHub.Visible = false
+
+end)
+
+AntiAfk.Name = "AntiAfk"
+AntiAfk.Parent = ScreenGui
+AntiAfk.Style = 1
+AntiAfk.BackgroundColor3 = Color3.new(0, 0, 0)
+AntiAfk.Position = UDim2.new(0.219, 0, 0.365, 0)
+AntiAfk.Size = UDim2.new(0, 95, 0, 21)
+AntiAfk.Font = Enum.Font.GothamBlack
+AntiAfk.Text = "Anti Afk 1"
+AntiAfk.TextColor3 = Color3.new(255, 0, 0)
+AntiAfk.TextSize = 10
+AntiAfk.Visible = false
+AntiAfk.MouseButton1Down:connect(function()
+local mt = getrawmetatable(game)
+		local old = mt.__namecall
+		local protect = newcclosure or protect_function
+
+		setreadonly(mt, false)
+		mt.__namecall = protect(function(self, ...)
+			local method = getnamecallmethod()
+			if method == "Kick" then
+				wait(9e9)
+				return
+			end
+			return old(self, ...)
+		end)
+		hookfunction(game.Players.LocalPlayer.Kick,protect(function() wait(9e9) end))
+end)
+
+AntiAfk2.Name = "AntiAfk2"
+AntiAfk2.Parent = ScreenGui
+AntiAfk2.Style = 1
+AntiAfk2.BackgroundColor3 = Color3.new(0, 0, 0)
+AntiAfk2.Position = UDim2.new(0.293, 0, 0.365, 0)
+AntiAfk2.Size = UDim2.new(0, 95, 0, 21)
+AntiAfk2.Font = Enum.Font.GothamBlack
+AntiAfk2.Text = "Anti Afk 2"
+AntiAfk2.TextColor3 = Color3.new(255, 0, 0)
+AntiAfk2.TextSize = 10
+AntiAfk2.Visible = false
+AntiAfk2.MouseButton1Down:connect(function()
+script=loadstring(game:HttpGet("https://pastebin.com/raw/KHZ8pYx9", true))()
+end)
+
+GiveDrink.Name = "GiveDrink"
+GiveDrink.Parent = ScreenGui
+GiveDrink.Style = 1
+GiveDrink.BackgroundColor3 = Color3.new(0, 0, 0)
+GiveDrink.Position = UDim2.new(0.37, 0, 0.365, 0)
+GiveDrink.Size = UDim2.new(0, 95, 0, 21)
+GiveDrink.Font = Enum.Font.GothamBlack
+GiveDrink.Text = "Garlic Juice (NEW)"
+GiveDrink.TextColor3 = Color3.new(255, 0, 0)
+GiveDrink.TextSize = 10
+GiveDrink.Visible = false
+GiveDrink.MouseButton1Down:connect(function()
+
+while wait (2.34) do
+local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
+ 
+local Arguments = {
+        [1] = "Garlic Juice"
+}
+
+Remote:FireServer(unpack(Arguments))
+end
+end)
+
+DiamondAutoFarm.Name = "DiamondAutoFarm"
+DiamondAutoFarm.Parent = ScreenGui
+DiamondAutoFarm.Style = 1
+DiamondAutoFarm.BackgroundColor3 = Color3.new(0, 0, 0)
+DiamondAutoFarm.Position = UDim2.new(0.219, 0, 0.446, 0)
+DiamondAutoFarm.Size = UDim2.new(0, 95, 0, 21)
+DiamondAutoFarm.Font = Enum.Font.GothamBlack
+DiamondAutoFarm.Text = "Diamond Auto Farm"
+DiamondAutoFarm.TextColor3 = Color3.new(255, 0, 0)
+DiamondAutoFarm.TextSize = 8
+DiamondAutoFarm.Visible = false
+DiamondAutoFarm.MouseButton1Down:connect(function()
+while wait() do
+local gem = game:GetService("Workspace").Diamonds:WaitForChild("Diamond")
+local char = game:GetService("Players").LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+gem.CFrame = char.CFrame
+end
+end)
