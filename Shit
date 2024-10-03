@@ -694,7 +694,7 @@ Teleport:Button("Sky Island", function()
 end)
 
 Teleport:Button("SafePlace", function()
-	local New_CFrame = CFrame.new(231, 054047, 97)
+	local New_CFrame = CFrame.new(167, 48, -5357)
 
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
