@@ -326,9 +326,12 @@ Library:Tab("Credits")
 local Credits =
 CreditsTab:Section("Credits")
 
-function AutoEquip() spawn(function(v)
-		while getgenv().equip == true do
-			wait(0.8)
+function AutoEquip() spawn(function(v) 
+		getgenv().equipdrink = v
+while getgenv().equipdrink do wait(0.8)
+AutoEquipDrink()
+end
+end)
 
 			if not game.Players.LocalPlayer.Backpack:FindFirstChild("Starter Drink") then
 				if not game.Players.LocalPlayer.Character:FindFirstChild("Starter Drink") then
