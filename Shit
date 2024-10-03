@@ -327,9 +327,12 @@ local Credits =
 CreditsTab:Section("Credits")
 
 function AutoEquip()
-	.MouseButton1Down:connect(function(v)
-while true do
-wait(0.8)
+	function(v)
+getgenv().equipdrink = v
+while wait(0.8) do
+    AutoEquipDrink()
+    end
+end)
 			if not game.Players.LocalPlayer.Backpack:FindFirstChild("Starter Drink") then
 				if not game.Players.LocalPlayer.Character:FindFirstChild("Starter Drink") then
 					game.Players.LocalPlayer.Character:BreakJoints()
