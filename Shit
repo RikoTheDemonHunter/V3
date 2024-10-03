@@ -559,7 +559,7 @@ function AutoEquip()
 end
 
 AutoFarm:Button("Auto Prestige", function()
-	while wait(1) do
+	while wait(0.8) do
 		game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
 	end
 end)
@@ -580,7 +580,7 @@ AutoFarm:Button("Auto Collect Gem", function()
 end)
 
 AutoFarm:Button("Auto Drink", function()
-	while wait(2.35) do
+	while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
@@ -734,6 +734,9 @@ end)
 
 Misc:Button("Anti Afk", function()
 	loadstring(game:HttpGet("https://pastebin.com/raw/LxuBzfGp", true))()
+end)
+Misc:Button("SafePlace", function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace"))()
 end)
 
 Credits:Button("Made By Rikoplayz")
