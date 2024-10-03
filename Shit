@@ -316,6 +316,10 @@ local MiscTab = Library:Tab("Misc")
 
 local Misc = MiscTab:Section("Misc")
 
+local ScriptsTab = Library:Tab("Scripts")
+
+local Scripts = ScriptsTab:Section("Scripts")
+
 local CreditsTab =
 Library:Tab("Credits")
 
@@ -558,7 +562,7 @@ function AutoEquip()
 	end)
 end
 
-AutoFarm:Button("Auto Prestige", function()
+AutoFarm:Toggle("Auto Prestige", function(v)
 	while wait(0.8) do
 		game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
 	end
@@ -571,15 +575,15 @@ AutoFarm:Toggle("Auto Equip", function(bool)
 	end
 end)
 
-AutoFarm:Button("Auto Collect Gem", function()
-	while wait() do
+AutoFarm:Toggle("Auto Collect Gem", function(v)
+	while wait(0.6) do
 		local gem = game.Workspace.Diamonds:WaitForChild("Diamond")
 		local Char = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
 		gem.CFrame = Char.CFrame
 	end
 end)
 
-AutoFarm:Button("Auto Drink", function()
+AutoFarm:Button("Auto Drink", function(v)
 	while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
@@ -694,7 +698,7 @@ Teleport:Button("Sky Island", function()
 end)
 
 Teleport:Button("SafePlace", function()
-	local New_CFrame = CFrame.new(167, 48, -5357)
+	local New_CFrame = CFrame.new(167, 48.18, -5357)
 
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
@@ -746,3 +750,15 @@ Credits:Button("Made By Rikoplayz")
 Credits:Button("Discord: rikothedemonlord")
 Credits:Button("Note: Copy Stealers Fuck Off")
 Credits:Button("Update: Script is in Beta")
+Scripts:Button("SimonHub", function()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SimonHub"))()
+end)
+Scripts:Button("SimonHax", function()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/main/SimonHax"))()
+end)
+Scripts:Button("Drinkhaxx", function()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/main/drinkhaxx"))()
+end)
+Scripts:Button("V7", function()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/V7"))()
+end)
