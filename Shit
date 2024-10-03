@@ -298,7 +298,7 @@ function lib:Gui(title)
 	return Tabs
 end
 
-local Library = lib:Gui("Shit Hax V3")
+local Library = lib:Gui("Drink-Hax V3.0")
 
 local AutoFarmTab = Library:Tab("AutoDrink")
 
@@ -308,7 +308,7 @@ local LocalPlayerTab = Library:Tab("LocalPlayer")
 
 local LocalPlayer = LocalPlayerTab:Section("LocalPlayer")
 
-local TeleportTab = Library:Tab("Teleport")
+local TeleportTab = Library:Tab("Teleports")
 
 local Teleport = TeleportTab:Section("Teleport")
 
