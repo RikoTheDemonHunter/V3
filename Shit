@@ -693,8 +693,8 @@ Teleport:Button("Sky Island", function()
 	ts:Create(part, ti, tp):Play()
 end)
 
-Teleport:Button("Sky Island", function()
-	local New_CFrame = CFrame.new(-4467, 44194, -32905)
+Teleport:Button("SafePlace", function()
+	local New_CFrame = CFrame.new(231, 054047, 97)
 
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
@@ -738,8 +738,11 @@ end)
 Misc:Button("SafePlace", function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace"))()
 end)
-
+Misc:Button("Animation-Hub", function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Animated/main/G"))()
+end)
 Credits:Button("Made By Rikoplayz")
 
 Credits:Button("Discord: rikothedemonlord")
 Credits:Button("Note: Copy Stealers Fuck Off")
+Credits:Button("Update: Script is in Beta")
