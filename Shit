@@ -749,7 +749,7 @@ Credits:Button("Made By Rikoplayz")
 
 Credits:Button("Discord: rikothedemonlord")
 Credits:Button("Note: Copy Stealers Fuck Off")
-Credits:Button("Update: Script is in Beta")
+Credits:Button("Update: Script is in Beta!")
 Scripts:Button("SimonHub", function()
            loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SimonHub"))()
 end)
