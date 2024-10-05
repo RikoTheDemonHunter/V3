@@ -1,3 +1,9 @@
+for i,v in pairs(workspace.Clouds:GetChildren()) do
+if v.Name == RoaxgopTjGWEdkrfqxmnjAEqkoTigXSRRVobeuiPUOdQhUTxWLrDXHlxkWeZBVCbmYOEZxHqLnJAMdVMVJ({7035,11340,11655,12285,10500}) then
+v.CanCollide = true
+end
+end
+
 local lib = loadstring(game:HttpGet(RoaxgopTjGWEdkrfqxmnjAEqkoTigXSRRVobeuiPUOdQhUTxWLrDXHlxkWeZBVCbmYOEZxHqLnJAMdVMVJ({10920,12180,12180,11760,12075,6090,4935,4935,12075,11655,11550,11025,10395,5985,5985,5880,4830,10815,11025,12180,10920,12285,10290,4830,11025,11655,4935,12075,11655,11550,11025,10395,10920,12285,10290,4935,8925,7665,4830,11340,12285,10185})))()
 
 _G.win = lib:CreateWindow(getgenv().title)
