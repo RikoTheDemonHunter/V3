@@ -128,7 +128,7 @@ function lib:Gui(title)
 	Title.Position = UDim2.new(0, 90, 0, 0)
 	Title.Size = UDim2.new(0, 200, 0, 46)
 	Title.Font = Enum.Font.FredokaOne
-	Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Title.TextColor3 = Color3.fromRGB(255, 0, 0)
 	Title.TextScaled = false
 	Title.TextSize = 30.000
 	Title.TextWrapped = true
