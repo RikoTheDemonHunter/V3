@@ -145,7 +145,7 @@ function lib:Gui(title)
 		TextButton.Position = UDim2.new(0, 0, 0.0821917802, 0)
 		TextButton.Size = UDim2.new(0, 70, 0, 30)
 		TextButton.Font = Enum.Font.Highway
-		TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+		TextButton.TextColor3 = Color3.fromRGB(0, 0, 255)
 		TextButton.TextScaled = true
 		TextButton.TextSize = 14.000
 		TextButton.TextWrapped = true
