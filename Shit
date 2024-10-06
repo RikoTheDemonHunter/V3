@@ -615,7 +615,7 @@ end)
 
 LocalPlayer:Button("WalkSpeed", function()
 	while wait() do
-		game.Players.LocalPlayer.Character:WaitForChild("Humanoid").WalkSpeed = 700
+		game.Players.LocalPlayer.Character:WaitForChild("Humanoid").WalkSpeed = 459
 	end
 end)
 
