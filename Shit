@@ -122,7 +122,7 @@ function lib:Gui(title)
 	
 	Title.Name = "Title"
 	Title.Parent = Main
-	Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Title.BackgroundColor3 = Color3.fromRGB(123, 180, 0)
 	Title.BackgroundTransparency = 1.000
 	Title.BorderSizePixel = 0
 	Title.Position = UDim2.new(0, 90, 0, 0)
