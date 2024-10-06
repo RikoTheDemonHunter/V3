@@ -143,7 +143,7 @@ while true do
 	index = index + 1
 	strbefore = leaderstats["Burp points"].Value
 	sps = 'Rebooting'
-	wait(1)
+	wait(0.8)
 	if index > 3 then
 		strafter = leaderstats["Burp points"].Value-strbefore
 		sps = tostring(strafter)
