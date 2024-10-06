@@ -693,8 +693,8 @@ Teleport:Button("Sky Island", function()
 	ts:Create(part, ti, tp):Play()
 end)
 
-Teleport:Button("Sky Island", function()
-	local New_CFrame = CFrame.new(-4467, 44194, -32905)
+Teleport:Button("FavSpot", function()
+	local New_CFrame = CFrame.new(60, 12, -72)
 
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
