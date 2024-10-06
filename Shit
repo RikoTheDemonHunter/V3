@@ -710,7 +710,7 @@ Teleport:Button("SafePlace", function()
 end)
 
 Teleport:Button("FavSpot", function()
-	local New_Crame = CFrame.new(60.12, 12.25, -72)
+	local New_Crame = CFrame.new(60, 12, -72)
 
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
