@@ -28,7 +28,7 @@ function AutoEquip()
     spawn(
         function()
             while getgenv().equip == true do
-                task.wait(0.8)
+                task.wait(0.39)
                 if not game.Players.LocalPlayer.Backpack:FindFirstChild("Starter Drink") then
                     if not game.Players.LocalPlayer.Character:FindFirstChild("Starter Drink") then
                         game.Players.LocalPlayer.Character:BreakJoints()
@@ -250,7 +250,7 @@ end
 local PlayerTab =
     Window:MakeTab(
     {
-        Name = "Tools",
+        Name = "Player",
         Icon = "rbxassetid://4483345998",
         PremiumOnly = false
     }
@@ -259,11 +259,11 @@ local PlayerTab =
 local PlayerSection =
     PlayerTab:AddSection(
     {
-        Name = "Tools"
+        Name = "Player"
     }
 )
 
-PlayerSection:AddButton(
+PlayerSection:AddSlider(
     {
         Name = "Walkspeed",
         Min = 16,
@@ -278,7 +278,7 @@ PlayerSection:AddButton(
     }
 )
 
-PlayerSection:AddButton(
+PlayerSection:AddSlider(
     {
         Name = "Jump Power",
         Min = 50,
@@ -488,7 +488,7 @@ FarmingTab:AddToggle(
             if Value then
                 _G.Print = true
                 while _G.Print do
-                    while task.wait(2.4) do
+                    while task.wait(2.344) do
                         game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
                     end
                 end
@@ -509,7 +509,7 @@ FarmingTab:AddToggle(
             if Value then
                 _G.Print = true
                 while _G.Print do
-                    while task.wait(2.4) do
+                    while task.wait(2.344) do
                         game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
                     end
                 end
@@ -530,7 +530,7 @@ FarmingTab:AddToggle(
             if Value then
                 _G.Print = true
                 while _G.Print do
-                    while task.wait(2.4) do
+                    while task.wait(2.344) do
                         game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
                     end
                 end
@@ -551,7 +551,7 @@ FarmingTab:AddToggle(
             if Value then
                 _G.Print = true
                 while _G.Print do
-                    while task.wait(2.4) do
+                    while task.wait(2.344) do
                         game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
                     end
                 end
@@ -572,7 +572,7 @@ FarmingTab:AddToggle(
             if Value then
                 _G.Print = true
                 while _G.Print do
-                    while task.wait(2.4) do
+                    while task.wait(2.344) do
                         game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
                     end
                 end
@@ -593,7 +593,7 @@ FarmingTab:AddToggle(
             if Value then
                 _G.Print = true
                 while _G.Print do
-                    while task.wait(2.4) do
+                    while task.wait(2.344) do
                         game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
                     end
                 end
@@ -614,7 +614,7 @@ FarmingTab:AddToggle(
             if Value then
                 _G.Print = true
                 while _G.Print do
-                    while task.wait(2.4) do
+                    while task.wait(2.344) do
                         game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
                     end
                 end
@@ -635,7 +635,7 @@ FarmingTab:AddToggle(
             if Value then
                 _G.Print = true
                 while _G.Print do
-                    while task.wait(2.4) do
+                    while task.wait(2.344) do
                         game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
                     end
                 end
@@ -656,7 +656,7 @@ FarmingTab:AddToggle(
             if Value then
                 _G.Print = true
                 while _G.Print do
-                    while task.wait(2.4) do
+                    while task.wait(2.344) do
                         game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
                     end
                 end
@@ -677,7 +677,7 @@ FarmingTab:AddToggle(
             if Value then
                 _G.Print = true
                 while _G.Print do
-                    while task.wait(2.4) do
+                    while task.wait(2.344) do
                         game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
                     end
                 end
@@ -698,7 +698,7 @@ FarmingTab:AddToggle(
             if Value then
                 _G.Print = true
                 while _G.Print do
-                    while task.wait(2.4) do
+                    while task.wait(2.344) do
                         game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
                     end
                 end
@@ -719,7 +719,7 @@ FarmingTab:AddToggle(
             if Value then
                 _G.Print = true
                 while _G.Print do
-                    while task.wait(2.4) do
+                    while task.wait(2.344) do
                         game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
                     end
                 end
@@ -740,7 +740,7 @@ FarmingTab:AddToggle(
             if Value then
                 _G.Print = true
                 while _G.Print do
-                    while task.wait(2.4) do
+                    while task.wait(2.344) do
                         game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
                     end
                 end
@@ -764,7 +764,7 @@ FarmingTab:AddButton(
         Name = "Auto Prestige",
         Callback = function()
             while true do
-                task.wait(1)
+                task.wait(0.075)
                 game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
             end
         end
