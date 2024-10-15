@@ -736,8 +736,8 @@ Misc:Button("Anti Afk", function()
 	loadstring(game:HttpGet("https://pastebin.com/raw/LxuBzfGp", true))()
 end)
 
-Misc:Button("Shift-Lock", function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/Lua-Scripts/refs/heads/main/Perm%20Shift%20Lock.lua"))()
+Misc:Button("Safeplace", function()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace"))()
 end)
 Credits:Button("Made By Rikoplayz")
 
