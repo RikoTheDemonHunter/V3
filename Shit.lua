@@ -298,7 +298,7 @@ function lib:Gui(title)
 	return Tabs
 end
 
-local Library = lib:Gui("Drink-Hax V3.0")
+local Library = lib:Gui("Drink-Hax V3.1")
 
 local AutoFarmTab = Library:Tab("AutoDrink")
 
@@ -760,7 +760,7 @@ end)
 Credits:Button("Made By Rikoplayz")
 
 Credits:Button("Discord: rikothedemonlord")
-Credits:Button("Discord Inv: https://discord.gg/pxzXbGqF6K")
+Credits:Button("Note: Auto Drink is Stable")
 Credits:Button("Note: Copy Stealers Fuck Off")
 Credits:Button("Update: Script is Not Beta!")
 Scripts:Button("SimonHub", function()
@@ -779,5 +779,5 @@ Scripts:Button("Emotes-Hub", function()
            loadstring(game:HttpGet("https://pastebin.com/raw/eCpipCTH"))()
 end)
 Scripts:Button("Shift-Lock", function()
-	   loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/Lua-Scripts/refs/heads/main/Perm%20Shift%20Lock.lua"))()
+	   loadstring(game:HttpGet('https://pastebin.com/raw/WQ9NPeDS'))()
 end)		
