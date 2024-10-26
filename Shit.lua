@@ -279,7 +279,7 @@ function lib:Gui(title)
 				TextButton_2.Position = UDim2.new(0, 0, 0.0821917802, 0)
 				TextButton_2.Size = UDim2.new(0, 220, 0, 30)
 				TextButton_2.Font = Enum.Font.Highway
-				TextButton_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+				TextButton_2.TextColor3 = Color3.fromRGB(0, 255, 0)
 				TextButton_2.TextScaled = true
 				TextButton_2.TextSize = 14.000
 				TextButton_2.TextWrapped = true
