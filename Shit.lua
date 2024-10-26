@@ -224,7 +224,7 @@ function lib:Gui(title)
 				Click.Size = UDim2.new(0, 220, 0, 30)
 				Click.Font = Enum.Font.Highway
 				Click.Text = name
-				Click.TextColor3 = Color3.fromRGB(255, 255, 255)
+				Click.TextColor3 = Color3.fromRGB(0, 255, 0)
 				Click.TextScaled = true
 				Click.TextSize = 14.000
 				Click.TextWrapped = true
