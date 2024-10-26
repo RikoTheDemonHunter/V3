@@ -298,7 +298,7 @@ function lib:Gui(title)
 	return Tabs
 end
 
-local Library = lib:Gui("Drink-Hax V3.1")
+local Library = lib:Gui("Drink-Hax V3.2.0")
 
 local AutoFarmTab = Library:Tab("AutoDrink")
 
@@ -602,7 +602,7 @@ AutoFarm:Button("Auto Drink", function(v)
 	end
 end)
 
-LocalPlayer:Button("Remove Fps Cap", function()
+LocalPlayer:Button("Fps-Unlocker", function()
 	if setfpscap and type(setfpscap) == "function" then
 		local num = 100000 or 1e6
 		if num == 'none' then
