@@ -767,6 +767,13 @@ Misc:Button("Walk On Water",  function(bool)
 					end
 				end
 			end)
+Misc:Toggle("Night", function(v)
+				if v then
+					game.Lighting.ClockTime = 0
+				elseif not v then
+					game.Lighting.ClockTime = 14
+				end
+			end)
 
 Credits:Button("Made By 90PuroXx")
 
