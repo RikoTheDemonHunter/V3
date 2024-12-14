@@ -774,6 +774,10 @@ Misc:Toggle("Night", function(v)
 					game.Lighting.ClockTime = 14
 				end
 			end)
+Misc:Toggle("Sit",  function(v)
+				getgenv().sit = v
+				game.Players.LocalPlayer.Character.Humanoid.Sit = getgenv().sit
+			end)
 
 Credits:Button("Made By 90PuroXx")
 
