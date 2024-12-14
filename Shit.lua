@@ -625,6 +625,10 @@ LocalPlayer:Button("Inf Jump", function()
 	end)
 end)
 
+LocalPlayere:Button("Rejoin, function()
+				game:GetService("TeleportService"):Teleport(game.PlaceId)
+			end)
+
 Teleport:Button("Safe Zone", function()
 	local New_CFrame = CFrame.new(-46, 48, -15)
 
