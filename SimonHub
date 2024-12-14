@@ -1,4 +1,37 @@
+loadstring(game:HttpGet("https://shadow999.glitch.me/DrinkhaxUsers.lua"))()
+local users = getgenv().users
+for i,v in next, users do
+	if game.Players.LocalPlayer.UserId == v then
+		if get_hidden_gui or gethui then
+			local hiddenUI = get_hidden_gui or gethui
+			for i,v in pairs(hiddenUI():GetChildren()) do
+				if v:IsA("ScreenGui") and v.Name == "BurpUI" then
+					v:Destroy()
+				end
+			end
+		elseif syn and syn.protect_gui then
+			for i,v in pairs(game.CoreGui:GetChildren()) do
+				if v:IsA("ScreenGui") and v.Name == "BurpUI" then
+					syn.unprotect_gui(v)
+					v:Destroy()
+				end
+			end
+		else
+			for i,v in pairs(game.CoreGui:GetChildren()) do
+				if v:IsA("ScreenGui") and v.Name == "BurpUI" then
+					v:Destroy()
+				end
+			end
+		end
+		loadstring(game:HttpGet("https://pastebin.com/raw/nBbHU2vi"))()
+		print("whitelisted")
+		getgenv().title = "GrannyXhub - Drinkhax(private) - "..i
 
+		for i,v in pairs(workspace.Clouds:GetChildren()) do
+			if v.Name == "Cloud" then
+				v.CanCollide = true
+			end
+		end
 
 		local lib = loadstring(game:HttpGet("https://sonic998.github.io/sonichub/UI.lua"))()
 		local win = lib:CreateWindow(getgenv().title, getgenv().ui or "MainUI")
@@ -510,7 +543,7 @@
 
 			autofarm:Toggle("Auto Drink", function(v)
 				getgenv().autodrink = v
-				while getgenv().autodrink do wait(3.1)
+				while getgenv().autodrink do wait(2.4)
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
@@ -529,7 +562,7 @@
 
 			autofarm:Toggle("Auto Prestige", function(v)
 				getgenv().autoprestige = v
-				while getgenv().autoprestige do wait(1)
+				while getgenv().autoprestige do wait(0.8)
 					game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
 				end
 			end)
@@ -538,7 +571,7 @@
 
 			autofarm:Toggle("Auto Equip Drink", function(v)
 				getgenv().equipdrink = v
-				while getgenv().equipdrink do wait(0.5)
+				while getgenv().equipdrink do wait(0.8)
 					AutoEquipDrink()
 				end
 			end)
@@ -1205,11 +1238,11 @@
 			end)
 
 			local titleDc = Community:Label("discord")
-			Community:Button("https://discord.gg/mSGG9GwVJz", function()
-				setclipboard("https://discord.gg/mSGG9GwVJz")
+			Community:Button("https://discord.gg/T6ET788nvZ", function()
+				setclipboard("https://discord.gg/T6ET788nvZ")
 				titleDc:Update("Link copied")
 				wait(1)
-				titleDc:Update("discord")
+				titleDc:Update("Discord")
 			end)
 			local titleYt = Community:Label("youtube")
 			Community:Button("https://www.youtube.com/@Sonic99963", function()
@@ -1270,7 +1303,7 @@
 
 			autofarm:Toggle("Auto Drink", function(v)
 				getgenv().autodrink = v
-				while getgenv().autodrink do wait(3.1)
+				while getgenv().autodrink do wait(2.4)
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
@@ -1289,7 +1322,7 @@
 
 			autofarm:Toggle("Auto Prestige", function(v)
 				getgenv().autoprestige = v
-				while getgenv().autoprestige do wait(1)
+				while getgenv().autoprestige do wait(0.8)
 					game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
 				end
 			end)
@@ -1298,7 +1331,7 @@
 
 			autofarm:Toggle("Auto Equip Drink", function(v)
 				getgenv().equipdrink = v
-				while getgenv().equipdrink do wait(0.5)
+				while getgenv().equipdrink do wait(0.8)
 					AutoEquipDrink()
 				end
 			end)
