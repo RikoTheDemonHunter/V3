@@ -757,7 +757,7 @@ end)
 Misc:Button("Animation-Hub", function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Animated/main/G"))()
 end)
-Misc:Button("Walk On Water",  function(bool)
+Misc:Toggle("Walk On Water",  function(bool)
 				getgenv().walkonwater = bool
 				for i,v in pairs(workspace:GetChildren()) do
 					if v:IsA("Part") then
