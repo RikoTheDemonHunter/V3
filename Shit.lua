@@ -632,7 +632,7 @@ Teleport:Button("Safe Zone", function()
 	local char = game.Players.LocalPlayer.Character
 
 	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
 	ts:Create(part, ti, tp):Play()
 end)
@@ -644,7 +644,7 @@ Teleport:Button("Pet Shop", function()
 	local char = game.Players.LocalPlayer.Character
 
 	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
 	ts:Create(part, ti, tp):Play()
 end)
@@ -656,7 +656,7 @@ Teleport:Button("Disco Island", function()
 	local char = game.Players.LocalPlayer.Character
 
 	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
 	ts:Create(part, ti, tp):Play()
 end)
@@ -668,7 +668,7 @@ Teleport:Button("Cloud One", function()
 	local char = game.Players.LocalPlayer.Character
 
 	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
 	ts:Create(part, ti, tp):Play()
 end)
@@ -680,7 +680,7 @@ Teleport:Button("Cloud Second", function()
 	local char = game.Players.LocalPlayer.Character
 
 	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
 	ts:Create(part, ti, tp):Play()
 end)
@@ -692,7 +692,7 @@ Teleport:Button("Sky Island", function()
 	local char = game.Players.LocalPlayer.Character
 
 	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
 	ts:Create(part, ti, tp):Play()
 end)
@@ -704,7 +704,7 @@ Teleport:Button("SafePlace", function()
 	local char = game.Players.LocalPlayer.Character
 
 	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
 	ts:Create(part, ti, tp):Play()
 end)
@@ -716,7 +716,7 @@ Teleport:Button("FavSpot", function()
 	local char = game.Players.LocalPlayer.Character
 
 	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
 	ts:Create(part, ti, tp):Play()
 end)
