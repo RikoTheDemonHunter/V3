@@ -625,7 +625,7 @@ LocalPlayer:Button("Inf Jump", function()
 	end)
 end)
 
-LocalPlayere:Button("Rejoin, function()
+LocalPlayer:Button("Rejoin, function()
 				game:GetService("TeleportService"):Teleport(game.PlaceId)
 			end)
 
