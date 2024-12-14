@@ -602,7 +602,7 @@ AutoFarm:Toggle("Auto Drink", function(v)
 	end
 end)
 
-LocalPlayer:Button("Fps-Unlocker", function()
+LocalPlayer:Button("Fps-Unlocker", function(v)
 	if setfpscap and type(setfpscap) == "function" then
 		local num = 100000 or 1e6
 		if num == 'none' then
@@ -613,18 +613,21 @@ LocalPlayer:Button("Fps-Unlocker", function()
 	end
 end)
 
-LocalPlayer:Button("WalkSpeed", function()
+LocalPlayer:Button("WalkSpeed", function(v)
 	while wait() do
 		game.Players.LocalPlayer.Character:WaitForChild("Humanoid").WalkSpeed = 459
 	end
 end)
 
-LocalPlayer:Button("Inf Jump", function()
+LocalPlayer:Button("Inf Jump", function(v)
 	game:GetService("UserInputService").JumpRequest:connect(function()
 		game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
 	end)
 end)
 
+LocalPlayer:Button("Reset", function(v)
+				game.Players.LocalPlayer.Character:BreakJoints()
+			end)
 Teleport:Button("Safe Zone", function()
 	local New_CFrame = CFrame.new(-46, 48, -15)
 
