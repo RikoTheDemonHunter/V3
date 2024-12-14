@@ -298,7 +298,7 @@ function lib:Gui(title)
 	return Tabs
 end
 
-local Library = lib:Gui("Simon-Hub V2")
+local Library = lib:Gui("Puro-Hub V2")
 
 local AutoFarmTab = Library:Tab("AutoDrink")
 
@@ -584,7 +584,7 @@ AutoFarm:Toggle("Auto Collect Gem", function(v)
 end)
 
 AutoFarm:Button("Auto Drink", function(v)
-	while wait(2.340) do				
+	while wait(3.0) do				
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
@@ -757,7 +757,7 @@ end)
 Misc:Button("Animation-Hub", function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Animated/main/G"))()
 end)
-Credits:Button("Made By Rikoplayz")
+Credits:Button("Made By 90PuroXx")
 
 Credits:Button("Discord: rikothedemonlord")
 Credits:Button("Note: Auto Drink is Stable")
