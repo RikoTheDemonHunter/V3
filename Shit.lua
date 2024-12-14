@@ -298,7 +298,7 @@ function lib:Gui(title)
 	return Tabs
 end
 
-local Library = lib:Gui("Puro-Hub V2")
+local Library = lib:Gui("Puro-Hub V1")
 
 local AutoFarmTab = Library:Tab("AutoDrink")
 
@@ -584,7 +584,7 @@ AutoFarm:Toggle("Auto Collect Gem", function(v)
 end)
 
 AutoFarm:Toggle("Auto Drink", function(v)
-	while wait(2.4) do				
+	while wait(2.340) do				
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
