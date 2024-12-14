@@ -1,12 +1,4 @@
-loadstring(game:HttpGet("https://pastebin.com/raw/nBbHU2vi"))()
-		print("whitelisted")
-		getgenv().title = "GrannyXhub - Drinkhax(private) - "..i
 
-		for i,v in pairs(workspace.Clouds:GetChildren()) do
-			if v.Name == "Cloud" then
-				v.CanCollide = true
-			end
-		end
 
 		local lib = loadstring(game:HttpGet("https://sonic998.github.io/sonichub/UI.lua"))()
 		local win = lib:CreateWindow(getgenv().title, getgenv().ui or "MainUI")
