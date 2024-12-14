@@ -625,10 +625,6 @@ LocalPlayer:Button("Inf Jump", function()
 	end)
 end)
 
-LocalPlayer:Button("Rejoin, function()
-				game:GetService("TeleportService"):Teleport(game.PlaceId)
-			end)
-
 Teleport:Button("Safe Zone", function()
 	local New_CFrame = CFrame.new(-46, 48, -15)
 
@@ -782,7 +778,9 @@ Misc:Toggle("Sit",  function(v)
 				getgenv().sit = v
 				game.Players.LocalPlayer.Character.Humanoid.Sit = getgenv().sit
 			end)
-
+Misc:Button("Rejoin", function(v)
+				game:GetService("TeleportService"):Teleport(game.PlaceId)
+			end)
 Credits:Button("Made By 90PuroXx")
 
 Credits:Button("Discord: rikothedemonlord")
