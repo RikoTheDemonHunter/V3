@@ -299,7 +299,7 @@ function lib:Gui(title)
 	return Tabs
 end
 
-local Library = lib:Gui("Puro-Hub (Private)")
+local Library = lib:Gui("Puro-Hub V1")
 
 local AutoFarmTab = Library:Tab("AutoDrink")
 
