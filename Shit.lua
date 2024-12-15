@@ -1,3 +1,5 @@
+local lib = {}
+
 function lib:Gui(title)
 	
 	local DarkLib = Instance.new("ScreenGui")
