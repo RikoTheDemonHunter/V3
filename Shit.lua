@@ -633,7 +633,7 @@ LocalPlayer:Button("Rejoin", function(v)
 				game:GetService("TeleportService"):Teleport(game.PlaceId)
 			end)
 
-LocalPlayer:Button("Night, function(v)
+LocalPlayer:Button("Night",  function(v)
 				if v then
 					game.Lighting.ClockTime = 0
 				elseif not v then
@@ -641,7 +641,7 @@ LocalPlayer:Button("Night, function(v)
 				end
 			end)
 
-LocalPlayer:Button("Sit,   function(v)
+LocalPlayer:Toggle("Sit", function(v)
 				getgenv().sit = v
 				game.Players.LocalPlayer.Character.Humanoid.Sit = getgenv().sit
 			end)
