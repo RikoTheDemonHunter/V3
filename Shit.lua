@@ -724,6 +724,18 @@ Teleport:Button("FavSpot", function()
 	ts:Create(part, ti, tp):Play()
 end)
 
+Teleport:Button("Water Spot", function()
+        local New_CFrame = CFrame.new(-564, 40, 605)
+
+	local ts = game:GetService("TweenService")
+	local char = game.Players.LocalPlayer.Character
+
+	local part = char.HumanoidRootPart
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+	local tp = {CFrame = New_CFrame}
+	ts:Create(part, ti, tp):Play()
+end)
+
 Misc:Button("Bp Counter",
 function()
 
