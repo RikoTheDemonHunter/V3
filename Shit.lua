@@ -754,6 +754,18 @@ Teleport:Button("Water Spot", function()
 	ts:Create(part, ti, tp):Play()
 end)
 
+Teleport:Button("Safeplace v2", function()
+        local New_CFrame = CFrame.new(531, 1223, 0)
+
+	local ts = game:GetService("TweenService")
+	local char = game.Players.LocalPlayer.Character
+
+	local part = char.HumanoidRootPart
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+	local tp = {CFrame = New_CFrame}
+	ts:Create(part, ti, tp):Play()
+end)
+
 Misc:Button("Bp Counter",
 function()
 
@@ -799,6 +811,9 @@ Misc:Toggle("Walk On Water",  function(bool)
 						end
 					end
 				end
+			end)
+Misc:Button("Safeplace v2",  function()
+				loadstring(game:HttpGet("https://sonic998.github.io/sonichub/Shit/HackerMansion.lua"))()
 			end)
 
 Credits:Button("Made By 90PuroXx")
