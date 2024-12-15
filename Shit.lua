@@ -7,7 +7,7 @@ data = string.gsub(data, '[^'..b..'=]', '') return (data:gsub('.', function(x) i
  
 
 
-local userids = {,}
+local userids = {1497286101,}
 
 for i = 1,#userids do
 if game.Players.LocalPlayer.UserId == userids[i] then
