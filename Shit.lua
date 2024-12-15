@@ -603,6 +603,42 @@ AutoFarm:Toggle("Auto Drink", function(v)
 	end
 end)
 
+AutoFarm:Button("RainbowDrink", function(v)
+				getgenv().rainbow = v
+				local t = 2;
+
+				local tick = tick
+				local fromHSV = Color3.fromHSV
+				local RunService = game:GetService("RunService")
+				getgenv().texture = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Mesh.TextureId
+				getgenv().Color = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Color
+				RunService:BindToRenderStep("Rainbow", 1000, function()
+					if getgenv().rainbow == true then
+						local hue = tick() % t / t
+						local color = fromHSV(hue, 1, 1)
+						game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Mesh.TextureId = ""
+						game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Color = color
+					elseif getgenv().rainbow == false then
+						game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Mesh.TextureId = getgenv().texture
+						game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Color = getgenv().Color
+					end
+				end)
+			end)
+
+AutoFarm:Button("Hide Drink", function(bool)
+				getgenv().hidedrink = bool
+				if getgenv().hidedrink == true then
+					while wait() do
+						game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Transparency = 1
+					end
+				elseif getgenv().hidedrink == false then
+					getgenv().hidedrink = num
+					while wait() do
+						game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Transparency = 0
+					end
+				end
+			end)
+
 LocalPlayer:Button("Fps-Unlocker", function(v)
 	if setfpscap and type(setfpscap) == "function" then
 		local num = 100000 or 1e6
