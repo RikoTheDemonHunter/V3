@@ -629,6 +629,23 @@ end)
 LocalPlayer:Button("Reset", function(v)
 				game.Players.LocalPlayer.Character:BreakJoints()
 			end)
+LocalPlayer:Button("Rejoin", function(v)
+				game:GetService("TeleportService"):Teleport(game.PlaceId)
+			end)
+
+LocalPlayer:Button("Night, function(v)
+				if v then
+					game.Lighting.ClockTime = 0
+				elseif not v then
+					game.Lighting.ClockTime = 14
+				end
+			end)
+
+LocalPlayer:Button("Sit,   function(v)
+				getgenv().sit = v
+				game.Players.LocalPlayer.Character.Humanoid.Sit = getgenv().sit
+			end)
+
 Teleport:Button("Safe Zone", function()
 	local New_CFrame = CFrame.new(-46, 48, -15)
 
@@ -783,20 +800,7 @@ Misc:Toggle("Walk On Water",  function(bool)
 					end
 				end
 			end)
-Misc:Toggle("Night", function(v)
-				if v then
-					game.Lighting.ClockTime = 0
-				elseif not v then
-					game.Lighting.ClockTime = 14
-				end
-			end)
-Misc:Toggle("Sit",  function(v)
-				getgenv().sit = v
-				game.Players.LocalPlayer.Character.Humanoid.Sit = getgenv().sit
-			end)
-Misc:Button("Rejoin", function(v)
-				game:GetService("TeleportService"):Teleport(game.PlaceId)
-			end)
+
 Credits:Button("Made By 90PuroXx")
 
 Credits:Button("Discord: rikothedemonlord")
