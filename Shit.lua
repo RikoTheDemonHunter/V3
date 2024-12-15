@@ -1,4 +1,5 @@
 function lib:Gui(title)
+	
 	local DarkLib = Instance.new("ScreenGui")
 	local Main = Instance.new("Frame")
 	local TabSide = Instance.new("ScrollingFrame")
