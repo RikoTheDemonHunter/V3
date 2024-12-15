@@ -5,8 +5,6 @@ if game.Players.LocalPlayer.UserId == userids[i] then
 
 local lib = {loadstring(game:HttpGet("https://pastebin.com/raw/wYnd92Av"))()}
 		
-local lib = {}
-
 function lib:Gui(title)
 	
 	local DarkLib = Instance.new("ScreenGui")
