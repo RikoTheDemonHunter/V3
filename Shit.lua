@@ -807,13 +807,10 @@ function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Bp%20Counter.lua"))()
 end)
 
-Misc:Button("Infinity Yield", function() function(v)
-				local bb=game:GetService("VirtualUser")
-				game:GetService("Players").LocalPlayer.Idled:Connect(function()
-					bb:CaptureController()
-					bb:ClickButton2(Vector2.new())
-				end)
-			end)
+Misc:Button("Infinity Yield", function() 
+
+loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+end)		
 
 Misc:Button("Anti Kick", function()
 	local mt = getrawmetatable(game)
