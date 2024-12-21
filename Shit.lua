@@ -843,9 +843,11 @@ Misc:Button("Anti Afk", function() function(v)
 Misc:Button("SafePlace", function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace"))()
 end)
+		
 Misc:Button("Animation-Hub", function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Animated/main/G"))()
 end)
+		
 Misc:Toggle("Walk On Water",  function(bool)
 				getgenv().walkonwater = bool
 				for i,v in pairs(workspace:GetChildren()) do
@@ -856,6 +858,7 @@ Misc:Toggle("Walk On Water",  function(bool)
 					end
 				end
 			end)
+		
 Misc:Button("Safeplace v2",  function()
 				loadstring(game:HttpGet("https://sonic998.github.io/sonichub/Shit/HackerMansion.lua"))()
 			end)
