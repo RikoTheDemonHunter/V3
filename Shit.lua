@@ -586,45 +586,41 @@ AutoFarm:Toggle("Auto Collect Gem", function(v)
 	end
 end)
 
-AutoFarm:Toggle("Auto Drink", function(v)
-	while wait(2.344) do				
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
-
-	end
-end)
-
-AutoFarm:Button("RainbowDrink", function(v)
-				getgenv().rainbow = v
-				local t = 2;
-
-				local tick = tick
-				local fromHSV = Color3.fromHSV
-				local RunService = game:GetService("RunService")
-				getgenv().texture = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Mesh.TextureId
-				getgenv().Color = game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Color
-				RunService:BindToRenderStep("Rainbow", 1000, function()
-					if getgenv().rainbow == true then
-						local hue = tick() % t / t
-						local color = fromHSV(hue, 1, 1)
-						game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Mesh.TextureId = ""
-						game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Color = color
-					elseif getgenv().rainbow == false then
-						game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Mesh.TextureId = getgenv().texture
-						game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Color = getgenv().Color
-					end
-				end)
+AutoFarm:Toggle("Fast Drink", function(v)
+				getgenv().fastdrink = v
+				while getgenv().fastdrink do wait()
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
+				end
+			end)
+AutoFarm:Button("Auto Drink", function(v)
+				getgenv().autodrink = v
+				while getgenv().autodrink do wait(2.4)
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
+					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
+				end
 			end)
 
 AutoFarm:Button("Hide Drink", function(bool)
