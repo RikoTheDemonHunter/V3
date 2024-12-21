@@ -801,8 +801,7 @@ Teleport:Button("Safeplace v2", function()
 	ts:Create(part, ti, tp):Play()
 end)
 
-Misc:Button("Bp Counter",
-function()
+Misc:Button("Bp Counter",function()
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Bp%20Counter.lua"))()
 end)
