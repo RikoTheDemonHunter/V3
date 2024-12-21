@@ -604,6 +604,7 @@ AutoFarm:Toggle("Fast Drink", function(v)
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
 				end
 			end)
+
 AutoFarm:Button("Auto Drink", function(v)
 				getgenv().autodrink = v
 				while getgenv().autodrink do wait(2.4)
