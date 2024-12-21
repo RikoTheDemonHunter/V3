@@ -829,22 +829,18 @@ Misc:Button("Anti Kick", function()
 	hookfunction(game.Players.LocalPlayer.Kick,protect(function() wait(9e9) end))
 end)
 
-Misc:Button("Anti Afk", function() function(v)
-				local bb=game:GetService("VirtualUser")
-				game:GetService("Players").LocalPlayer.Idled:Connect(function()
-					bb:CaptureController()
-					bb:ClickButton2(Vector2.new())
-				end)
-			end)
+Misc:Button("Anti Afk", function() 
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
+end)
 
 Misc:Button("SafePlace", function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace"))()
 end)
-		
+
 Misc:Button("Animation-Hub", function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Animated/main/G"))()
-end)
-		
+end)	
+
 Misc:Toggle("Walk On Water",  function(bool)
 				getgenv().walkonwater = bool
 				for i,v in pairs(workspace:GetChildren()) do
