@@ -812,7 +812,7 @@ Misc:Button("Anti Kick", function()
 	hookfunction(game.Players.LocalPlayer.Kick,protect(function() wait(9e9) end))
 end)
 
-Misc:Button("Anti Afk", function() function(v)
+Misc:Button("Anti Afk", function(v) 
 				local bb=game:GetService("VirtualUser")
 				game:GetService("Players").LocalPlayer.Idled:Connect(function()
 					bb:CaptureController()
