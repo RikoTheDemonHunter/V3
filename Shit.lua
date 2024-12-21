@@ -569,14 +569,14 @@ AutoFarm:Toggle("Auto Prestige", function(v)
 	end
 end)
 
-loadstring(game:HttpGet("https://sonic998.github.io/sonichub/Shit/AutoEquipDrink.lua"))()
-
 AutoFarm:Toggle("Auto Equip", function(v)
 				getgenv().equipdrink = v
 				while getgenv().equipdrink do wait(0.8)
 					AutoEquipDrink()
 				end
 			end)
+
+loadstring(game:HttpGet("https://sonic998.github.io/sonichub/Shit/AutoEquipDrink.lua"))()
 
 AutoFarm:Toggle("Auto Collect Gem", function(v)
 	while wait(0.6) do
@@ -621,20 +621,6 @@ AutoFarm:Button("Auto Drink", function(v)
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
-				end
-			end)
-
-AutoFarm:Button("Hide Drink", function(bool)
-				getgenv().hidedrink = bool
-				if getgenv().hidedrink == true then
-					while wait() do
-						game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Transparency = 1
-					end
-				elseif getgenv().hidedrink == false then
-					getgenv().hidedrink = num
-					while wait() do
-						game.Players.LocalPlayer.Character:FindFirstChildWhichIsA("Tool").Handle.Transparency = 0
-					end
 				end
 			end)
 
@@ -802,12 +788,10 @@ Teleport:Button("Safeplace v2", function()
 end)
 
 Misc:Button("Bp Counter",function()
-
 loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Bp%20Counter.lua"))()
 end)
 
 Misc:Button("Infinity Yield", function() 
-
 loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)		
 
