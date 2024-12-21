@@ -299,7 +299,7 @@ function lib:Gui(title)
 	return Tabs
 end
 
-local Library = lib:Gui("Puro-Hub V1")
+local Library = lib:Gui("Puro-Hub V1.0")
 
 local AutoFarmTab = Library:Tab("AutoDrink")
 
@@ -607,7 +607,7 @@ AutoFarm:Toggle("Fast Drink", function(v)
 
 AutoFarm:Button("Auto Drink", function(v)
 				getgenv().autodrink = v
-				while getgenv().autodrink do wait(2.4)
+				while getgenv().autodrink do wait(2.344)
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
@@ -740,7 +740,7 @@ Teleport:Button("Sky Island", function()
 end)
 
 Teleport:Button("SafePlace", function()
-	local New_CFrame = CFrame.new(167, 48.30, -5357)
+	local New_CFrame = CFrame.new(167, 48.28, -5357)
 
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
