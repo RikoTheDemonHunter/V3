@@ -327,10 +327,6 @@ Library:Tab("Credits")
 local Credits =
 CreditsTab:Section("Credits")
 
-function AutoEquip()spawn(function(v)
-		while getgenv().equip == true do
-			wait(0.8)
-
 			if not game.Players.LocalPlayer.Backpack:FindFirstChild("Starter Drink") then
 				if not game.Players.LocalPlayer.Character:FindFirstChild("Starter Drink") then
 					game.Players.LocalPlayer.Character:BreakJoints()
