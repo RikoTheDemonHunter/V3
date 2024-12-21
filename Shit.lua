@@ -569,7 +569,7 @@ AutoFarm:Toggle("Auto Prestige", function(v)
 	end
 end)
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/Lua-Scripts/refs/heads/main/New%20Auto%20Equip.lua"))()
+loadstring(game:HttpGet("https://sonic998.github.io/sonichub/Shit/AutoEquipDrink.lua"))()
 
 AutoFarm:Toggle("Auto Equip", function(v)
 				getgenv().equipdrink = v
