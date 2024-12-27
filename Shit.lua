@@ -569,12 +569,14 @@ AutoFarm:Toggle("Auto Prestige", function(v)
 	end
 end)
 
-AutoFarm:Toggle("Auto Equip", function(bool)
-	getgenv().equip = bool
-	if bool then
-		AutoEquip()
-	end
-end)
+AutoFarm:Toggle("Auto Equip", function(v)
+				getgenv().equipdrink = v
+				while getgenv().equipdrink do wait(0.8)
+					AutoEquipDrink()
+				end
+			end)
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua"))()
 
 AutoFarm:Toggle("Auto Collect Gem", function(v)
 	while wait(0.6) do
