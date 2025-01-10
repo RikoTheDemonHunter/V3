@@ -67,7 +67,11 @@ Initiate  Deletion  Do wait (1.2)
               end)
   
 
-
-
-
+Local Server : HttpServiceHost//localport.File.Request
+Local Deletion do wait (1)
+  Local value (9e9)
+  Dns Port : 192.60.3.3.3 
+  Fake Adress : Ur Mom gui
+  
+Local Function : Delete   Gateway-Intent 
                         
