@@ -51,9 +51,9 @@ end
           end 
               end 
                   end 
-                 end
-                end 
-               end)
+                      end
+                          end 
+                              end)
   Local File: Loadstring:HttpGet("Https//LocalPort.Lua.content.File.request
 
 Initiate  Deletion  Do wait (1.2)
@@ -74,4 +74,30 @@ Local Deletion do wait (1)
   Fake Adress : Ur Mom gui
   
 Local Function : Delete   Gateway-Intent 
-                        
+
+
+Intent Port:188.45.-12.0000
+  Local File: function () Server File "Windows Server WinTPM.iso
+Local function Set-Local value "5.5.5"
+  Value:7.8.90.12.12.'12.8 do wait (0.7)
+  Local Wifi Name "randomized"
+  IP Logger:10.10.10.33.-192
+
+  Local Port:"Dlink 5G"
+  BSSD Name:"Dlink"
+  Local Speed:2.4Ghz
+  Max Speed:5Ghz
+  Default Channel:'10'
+  Random Channel:"21 10 11 30 40"
+  do wait (1)
+ end 
+     end 
+         end
+      end
+          end)
+
+Automation Software:Local Value String (20.10.-12)
+do wait (3.2)  
+end 
+    end 
+end)
