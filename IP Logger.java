@@ -101,3 +101,24 @@ do wait (3.2)
 end 
     end 
 end)
+
+  function do create {}
+File Name:Ip config   W&S189.90
+  do wait (0.8)
+
+end function
+
+  function file local vector = 123.89.-233
+  X vector = 1.222.45.90
+  Y vector = -1.-240.60.2
+  end
+      end  
+  end 
+      end
+  end)
+
+  Local windows Folder {}
+
+  =winTPM.iso()
+  =windows.partition file()
+  
