@@ -121,4 +121,41 @@ end function
 
   =winTPM.iso()
   =windows.partition file()
+  end
+      end
+           end 
+               end 
+                    end)
+  Local end =windows Batch file function Return 9e9
+
+  Gateway, nit RGB 456.32.-2.90  
+  nit value =6
+  Local nit value =4
+  initial value =1
+  do wait ("0.2")
+  end
+      end 
+          end
+              end
+                  end
+                      end)
+  Local Delete =("Hook")
+  Hook Function,=("This Account is rather being monitored or deleted")")
+  end
+      end
+          end)
+
+  Batch Gateway = LocalPromopt =("True")
+  •Local RGB Color•
+ = RGB 123.60.79.-23
+ = RGB 255.30.-0.1
+ = RGB 457.234.-120
+  Local RGB Color is randomized
+  Function = "True"
+ 
+Local owner status
+  ("Incognito")
   
+Batch Request Function,
+ do wait ("1")
+                        
