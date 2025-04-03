@@ -440,7 +440,7 @@ StarterDrink.TextSize = 14
 StarterDrink.Visible = false 
 StarterDrink.MouseButton1Down:connect(function()
 StarterDrink.Text = "Executed"
-while wait (2.34) do
+while wait (2.4) do
 local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
  
 local Arguments = {
@@ -464,7 +464,7 @@ SecondDrink.TextSize = 14
 SecondDrink.Visible = false
 SecondDrink.MouseButton1Down:connect(function()
 SecondDrink.Text = "Executed"
-while wait (2.34) do
+while wait (2.4) do
 local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
  
 local Arguments = {
@@ -488,7 +488,7 @@ ThirdDrink.TextSize = 14
 ThirdDrink.Visible = false
 ThirdDrink.MouseButton1Down:connect(function()
 ThirdDrink.Text = "Executed"
-while wait (2.34) do
+while wait (2.4) do
 local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
  
 local Arguments = {
@@ -536,7 +536,7 @@ FifthDrink.TextSize = 14
 FifthDrink.Visible = false
 FifthDrink.MouseButton1Down:connect(function()
 FifthDrink.Text = "Executed"
-while wait (2.34) do
+while wait (2.4) do
 local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
  
 local Arguments = {
@@ -560,7 +560,7 @@ SixthDrink.TextSize = 14
 SixthDrink.Visible = false
 SixthDrink.MouseButton1Down:connect(function()
 SixthDrink.Text = "Executed"
-while wait (2.34) do
+while wait (2.4) do
 local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
  
 local Arguments = {
@@ -584,7 +584,7 @@ SeventhDrink.TextSize = 14
 SeventhDrink.Visible = false
 SeventhDrink.MouseButton1Down:connect(function()
 SeventhDrink.Text = "Executed"
-while wait (2.34) do
+while wait (2.4) do
 local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
  
 local Arguments = {
@@ -607,7 +607,7 @@ EighthDrink.TextSize = 14
 EighthDrink.Visible = false
 EighthDrink.MouseButton1Down:connect(function()
 EighthDrink.Text = "Executed"
-while wait (2.34) do
+while wait (2.4) do
 local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
  
 local Arguments = {
@@ -631,7 +631,7 @@ NinthDrink.TextSize = 14
 NinthDrink.Visible = false
 NinthDrink.MouseButton1Down:connect(function()
 NinthDrink.Text = "Executed"
-while wait (2.34) do
+while wait (2.4) do
 local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
  
 local Arguments = {
@@ -655,7 +655,7 @@ AtomicDrink.TextSize = 14
 AtomicDrink.Visible = false
 AtomicDrink.MouseButton1Down:connect(function()
 AtomicDrink.Text = "Executed"
-while wait (2.34) do
+while wait (2.4) do
 local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
  
 local Arguments = {
@@ -679,7 +679,7 @@ OmegaBurpJuice.TextSize = 10
 OmegaBurpJuice.Visible = false
 OmegaBurpJuice.MouseButton1Down:connect(function()
 OmegaBurpJuice.Text = "Executed"
-while wait (2.34) do
+while wait (2.4) do
 local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
  
 local Arguments = {
@@ -703,7 +703,7 @@ ThunderFizz.TextSize = 14
 ThunderFizz.Visible = false
 ThunderFizz.MouseButton1Down:connect(function()
 ThunderFizz.Text = "Executed"
-while wait (2.34) do
+while wait (2.4) do
 local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
  
 local Arguments = {
@@ -727,7 +727,7 @@ ThunderFizz.TextSize = 14
 ThunderFizz.Visible = false
 ThunderFizz.MouseButton1Down:connect(function()
 ThunderFizz.Text = "Executed"
-while wait (2.34) do
+while wait (2.4) do
 local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
  
 local Arguments = {
@@ -1277,7 +1277,7 @@ GiveDrink.TextSize = 10
 GiveDrink.Visible = false
 GiveDrink.MouseButton1Down:connect(function()
 
-while wait (2.34) do
+while wait (2.4) do
 local Remote = game.ReplicatedStorage.RemoteEvents['DrinkEvent']
  
 local Arguments = {
