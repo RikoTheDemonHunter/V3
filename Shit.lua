@@ -299,7 +299,7 @@ function lib:Gui(title)
 	return Tabs
 end
 
-local Library = lib:Gui("Puro-Hub V1.0")
+local Library = lib:Gui("Avery-Hub V1.0")
 
 local AutoFarmTab = Library:Tab("AutoDrink")
 
@@ -820,12 +820,12 @@ Misc:Button("Safeplace v2",  function()
 				loadstring(game:HttpGet("https://sonic998.github.io/sonichub/Shit/HackerMansion.lua"))()
 			end)
 
-Credits:Button("Made By 90PuroXx")
+Credits:Button("Made By Avery")
 
 Credits:Button("Discord: rikothedemonlord")
 Credits:Button("Note: Auto Drink is 2.4")
 Credits:Button("Note: Copy Stealers Fuck Off")
-Credits:Button("Update: Script is Up")
+Credits:Button("Update: Patched")
 Scripts:Button("SimonHub", function()
            loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SimonHub"))()
 end)
