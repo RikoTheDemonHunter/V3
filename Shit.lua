@@ -824,7 +824,6 @@ Misc:Button("Sky Plate V2",   Callback = function()
                 game.workspace[game.Players.LocalPlayer.Name].HumanoidRootPart.CFrame + Vector3.new(0, -2, 0)
             baseplatee.Anchored = true
         end
-}
 
 Credits:Button("Made By Avery")
 
