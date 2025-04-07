@@ -3,7 +3,7 @@ local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.
 local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau"))()
  
 local Window = Library:CreateWindow{
-    Title = "Avery-Hub GUI v 1.1.0",
+    Title = "Avery-Hub GUI v 1.0",
     SubTitle = "by Avery",
     TabWidth = 130,
     Size = UDim2.fromOffset(630, 425),
