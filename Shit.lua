@@ -756,18 +756,6 @@ Teleport:Button("Water Spot", function()
 	ts:Create(part, ti, tp):Play()
 end)
 
-Teleport:Button("Safeplace v2", function()
-        local New_CFrame = CFrame.new(531, 1223, 0)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
 Misc:Button("Bp Counter",function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Bp%20Counter.lua"))()
 end)
@@ -816,8 +804,6 @@ Misc:Toggle("Walk On Water",  function(bool)
 				end
 			end)
 		
-Misc:Button("Sky Plate V2",   
-
 Credits:Button("Made By Avery")
 
 Credits:Button("Discord: 90averyxx")
@@ -830,8 +816,8 @@ end)
 Scripts:Button("SimonHax", function()
            loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/main/SimonHax"))()
 end)
-Scripts:Button("Drinkhaxx", function()
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/main/drinkhaxx"))()
+Scripts:Button("Orion V1", function()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Orion%20Lib.lua"))()
 end)
 Scripts:Button("V7", function()
            loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/V7"))()
