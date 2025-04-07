@@ -1,39 +1,25 @@
--- DO NOT STEAL THIS SCRIPT.
+local Library = loadstring(game:HttpGetAsync("https://github.com/ActualMasterOogway/Fluent-Renewed/releases/latest/download/Fluent.luau"))()
+local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/SaveManager.luau"))()
+local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau"))()
+ 
+local Window = Library:CreateWindow{
+    Title = "Avery-Hub GUI v 1.1.0",
+    SubTitle = "by Avery",
+    TabWidth = 130,
+    Size = UDim2.fromOffset(630, 425),
+    Resize = true, -- Resize this ^ Size according to a 1920x1080 screen, good for mobile users but may look weird on some devices
+    MinSize = Vector2.new(470, 380),
+    Acrylic = true, -- The blur may be detectable, setting this to false disables blur entirely
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.RightControl -- Used when theres no MinimizeKeybind
+}
 
-repeat
-    wait()
-until game:IsLoaded()
-
--- Making sure the game is Burping Simulator.
-if game.PlaceId ~= 1747207098 then
-    game.Players.LocalPlayer:Kick("This script only works on Burping Simulator.")
-end
-local OrionLib = loadstring(game:HttpGet(("https://raw.githubusercontent.com/shlexware/Orion/main/source")))()
-
-OrionLib:MakeNotification(
-    {
-        Name = "Welcome!",
-        Content = "Some features may be added in the future, or removed.",
-        Image = "rbxassetid://4483345998",
-        Time = 5
-    }
-)
-
-local Window =
-    OrionLib:MakeWindow(
-    {Name = "Burping Simulator [v1.04.1 GUI release]", HidePremium = false, SaveConfig = true, ConfigFolder = "Orion"}
-)
-
+-- Logic for farming. --
 function AutoEquip()
     spawn(
         function()
             while getgenv().equip == true do
-                task.wait(0.39)
-                if not game.Players.LocalPlayer.Backpack:FindFirstChild("Starter Drink") then
-                    if not game.Players.LocalPlayer.Character:FindFirstChild("Starter Drink") then
-                        game.Players.LocalPlayer.Character:BreakJoints()
-                    end
-                end
+                task.wait(0.8)
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value == 0 then
                     local Players = game:GetService("Players")
 
@@ -242,89 +228,458 @@ function AutoEquip()
                     end
                 end
             end
-        end
-    )
+end)
 end
 
---Player Tab--
-local PlayerTab =
-    Window:MakeTab(
-    {
-        Name = "Player",
-        Icon = "rbxassetid://4483345998",
-        PremiumOnly = false
-    }
-)
+-- Sections go here. --
+local FunStuff = {
+    Fun = Window:CreateTab{
+        Title = "Tools",
+        Icon = "phosphor-smiley-bold"
+    },
+}
 
-local PlayerSection =
-    PlayerTab:AddSection(
-    {
-        Name = "Player"
-    }
-)
+local Farming = {
+    Farm = Window:CreateTab{
+        Title = "Farming",
+        Icon = "phosphor-piggy-bank-bold"
+    },
+}
 
-PlayerSection:AddSlider(
-    {
-        Name = "Walkspeed",
-        Min = 16,
-        Max = 1000,
-        Default = 5,
-        Color = Color3.fromRGB(255, 0, 255),
-        Increment = 4,
-        ValueName = "Walkspeed",
-        Callback = function(Value)
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
-        end
+local Player = {
+    Main = Window:CreateTab{
+        Title = "Player",
+        Icon = "phosphor-user-bold"
+    },
+    Settings = Window:CreateTab{
+        Title = "Settings",
+        Icon = "settings"
     }
-)
+}
 
-PlayerSection:AddSlider(
-    {
-        Name = "Jump Power",
-        Min = 50,
-        Max = 1000,
-        Default = 5,
-        Color = Color3.fromRGB(255, 0, 0),
-        Increment = 4,
-        ValueName = "Jump Power",
-        Callback = function(Value)
-            game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
-        end
-    }
-)
---Player Tab End--
+local Miscellaneous = {
+    Misc = Window:CreateTab{
+        Title = "Misc.",
+        Icon = "phosphor-terminal-window-bold"
+    },
+}
 
---Fun Stuff Tab
-local FunStuffTab =
-    Window:MakeTab(
-    {
-        Name = "Fun Stuff",
-        Icon = "rbxassetid://4483345998",
-        PremiumOnly = false
-    }
-)
-local FunStuffSection =
-    FunStuffTab:AddSection(
-    {
-        Name = "Fun Stuff"
-    }
-)
 
-FunStuffTab:AddButton(
-    {
-        Name = "Spam the BURPS",
+local Options = Library.Options
+
+Library:Notify{
+    Title = "Script executed",
+    Content = "Some features may be added in the future.",
+    SubContent = "", -- Optional
+    Duration = 5 -- Set to nil to make the notification not disappear
+}
+
+local Paragraph = Player.Main:CreateParagraph("Paragraph", {
+    Title = "Basic stuff to mess with for the LocalPlayer.",
+    Content = ""
+})
+Player.Main:CreateSection("")
+
+local Slider = Player.Main:CreateSlider("Slider", {
+    Title = "Walkspeed",
+    Description = "Change the speed here.",
+    Default = 2,
+    Min = 16,
+    Max = 1000,
+    Rounding = 1,
+    Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+    end
+})
+
+Slider:SetValue(3)
+
+local Slider = Player.Main:CreateSlider("Slider", {
+    Title = "Jump power",
+    Description = "Change the jump power here.",
+    Default = 3,
+    Min = 50,
+    Max = 1000,
+    Rounding = 1,
+    Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+    end
+})
+
+Slider:SetValue(3)
+--Player tab end--
+
+
+--FunStuff tab begin--
+FunStuff.Fun:CreateSection("Burps")
+
+FunStuff.Fun:CreateButton{
+    Title = "Spam Burp",
+    Description = "Once you begin burping, you cannot stop",
+    Callback = function()
+        Window:Dialog{
+            Title = "Troll burp time",
+            Content = "Are you sure you want to burp?",
+            Buttons = {
+                {
+                    Title = "Confirm",
+                    Callback = function()
+                        while true do
+                        task.wait()
+                        game:GetService("ReplicatedStorage").RemoteEvents.BurpEvent:FireServer()
+                    end
+                    end
+                },
+                {
+                    Title = "Cancel",
+                    Callback = function()
+                        print("Cancelled the dialog.")
+                    end
+                }
+            }
+        }
+    end
+}
+
+FunStuff.Fun:CreateSection("Teleport")
+
+FunStuff.Fun:CreateButton{
+    Title = "Teleport to safe zone",
+    Description = "",
+    Callback = function()
+     local New_CFrame = CFrame.new(-46, 48, -15)
+
+            local ts = game:GetService("TweenService")
+            local char = game.Players.LocalPlayer.Character
+
+            local part = char.HumanoidRootPart
+            local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+            local tp = {CFrame = New_CFrame}
+            ts:Create(part, ti, tp):Play()
+    end
+}
+
+FunStuff.Fun:CreateButton{
+     Title = "Teleport to Pet Shop",
         Callback = function()
-            while true do
-                task.wait()
-                game:GetService("ReplicatedStorage").RemoteEvents.BurpEvent:FireServer()
+            local New_CFrame = CFrame.new(311, 52, 103)
+
+            local ts = game:GetService("TweenService")
+            local char = game.Players.LocalPlayer.Character
+
+            local part = char.HumanoidRootPart
+            local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+            local tp = {CFrame = New_CFrame}
+            ts:Create(part, ti, tp):Play()
+        end
+}
+
+FunStuff.Fun:CreateButton{
+   Title = "Teleport to Sky Island",
+        Callback = function()
+            local New_CFrame = CFrame.new(2117.87109375, 1470.884765625, -1050.54296875)
+
+            local ts = game:GetService("TweenService")
+            local char = game.Players.LocalPlayer.Character
+
+            local part = char.HumanoidRootPart
+            local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+            local tp = {CFrame = New_CFrame}
+            ts:Create(part, ti, tp):Play()
+        end
+}
+
+FunStuff.Fun:CreateButton{
+   Title = "Teleport to Hotel",
+        Callback = function()
+            local New_CFrame = CFrame.new(-1198.279052734375, 44.315752029418945, -5.583522319793701)
+
+            local ts = game:GetService("TweenService")
+            local char = game.Players.LocalPlayer.Character
+
+            local part = char.HumanoidRootPart
+            local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+            local tp = {CFrame = New_CFrame}
+            ts:Create(part, ti, tp):Play()
+        end
+}
+
+FunStuff.Fun:CreateButton{
+   Title = "Teleport to First Cloud",
+        Callback = function()
+            local New_CFrame = CFrame.new(296, 566, 689)
+
+            local ts = game:GetService("TweenService")
+            local char = game.Players.LocalPlayer.Character
+
+            local part = char.HumanoidRootPart
+            local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+            local tp = {CFrame = New_CFrame}
+            ts:Create(part, ti, tp):Play()
+        end
+}
+
+FunStuff.Fun:CreateButton{
+   Title = "Teleport to Second Cloud",
+        Callback = function()
+            local New_CFrame = CFrame.new(-1224, 557, -318)
+
+            local ts = game:GetService("TweenService")
+            local char = game.Players.LocalPlayer.Character
+
+            local part = char.HumanoidRootPart
+            local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+            local tp = {CFrame = New_CFrame}
+            ts:Create(part, ti, tp):Play()
+        end
+}
+--FunStuff tab end--
+
+
+--Farming tab begin--
+Farming.Farm:CreateSection("Farming")
+local Toggle = Farming.Farm:CreateToggle("FarmToggle", {Title = "Toggle farm", Default = false })
+
+Toggle:OnChanged(function(bool)
+            getgenv().equip = bool
+            if bool then
+                AutoEquip()
+            end
+        end)
+
+Farming.Farm:CreateButton{
+   Title = "Auto-prestige",
+        Callback = function()
+             while true do
+                task.wait(0.8)
+                game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
             end
         end
-    }
-)
+}
 
-FunStuffTab:AddButton(
-    {
-        Name = "Remove FPS cap",
+Farming.Farm:CreateButton{
+   Title = "UrMom Ui BPS edition",
+        Callback = function()
+            loadstring(game:HttpGet("https://pastefy.app/nqSs54Ez/raw"))()
+        end
+}
+
+
+Farming.Farm:CreateSection("Drinks")
+local Toggle = Farming.Farm:CreateToggle("Toggle1", {Title = "Starter Drink", Default = false })
+
+Toggle:OnChanged(function(Value)
+            if Value then
+                _G.Print = true
+                while _G.Print do
+                    while task.wait(2.4) do
+                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
+                    end
+                end
+            else
+                _G.Print = false
+            end
+        end)
+
+local Toggle = Farming.Farm:CreateToggle("Toggle2", {Title = "Second Drink", Default = false })
+
+Toggle:OnChanged(function(Value)
+            if Value then
+                _G.Print = true
+                while _G.Print do
+                    while task.wait(2.4) do
+                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
+                    end
+                end
+            else
+                _G.Print = false
+            end
+        end)
+
+local Toggle = Farming.Farm:CreateToggle("Toggle3", {Title = "Third Drink", Default = false })
+
+Toggle:OnChanged(function(Value)
+            if Value then
+                _G.Print = true
+                while _G.Print do
+                    while task.wait(2.4) do
+                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
+                    end
+                end
+            else
+                _G.Print = false
+            end
+        end)
+
+local Toggle = Farming.Farm:CreateToggle("Toggle4", {Title = "Fourth Drink", Default = false })
+
+Toggle:OnChanged(function(Value)
+            if Value then
+                _G.Print = true
+                while _G.Print do
+                    while task.wait(2.4) do
+                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
+                    end
+                end
+            else
+                _G.Print = false
+            end
+        end)
+
+local Toggle = Farming.Farm:CreateToggle("Toggle5", {Title = "Fifth Drink", Default = false })
+
+Toggle:OnChanged(function(Value)
+            if Value then
+                _G.Print = true
+                while _G.Print do
+                    while task.wait(2.4) do
+                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
+                    end
+                end
+            else
+                _G.Print = false
+            end
+        end)
+
+local Toggle = Farming.Farm:CreateToggle("Toggle6", {Title = "Sixth Drink", Default = false })
+
+Toggle:OnChanged(function(Value)
+            if Value then
+                _G.Print = true
+                while _G.Print do
+                    while task.wait(2.4) do
+                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
+                    end
+                end
+            else
+                _G.Print = false
+            end
+        end)
+
+local Toggle = Farming.Farm:CreateToggle("Toggle7", {Title = "Seventh Drink", Default = false })
+
+Toggle:OnChanged(function(Value)
+            if Value then
+                _G.Print = true
+                while _G.Print do
+                    while task.wait(2.4) do
+                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
+                    end
+                end
+            else
+                _G.Print = false
+            end
+        end)
+
+local Toggle = Farming.Farm:CreateToggle("Toggle8", {Title = "Eighth Drink", Default = false })
+
+Toggle:OnChanged(function(Value)
+            if Value then
+                _G.Print = true
+                while _G.Print do
+                    while task.wait(2.4) do
+                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
+                    end
+                end
+            else
+                _G.Print = false
+            end
+        end)
+
+local Toggle = Farming.Farm:CreateToggle("Toggle9", {Title = "Ninth Drink", Default = false })
+
+Toggle:OnChanged(function(Value)
+            if Value then
+                _G.Print = true
+                while _G.Print do
+                    while task.wait(2.4) do
+                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
+                    end
+                end
+            else
+                _G.Print = false
+            end
+        end)
+
+local Toggle = Farming.Farm:CreateToggle("Toggle10", {Title = "Atomic Drink", Default = false })
+
+Toggle:OnChanged(function(Value)
+            if Value then
+                _G.Print = true
+                while _G.Print do
+                    while task.wait(2.4) do
+                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
+                    end
+                end
+            else
+                _G.Print = false
+            end
+        end)
+
+local Toggle = Farming.Farm:CreateToggle("Toggle11", {Title = "Omega Burp Juice", Default = false })
+
+Toggle:OnChanged(function(Value)
+            if Value then
+                _G.Print = true
+                while _G.Print do
+                    while task.wait(2.4) do
+                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
+                    end
+                end
+            else
+                _G.Print = false
+            end
+        end)
+
+local Toggle = Farming.Farm:CreateToggle("Toggle12", {Title = "⚡ Thunder Fizz ⚡", Default = false })
+
+Toggle:OnChanged(function(Value)
+            if Value then
+                _G.Print = true
+                while _G.Print do
+                    while task.wait(2.4) do
+                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
+                    end
+                end
+            else
+                _G.Print = false
+            end
+        end)
+
+local Toggle = Farming.Farm:CreateToggle("Toggle13", {Title = "🧄 Garlic Juice 🧄", Default = false })
+
+Toggle:OnChanged(function(Value)
+            if Value then
+                _G.Print = true
+                while _G.Print do
+                    while task.wait(2.4) do
+                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
+                    end
+                end
+            else
+                _G.Print = false
+            end
+        end)
+-- Farming tab end --
+
+
+-- Misc. tab begin --
+local Paragraph = Miscellaneous.Misc:CreateParagraph("Paragraph", {
+    Title = "Other options that are not related to Burping Simulator.",
+    Content = ""
+})
+Miscellaneous.Misc:CreateSection("Client-sided settings")
+
+Miscellaneous.Misc:CreateButton{
+   Title = "Load Anti-afk remastered",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/juywvm/-Roblox-Projects-/main/____Anti_Afk_Remastered_______"))()
+        end
+}
+
+
+Miscellaneous.Misc:CreateButton{
+   Title = "Uncap FPS limit",
         Callback = function()
             if setfpscap and type(setfpscap) == "function" then
                 local num = 100000 or 1e6
@@ -335,595 +690,10 @@ FunStuffTab:AddButton(
                 end
             end
         end
-    }
-)
-local FunStuffSection =
-    FunStuffTab:AddSection(
-    {
-        Name = "Teleport options"
-    }
-)
+}
 
-FunStuffTab:AddButton(
-    {
-        Name = "Teleport to Safe Zone",
-        Callback = function()
-            local New_CFrame = CFrame.new(-46, 48, -15)
-
-            local ts = game:GetService("TweenService")
-            local char = game.Players.LocalPlayer.Character
-
-            local part = char.HumanoidRootPart
-            local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
-            local tp = {CFrame = New_CFrame}
-            ts:Create(part, ti, tp):Play()
-        end
-    }
-)
-
-FunStuffTab:AddButton(
-    {
-        Name = "Teleport to Pet Shop",
-        Callback = function()
-            local New_CFrame = CFrame.new(311, 52, 103)
-
-            local ts = game:GetService("TweenService")
-            local char = game.Players.LocalPlayer.Character
-
-            local part = char.HumanoidRootPart
-            local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
-            local tp = {CFrame = New_CFrame}
-            ts:Create(part, ti, tp):Play()
-        end
-    }
-)
-
-FunStuffTab:AddButton(
-    {
-        Name = "Teleport to Disco Island",
-        Callback = function()
-            local New_CFrame = CFrame.new(63, 48, 636)
-
-            local ts = game:GetService("TweenService")
-            local char = game.Players.LocalPlayer.Character
-
-            local part = char.HumanoidRootPart
-            local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
-            local tp = {CFrame = New_CFrame}
-            ts:Create(part, ti, tp):Play()
-        end
-    }
-)
-FunStuffTab:AddButton(
-    {
-        Name = "Teleport to Hotel",
-        Callback = function()
-            local New_CFrame = CFrame.new(-1198.279052734375, 44.315752029418945, -5.583522319793701)
-
-            local ts = game:GetService("TweenService")
-            local char = game.Players.LocalPlayer.Character
-
-            local part = char.HumanoidRootPart
-            local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
-            local tp = {CFrame = New_CFrame}
-            ts:Create(part, ti, tp):Play()
-        end
-    }
-)
-
-FunStuffTab:AddButton(
-    {
-        Name = "Teleport to First Cloud",
-        Callback = function()
-            local New_CFrame = CFrame.new(296, 566, 689)
-
-            local ts = game:GetService("TweenService")
-            local char = game.Players.LocalPlayer.Character
-
-            local part = char.HumanoidRootPart
-            local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
-            local tp = {CFrame = New_CFrame}
-            ts:Create(part, ti, tp):Play()
-        end
-    }
-)
-
-FunStuffTab:AddButton(
-    {
-        Name = "Teleport to Second Cloud",
-        Callback = function()
-            local New_CFrame = CFrame.new(-1224, 557, -318)
-
-            local ts = game:GetService("TweenService")
-            local char = game.Players.LocalPlayer.Character
-
-            local part = char.HumanoidRootPart
-            local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
-            local tp = {CFrame = New_CFrame}
-            ts:Create(part, ti, tp):Play()
-        end
-    }
-)
-
-FunStuffTab:AddButton(
-    {
-        Name = "Teleport to Sky Island",
-        Callback = function()
-            local New_CFrame = CFrame.new(2117.87109375, 1470.884765625, -1050.54296875)
-
-            local ts = game:GetService("TweenService")
-            local char = game.Players.LocalPlayer.Character
-
-            local part = char.HumanoidRootPart
-            local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
-            local tp = {CFrame = New_CFrame}
-            ts:Create(part, ti, tp):Play()
-        end
-    }
-)
---Fun Stuff Tab End--
-
---Farming Tab
-local FarmingTab =
-    Window:MakeTab(
-    {
-        Name = "Farming",
-        Icon = "rbxassetid://4483345998",
-        PremiumOnly = false
-    }
-)
-local FarmingSection =
-    FarmingTab:AddSection(
-    {
-        Name = "Drinks"
-    }
-)
-
-FarmingTab:AddToggle(
-    {
-        Name = "Starter Drink",
-        Default = false,
-        Save = false,
-        Callback = function(Value)
-            if Value then
-                _G.Print = true
-                while _G.Print do
-                    while task.wait(2.344) do
-                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
-                    end
-                end
-            else
-                _G.Print = false
-            end
-            -- The variable (Value) is a boolean on whether the toggle is true or false
-        end
-    }
-)
-
-FarmingTab:AddToggle(
-    {
-        Name = "Second Drink",
-        Default = false,
-        Save = false,
-        Callback = function(Value)
-            if Value then
-                _G.Print = true
-                while _G.Print do
-                    while task.wait(2.344) do
-                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
-                    end
-                end
-            else
-                _G.Print = false
-            end
-            -- The variable (Value) is a boolean on whether the toggle is true or false
-        end
-    }
-)
-
-FarmingTab:AddToggle(
-    {
-        Name = "Third Drink",
-        Default = false,
-        Save = false,
-        Callback = function(Value)
-            if Value then
-                _G.Print = true
-                while _G.Print do
-                    while task.wait(2.344) do
-                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
-                    end
-                end
-            else
-                _G.Print = false
-            end
-            -- The variable (Value) is a boolean on whether the toggle is true or false
-        end
-    }
-)
-
-FarmingTab:AddToggle(
-    {
-        Name = "Fourth Drink",
-        Default = false,
-        Save = false,
-        Callback = function(Value)
-            if Value then
-                _G.Print = true
-                while _G.Print do
-                    while task.wait(2.344) do
-                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
-                    end
-                end
-            else
-                _G.Print = false
-            end
-            -- The variable (Value) is a boolean on whether the toggle is true or false
-        end
-    }
-)
-
-FarmingTab:AddToggle(
-    {
-        Name = "Fifth Drink",
-        Default = false,
-        Save = false,
-        Callback = function(Value)
-            if Value then
-                _G.Print = true
-                while _G.Print do
-                    while task.wait(2.344) do
-                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
-                    end
-                end
-            else
-                _G.Print = false
-            end
-            -- The variable (Value) is a boolean on whether the toggle is true or false
-        end
-    }
-)
-
-FarmingTab:AddToggle(
-    {
-        Name = "Sixth Drink",
-        Default = false,
-        Save = false,
-        Callback = function(Value)
-            if Value then
-                _G.Print = true
-                while _G.Print do
-                    while task.wait(2.344) do
-                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
-                    end
-                end
-            else
-                _G.Print = false
-            end
-            -- The variable (Value) is a boolean on whether the toggle is true or false
-        end
-    }
-)
-
-FarmingTab:AddToggle(
-    {
-        Name = "Seventh Drink",
-        Default = false,
-        Save = false,
-        Callback = function(Value)
-            if Value then
-                _G.Print = true
-                while _G.Print do
-                    while task.wait(2.344) do
-                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
-                    end
-                end
-            else
-                _G.Print = false
-            end
-            -- The variable (Value) is a boolean on whether the toggle is true or false
-        end
-    }
-)
-
-FarmingTab:AddToggle(
-    {
-        Name = "Eighth Drink",
-        Default = false,
-        Save = false,
-        Callback = function(Value)
-            if Value then
-                _G.Print = true
-                while _G.Print do
-                    while task.wait(2.344) do
-                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
-                    end
-                end
-            else
-                _G.Print = false
-            end
-            -- The variable (Value) is a boolean on whether the toggle is true or false
-        end
-    }
-)
-
-FarmingTab:AddToggle(
-    {
-        Name = "Ninth Drink",
-        Default = false,
-        Save = false,
-        Callback = function(Value)
-            if Value then
-                _G.Print = true
-                while _G.Print do
-                    while task.wait(2.344) do
-                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
-                    end
-                end
-            else
-                _G.Print = false
-            end
-            -- The variable (Value) is a boolean on whether the toggle is true or false
-        end
-    }
-)
-
-FarmingTab:AddToggle(
-    {
-        Name = "Atomic Drink",
-        Default = false,
-        Save = false,
-        Callback = function(Value)
-            if Value then
-                _G.Print = true
-                while _G.Print do
-                    while task.wait(2.344) do
-                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
-                    end
-                end
-            else
-                _G.Print = false
-            end
-            -- The variable (Value) is a boolean on whether the toggle is true or false
-        end
-    }
-)
-
-FarmingTab:AddToggle(
-    {
-        Name = "Omega Burp Juice",
-        Default = false,
-        Save = false,
-        Callback = function(Value)
-            if Value then
-                _G.Print = true
-                while _G.Print do
-                    while task.wait(2.344) do
-                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
-                    end
-                end
-            else
-                _G.Print = false
-            end
-            -- The variable (Value) is a boolean on whether the toggle is true or false
-        end
-    }
-)
-
-FarmingTab:AddToggle(
-    {
-        Name = "Thunder FIZZ",
-        Default = false,
-        Save = false,
-        Callback = function(Value)
-            if Value then
-                _G.Print = true
-                while _G.Print do
-                    while task.wait(2.344) do
-                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
-                    end
-                end
-            else
-                _G.Print = false
-            end
-            -- The variable (Value) is a boolean on whether the toggle is true or false
-        end
-    }
-)
-
-FarmingTab:AddToggle(
-    {
-        Name = "Garlic Juice",
-        Default = false,
-        Save = false,
-        Callback = function(Value)
-            if Value then
-                _G.Print = true
-                while _G.Print do
-                    while task.wait(2.344) do
-                        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
-                    end
-                end
-            else
-                _G.Print = false
-            end
-            -- The variable (Value) is a boolean on whether the toggle is true or false
-        end
-    }
-)
-
-local FarmingSection =
-    FarmingTab:AddSection(
-    {
-        Name = "Others"
-    }
-)
-
-FarmingTab:AddButton(
-    {
-        Name = "Auto Prestige",
-        Callback = function()
-            while true do
-                task.wait(0.075)
-                game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
-            end
-        end
-    }
-)
-
-FarmingTab:AddTextbox(
-    {
-        Name = "Select a drink",
-        Default = "",
-        TextDisappear = true,
-        Callback = function(Value)
-            _G.equip = true
-            while _G.equip do
-                wait()
-                for i, v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
-                    if v.Name == Value then
-                        v.Parent = game.Players.LocalPlayer.Character
-                    else
-                        _G.equip = false
-                    end
-                end
-            end
-        end
-    }
-)
-
-FarmingTab:AddBind(
-    {
-        Name = "Unequip drink [for PC users]",
-        Default = Enum.KeyCode.U,
-        Hold = false,
-        Callback = function()
-            local Players = game:GetService("Players")
-            local ContextActionService = game:GetService("ContextActionService")
-
-            local player = Players.LocalPlayer
-
-            ContextActionService:BindAction(
-                "unequipTools",
-                function(_, userInputState)
-                    if userInputState == Enum.UserInputState.Begin then
-                        if player.Character then
-                            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-                            if humanoid then
-                                humanoid:UnequipTools()
-                            end
-                        end
-                    end
-                end,
-                false,
-                Enum.KeyCode.U
-            )
-            -- The variable (Keybind) is a boolean for whether the keybind is being held or not (HoldToInteract needs to be true)
-        end
-    }
-)
-
-FarmingTab:AddButton(
-    {
-        Name = "Unequip drink [for mobile users]",
-        Callback = function()
-            game:GetService "Players".LocalPlayer.Character:FindFirstChildOfClass "Humanoid":UnequipTools()
-        end
-    }
-)
---Farming Tab End--
-
---Extras Tab
-local ExtrasTab =
-    Window:MakeTab(
-    {
-        Name = "Extras",
-        Icon = "rbxassetid://4483345998",
-        PremiumOnly = false
-    }
-)
-local ExtrasSection =
-    ExtrasTab:AddSection(
-    {
-        Name = "Extras"
-    }
-)
-
-ExtrasTab:AddButton(
-    {
-        Name = "Auto-collect Gems",
-        Callback = function()
-            while true do
-                task.wait()
-                --pcall(function()
-                --game:GetService('RunService').Stepped:connect(function()
-                local gem = game.Workspace.Diamonds:WaitForChild("Diamond")
-                local Char = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-                gem.CFrame = Char.CFrame
-            end
-        end
-    }
-)
-
-ExtrasTab:AddToggle(
-    {
-        Name = "Auto Equip",
-        Default = false,
-        Callback = function(bool)
-            getgenv().equip = bool
-            if bool then
-                AutoEquip()
-            end
-        end
-    }
-)
--- The variable (Value) is a boolean on whether the toggle is true or false
---ExtrasTab:AddToggle({
---	Name = "Auto Drop",
---	Default = false,
---	Callback = function(Value)
---if Value then
---		_G.Print = true
---		while _G.Print do
---			game.Players.LocalPlayer.Character.Humanoid.Name = 1
---			local l = game.Players.LocalPlayer.Character["1"]:Clone()
---			l.Parent = game.Players.LocalPlayer.Character
---			l.Name = "Humanoid"
---			wait()
---			game.Players.LocalPlayer.Character["1"]:Destroy()
---			game.Workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character
---			game.Players.LocalPlayer.Character.Animate.Disabled = true
---			wait(0)
---			game.Players.LocalPlayer.Character.Animate.Disabled = false
---			game.Players.LocalPlayer.Character.Humanoid.DisplayDistanceType = "None"
---			wait(5)
---		end
---		else
---		_G.Print = false
---	end
---	 The variable (Value) is a boolean on whether the toggle is true or false
---end,
---})
-ExtrasTab:AddButton(
-    {
-        Name = "UrMom Ui",
-        Callback = function()
-            OrionLib:MakeNotification(
-                {
-                    Name = "Need help to read smol numbers?",
-                    Content = "Here ya go lmao",
-                    Image = "rbxassetid://4483345998",
-                    Time = 5
-                }
-            )
-            loadstring(game:HttpGet("https://pastebin.com/raw/XCXxhZht"))()
-        end
-    }
-)
-
-ExtrasTab:AddButton(
-    {
-        Name = "Sky Baseplate",
+Miscellaneous.Misc:CreateButton{
+   Title = "Make a sky baseplate",
         Callback = function()
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-7000, 22000, -5000)
             baseplatee = Instance.new("Part", workspace)
@@ -932,106 +702,18 @@ ExtrasTab:AddButton(
                 game.workspace[game.Players.LocalPlayer.Name].HumanoidRootPart.CFrame + Vector3.new(0, -2, 0)
             baseplatee.Anchored = true
         end
-    }
-)
---Extras Tab End--
+}
 
---"Admin Tab"--
-local AdminScriptsTab =
-    Window:MakeTab(
-    {
-        Name = " ”Admin scripts”",
-        Icon = "rbxassetid://4483345998",
-        PremiumOnly = false
-    }
-)
-local AdminScriptsSection =
-    AdminScriptsTab:AddSection(
-    {
-        Name = "”Admin” <-- Pick & choose"
-    }
-)
-
-AdminScriptsTab:AddButton(
-    {
-        Name = "Load Fate's Admin",
+Miscellaneous.Misc:CreateButton{
+   Title = "Client-sided Anti kick",
         Callback = function()
-            -- The function that takes place when the button is pressed
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/ZeroedCode/Executors/main/Fate%20Admin.lua"))()
-        end
-    }
-)
-
-AdminScriptsTab:AddButton(
-    {
-        Name = "Load IY FE",
-        Callback = function()
-            -- The function that takes place when the button is pressed
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-        end
-    }
-)
-
-AdminScriptsTab:AddButton(
-    {
-        Name = "Load Reviz v2",
-        Callback = function()
-            -- The function that takes place when the button is pressed
-            loadstring(game:HttpGet("https://pastebin.com/raw/ZNSgtiwA"))()
-        end
-    }
-)
-
-AdminScriptsTab:AddButton(
-    {
-        Name = "Load CMD-X",
-        Callback = function()
-            -- The function that takes place when the button is pressed
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source"))()
-        end
-    }
-)
---"Admin" Tab End--
-
---Settings Tab--
-local SettingsTab =
-    Window:MakeTab(
-    {
-        Name = "Settings",
-        Icon = "rbxassetid://4483345998",
-        PremiumOnly = false
-    }
-)
-
-local SettingsSection =
-    SettingsTab:AddSection(
-    {
-        Name = "Settings"
-    }
-)
-
-SettingsSection:AddButton(
-    {
-        Name = "Destroy UI",
-        Callback = function()
-            OrionLib:Destroy()
-        end
-    }
-)
-
-SettingsSection:AddButton(
-    {
-        Name = "Anti Kick",
-        Callback = function()
-            OrionLib:MakeNotification(
-                {
-                    Name = "Anti Kick enabled.",
-                    Content = "This should prevent the localscript from kicking you, if you're autofarming.",
-                    Image = "rbxassetid://4483345998",
-                    Time = 7
-                }
-            )
-            local mt = getrawmetatable(game)
+            Library:Notify{
+    Title = "Anti kick enabled.",
+    Content = "This should stop localscripts from kicking you.",
+    SubContent = "Warning: this can be detected by some anti-cheats.", -- Optional
+    Duration = 5 -- Set to nil to make the notification not disappear
+}
+local mt = getrawmetatable(game)
             local old = mt.__namecall
             local protect = newcclosure or protect_function
 
@@ -1056,77 +738,66 @@ SettingsSection:AddButton(
                 )
             )
         end
-    }
-)
+}
 
-SettingsSection:AddButton(
-    {
-        Name = "Anti AFK",
+Miscellaneous.Misc:CreateSection("”Admin” <-- Pick & choose")
+
+Miscellaneous.Misc:CreateButton{
+   Title = "Load Fate's Admin",
         Callback = function()
-            OrionLib:MakeNotification(
-                {
-                    Name = "Anti AFK loaded.",
-                    Content = "This script was made by blood of batus#9999.",
-                    Image = "rbxassetid://4483345998",
-                    Time = 7
-                }
-            )
-            loadstring(
-                game:HttpGet(
-                    "https://raw.githubusercontent.com/juywvm/-Roblox-Projects-/main/____Anti_Afk_Remastered_______",
-                    true
-                )
-            )()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/ZeroedCode/Executors/main/Fate%20Admin.lua"))()
         end
-    }
-)
+}
 
-SettingsTab:AddButton(
-    {
-        Name = "Rejoin",
+Miscellaneous.Misc:CreateButton{
+   Title = "Load IY FE",
         Callback = function()
-            OrionLib:MakeNotification(
-                {
-                    Name = "Rejoining.",
-                    Content = "Please wait.",
-                    Image = "rbxassetid://4483345998",
-                    Time = 5
-                }
-            )
-            -- The function that takes place when the button is pressed
-            game:GetService("TeleportService"):Teleport(game.PlaceId)
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
         end
-    }
-)
---Settings End--
+}
 
---Info Tab--
-local InfoTab =
-    Window:MakeTab(
-    {
-        Name = "Info",
-        Icon = "rbxassetid://4483345998",
-        PremiumOnly = false
-    }
-)
-local InfoSection =
-    InfoTab:AddSection(
-    {
-        Name = "Info"
-    }
-)
+Miscellaneous.Misc:CreateButton{
+   Title = "Load CMD-X",
+        Callback = function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source"))()
+        end
+}
 
-InfoTab:AddLabel("UI project is in a work of progress.")
-InfoTab:AddParagraph(
-    "Important:",
-    "• Dropping has since been patched by Roblox, which has been removed from the Extras tab.\n• Changed Anti-AFK script to a different one.\n• Garlic Juice auto-equip should be properly fixed this time.\n• Notifications added for certain GUI actions.\n - Everything here is not final. "
-)
-local InfoSection =
-    InfoTab:AddSection(
-    {
-        Name = "Credits"
-    }
-)
-InfoTab:AddLabel("Made by 01_pink")
 
-OrionLib:Init()
+
+-- Addons:
+-- SaveManager (Allows you to have a configuration system)
+-- InterfaceManager (Allows you to have a interface managment system)
+
+-- Hand the library over to our managers
+SaveManager:SetLibrary(Library)
+InterfaceManager:SetLibrary(Library)
+
+-- Ignore keys that are used by ThemeManager.
+-- (we dont want configs to save themes, do we?)
+SaveManager:IgnoreThemeSettings()
+
+-- You can add indexes of elements the save manager should ignore
+SaveManager:SetIgnoreIndexes{}
+
+-- use case for doing it this way:
+-- a script hub could have themes in a global folder
+-- and game configs in a separate folder per game
+InterfaceManager:SetFolder("FluentScriptHub")
+SaveManager:SetFolder("FluentScriptHub/specific-game")
+
+InterfaceManager:BuildInterfaceSection(Player.Settings)
+SaveManager:BuildConfigSection(Player.Settings)
+
+
+Window:SelectTab(1)
+
+Library:Notify{
+    Title = "Keybind",
+    Content = "Press the Left Control key to hide or show the UI.",
+    Duration = 5
+}
+
+-- You can use the SaveManager:LoadAutoloadConfig() to load a config
+-- which has been marked to be one that auto loads!
+SaveManager:LoadAutoloadConfig()
