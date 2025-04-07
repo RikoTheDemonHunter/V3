@@ -816,9 +816,15 @@ Misc:Toggle("Walk On Water",  function(bool)
 				end
 			end)
 		
-Misc:Button("Safeplace v2",  function()
-				loadstring(game:HttpGet("https://sonic998.github.io/sonichub/Shit/HackerMansion.lua"))()
-			end)
+Misc:Button("Sky Plate V2",   Callback = function()
+            game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-7000, 22000, -5000)
+            baseplatee = Instance.new("Part", workspace)
+            baseplatee.Size = Vector3.new(1000, 0.2, 1000)
+            baseplatee.CFrame =
+                game.workspace[game.Players.LocalPlayer.Name].HumanoidRootPart.CFrame + Vector3.new(0, -2, 0)
+            baseplatee.Anchored = true
+        end
+}
 
 Credits:Button("Made By Avery")
 
