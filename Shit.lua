@@ -822,7 +822,7 @@ Misc:Button("Safeplace v2",  function()
 
 Credits:Button("Made By Avery")
 
-Credits:Button("Discord: rikothedemonlord")
+Credits:Button("Discord: 90averyxx")
 Credits:Button("Note: Auto Drink is 2.4")
 Credits:Button("Note: Copy Stealers Fuck Off")
 Credits:Button("Update: Patched")
