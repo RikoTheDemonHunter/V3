@@ -756,6 +756,18 @@ Teleport:Button("Water Spot", function()
 	ts:Create(part, ti, tp):Play()
 end)
 
+Teleport:Button("Hotel", function()
+	 local New_CFrame = CFrame.new(-1198.279052734375, 44.315752029418945, -5.583522319793701)
+
+	local ts = game:GetService("TweenService")
+	local char = game.Players.LocalPlayer.Character
+
+	local part = char.HumanoidRootPart
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+	local tp = {CFrame = New_CFrame}
+	ts:Create(part, ti, tp):Play()
+end)
+
 Misc:Button("Bp Counter",function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Bp%20Counter.lua"))()
 end)
