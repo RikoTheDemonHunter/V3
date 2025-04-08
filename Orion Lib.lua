@@ -241,7 +241,7 @@ local FunStuff = {
 
 local Farming = {
     Farm = Window:CreateTab{
-        Title = "Farming",
+        Title = "Auto Drink",
         Icon = "phosphor-piggy-bank-bold"
     },
 }
@@ -270,7 +270,7 @@ local Options = Library.Options
 Library:Notify{
     Title = "Script executed",
     Content = "Some features may be added in the future.",
-    SubContent = "", -- Optional
+    SubContent = "This Script Is Private.", -- Optional
     Duration = 5 -- Set to nil to make the notification not disappear
 }
 
