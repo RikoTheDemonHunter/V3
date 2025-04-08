@@ -616,13 +616,13 @@ LocalPlayer:Button("Fps-Unlocker", function(v)
 	end
 end)
 
-LocalPlayer:Button("WalkSpeed", function(v)
+LocalPlayer:Toggle("WalkSpeed", function(v)
 	while wait() do
 		game.Players.LocalPlayer.Character:WaitForChild("Humanoid").WalkSpeed = 459
 	end
 end)
 
-LocalPlayer:Button("Inf Jump", function(v)
+LocalPlayer:Toggle("Inf Jump", function(v)
 	game:GetService("UserInputService").JumpRequest:connect(function()
 		game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
 	end)
