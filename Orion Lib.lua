@@ -437,11 +437,13 @@ FunStuff.Fun:CreateButton{
 
 
 --Farming tab begin--
-Farming.Farm:CreateSection("Auto Stuff")
-local Toggle = Farming.Farm:CreateToggle("FarmToggle", {Title = "Toggle Auto Stuff", Default = false })
+Farming.Farm:CreateSection("Farming")
+local Toggle = Farming.Farm:CreateToggle("FarmToggle", {Title = "Toggle farm", Default = false })
 
 Toggle:OnChanged(function(bool)
-          loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua"))()
+            getgenv().equip = bool
+            if bool then
+                AutoEquip()
             end
         end)
 
