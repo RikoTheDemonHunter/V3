@@ -579,8 +579,27 @@ AutoFarm:Button("Auto Collect Gem", function()
 	end
 end)
 
-AutoFarm:Button("Slow Auto Drink", function()
+AutoFarm:Toggle("Slow Auto Drink", function()
 	while wait(3) do
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
+
+	end
+end)
+
+AutoFarm:Toggle("Fast Drink"), function()
+	while wait(2.34) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
