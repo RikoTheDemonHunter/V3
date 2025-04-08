@@ -447,6 +447,8 @@ Toggle:OnChanged(function(bool)
             end
         end)
 
+loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua"))()
+
 Farming.Farm:CreateButton{
    Title = "Auto-prestige",
         Callback = function()
