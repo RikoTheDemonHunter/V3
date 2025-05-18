@@ -850,3 +850,5 @@ end)
 Scripts:Button("Slow-Drink", function()
 	   loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Slow.lua"))()
 end)		
+
+brokenhrhrbvfjfjrjre
