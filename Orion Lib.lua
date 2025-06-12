@@ -460,8 +460,8 @@ Farming.Farm:CreateButton{
 Farming.Farm:CreateToggle{
    Title = "Auto Equip V2",
         Callback = function()
-             loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua"))()
-
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua"))() 
+           
         end
 }
 
