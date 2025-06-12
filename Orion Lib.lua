@@ -35,6 +35,9 @@ function AutoEquip()
                     end
                 end
 
+ loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua"))()
+
+    
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 0 then
                     local Players = game:GetService("Players")
 
@@ -269,13 +272,13 @@ local Options = Library.Options
 
 Library:Notify{
     Title = "Script executed",
-    Content = "Some features may be added in the future.",
+    Content = "Some features may be added or removed.",
     SubContent = "This Script Is Private.", -- Optional
     Duration = 5 -- Set to nil to make the notification not disappear
 }
 
 local Paragraph = Player.Main:CreateParagraph("Paragraph", {
-    Title = "Basic stuff to mess with for the LocalPlayer.",
+    Title = "Basic stuff to mess with.",
     Content = ""
 })
 Player.Main:CreateSection("")
@@ -315,11 +318,11 @@ FunStuff.Fun:CreateSection("Burps")
 
 FunStuff.Fun:CreateButton{
     Title = "Spam Burp",
-    Description = "Once you begin burping, you cannot stop",
+    Description = "Once you enable it you can't stop you have been warned",
     Callback = function()
         Window:Dialog{
-            Title = "Troll burp time",
-            Content = "Are you sure you want to burp?",
+            Title = "Burp time",
+            Content = "Are you sure you want to continue?",
             Buttons = {
                 {
                     Title = "Confirm",
@@ -448,6 +451,7 @@ Toggle:OnChanged(function(bool)
         end)
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua"))()
+end)
 
 Farming.Farm:CreateButton{
    Title = "Auto-prestige",
@@ -460,9 +464,10 @@ Farming.Farm:CreateButton{
 }
 
 Farming.Farm:CreateButton{
-   Title = "UrMom Ui BPS edition",
+   Title = "Auto Equip V2",
         Callback = function()
-            loadstring(game:HttpGet("https://pastefy.app/nqSs54Ez/raw"))()
+             loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua"))()
+
         end
 }
 
