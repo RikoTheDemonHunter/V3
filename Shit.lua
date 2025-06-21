@@ -824,7 +824,7 @@ Misc:Button("Anti Afk", function()
 end)	
 
 Misc:Button("SafePlace", function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace%20v1"))()
 end)
 
 Misc:Button("Animation-Hub", function()
