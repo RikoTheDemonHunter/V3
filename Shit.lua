@@ -15,7 +15,7 @@ end
 if not isWhitelisted(player.Name) then
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "Access Denied";
-        Text = "You are not whitelisted!";
+        Text = "You are not whitelisted Dumbass!";
         Duration = 5;
     })
     script.Parent:Destroy() -- 
