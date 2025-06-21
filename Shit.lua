@@ -1,4 +1,4 @@
-local whitelist = { "macmacinRoblox", } 
+local whitelist = { "macmacinRoblox", "Rikothedev12", } 
  
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer -- 
