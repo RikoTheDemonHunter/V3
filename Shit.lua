@@ -847,8 +847,8 @@ Misc:Toggle("StandonClouds", function(bool)
 				getgenv().walkonwater = bool
 				for i,v in pairs(workspace:GetChildren()) do
 					if v:IsA("Part") then
-						if v.Color == Color3.fromRGB(255, 255, 255) then
-							v.CanCollide = getgenv().standonclouds
+						if v.Color == Color3.fromRGB(128, 128, 128) then
+							v.CanCollide = getgenv().standoncloud
 						end
 					end
 				end
