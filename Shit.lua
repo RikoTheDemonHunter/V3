@@ -843,8 +843,8 @@ Misc:Toggle("Walk On Water",  function(bool)
 			end)
 
 
-Misc:Toggle("StandonClouds", function(bool)
-				getgenv().walkonwater = bool
+Misc:Toggle("StandonCloud", function(bool)
+				getgenv().standoncloud = bool
 				for i,v in pairs(workspace:GetChildren()) do
 					if v:IsA("Part") then
 						if v.Color == Color3.fromRGB(128, 128, 128) then
