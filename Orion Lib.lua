@@ -340,7 +340,7 @@ Slider:SetValue(3)
 FunStuff.Fun:CreateSection("Burps")
 
 FunStuff.Fun:CreateButton{
-    Title = "Spam Birp Func",
+    Title = "Spam Burp Func",
     Description = "Once you begin burping, you cannot stop",
     Callback = function()
         Window:Dialog{
@@ -473,11 +473,13 @@ Toggle:OnChanged(function(bool)
             end
         end)
 
+loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua"))()
+
 Farming.Farm:CreateButton{
    Title = "Auto-prestige",
         Callback = function()
              while true do
-                task.wait(0.075)
+                task.wait(0.8)
                 game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
             end
         end
