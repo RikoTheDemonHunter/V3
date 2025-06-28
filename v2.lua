@@ -650,7 +650,6 @@ AutoFarm:Toggle("Auto Drink", function(v)
 				end
 			end)
 
-
 LocalPlayer:Button("Fps-Unlocker", function(v)
 	if setfpscap and type(setfpscap) == "function" then
 		local num = 100000 or 1e6
