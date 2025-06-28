@@ -842,14 +842,6 @@ Misc:Toggle("Walk On Water",  function(bool)
 				end
 			end)
 
-
-Misc:Toggle("StandonCloud",  function(v)
-              for i,v in pairs(workspace.Clouds:GetChildren()) do
-			if v.Name == "Cloud" then
-				v.CanCollide = true
-			end
-		end
-
 Misc:Button("Spam Burp", function()
 	   while true do
                         task.wait()
