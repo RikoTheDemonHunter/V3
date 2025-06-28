@@ -3,7 +3,7 @@ local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.
 local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau"))()
  
 local Window = Library:CreateWindow{
-    Title = "Avery-Hub GUI v 1.0",
+    Title = "Avery-Hub v2",
     SubTitle = "by Avery",
     TabWidth = 130,
     Size = UDim2.fromOffset(630, 425),
@@ -34,7 +34,7 @@ function AutoEquip()
                         end
                     end
                 end
-  
+
                 if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 0 then
                     local Players = game:GetService("Players")
 
@@ -234,14 +234,14 @@ end
 -- Sections go here. --
 local FunStuff = {
     Fun = Window:CreateTab{
-        Title = "Tools",
+        Title = "Fun Stuff",
         Icon = "phosphor-smiley-bold"
     },
 }
 
 local Farming = {
     Farm = Window:CreateTab{
-        Title = "Auto Drink",
+        Title = "Farming",
         Icon = "phosphor-piggy-bank-bold"
     },
 }
@@ -269,13 +269,13 @@ local Options = Library.Options
 
 Library:Notify{
     Title = "Script executed",
-    Content = "Some features may be added or removed.",
-    SubContent = "This Script Is Private.", -- Optional
+    Content = "Some features may be added or patched.",
+    SubContent = "this script contains a whitelist system", -- Optional
     Duration = 5 -- Set to nil to make the notification not disappear
 }
 
 local Paragraph = Player.Main:CreateParagraph("Paragraph", {
-    Title = "Basic stuff to mess with.",
+    Title = "Basic stuff to mess with for the LocalPlayer.",
     Content = ""
 })
 Player.Main:CreateSection("")
@@ -314,12 +314,12 @@ Slider:SetValue(3)
 FunStuff.Fun:CreateSection("Burps")
 
 FunStuff.Fun:CreateButton{
-    Title = "Spam Burp",
-    Description = "Once you enable it you can't stop you have been warned",
+    Title = "Spam Birp Func",
+    Description = "Once you begin burping, you cannot stop",
     Callback = function()
         Window:Dialog{
-            Title = "Burp time",
-            Content = "Are you sure you want to continue?",
+            Title = "Spam Burp",
+            Content = "Are you sure you want to burp?",
             Buttons = {
                 {
                     Title = "Confirm",
@@ -451,18 +451,17 @@ Farming.Farm:CreateButton{
    Title = "Auto-prestige",
         Callback = function()
              while true do
-                task.wait(0.8)
+                task.wait(0.075)
                 game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
             end
         end
 }
 
-Farming.Farm:CreateToggle{
-   Title = "Auto Equip V2",
+Farming.Farm:CreateButton{
+   Title = "Bp Counter",
         Callback = function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua"))() 
-          
-      end
+            loadstring(game:HttpGet("https://pastefy.app/nqSs54Ez/raw"))()
+        end
 }
 
 
@@ -666,7 +665,7 @@ Toggle:OnChanged(function(Value)
 
 -- Misc. tab begin --
 local Paragraph = Miscellaneous.Misc:CreateParagraph("Paragraph", {
-    Title = "Other options that are not related to Burping Simulator.",
+    Title = "Other options.",
     Content = ""
 })
 Miscellaneous.Misc:CreateSection("Client-sided settings")
@@ -680,7 +679,7 @@ Miscellaneous.Misc:CreateButton{
 
 
 Miscellaneous.Misc:CreateButton{
-   Title = "Uncap FPS limit",
+   Title = "Fps Booter",
         Callback = function()
             if setfpscap and type(setfpscap) == "function" then
                 local num = 100000 or 1e6
@@ -694,7 +693,7 @@ Miscellaneous.Misc:CreateButton{
 }
 
 Miscellaneous.Misc:CreateButton{
-   Title = "Make a sky baseplate",
+   Title = "sky baseplate",
         Callback = function()
             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-7000, 22000, -5000)
             baseplatee = Instance.new("Part", workspace)
