@@ -843,7 +843,8 @@ Misc:Toggle("Walk On Water",  function(bool)
 			end)
 
 
-Misc:Toggle("StandonCloud",  function(v) for i,v in pairs(workspace.Clouds:GetChildren()) do
+Misc:Toggle("StandonCloud",  function(v)
+              for i,v in pairs(workspace.Clouds:GetChildren()) do
 			if v.Name == "Cloud" then
 				v.CanCollide = true
 			end
