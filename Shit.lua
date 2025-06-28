@@ -846,7 +846,7 @@ Misc:Toggle("Walk On Water",  function(bool)
 Misc:Toggle("StandonCloud", function(bool)
 				getgenv().standoncloud = bool
 				for i,v in pairs(workspace:GetChildren()) do
-					if v:IsA("Part") then
+					if v:IsA("Cloud") then
 						if v.Color == Color3.fromRGB(128, 128, 128) then
 							v.CanCollide = getgenv().standoncloud
 						end
