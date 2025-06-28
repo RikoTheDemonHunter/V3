@@ -158,4 +158,8 @@ Local owner status
   
 Batch Request Function,
  do wait ("1")
+
+ if Batch request is set to =True
+function, ()
+initiate locale deletion 
                         
