@@ -23,7 +23,7 @@ if not isWhitelisted(player.UserId) then
 end
 
 -- Your script continues here for whitelisted users only
-print("Access granted. Script running...")
+print("Access granted. Script running".. player.Name)
 
 function AutoEquipDrink()
 
