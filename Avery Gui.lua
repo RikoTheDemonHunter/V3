@@ -247,7 +247,7 @@ function AutoEquipDrink()
 end
 
 
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/.github/workflows/Avery%20GUI.lua"))()
 local Window = Library.CreateLib("Avery-Hub v2", "BloodTheme")
 
 local Tab = Window:NewTab("AutoFarm")
