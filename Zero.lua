@@ -605,7 +605,7 @@ AutoFarm:Toggle("Auto Collect Gem", function(v)
 	end
 end)
 
-AutoFarm:Button("Auto Drink", task.spawn(function()
+AutoFarm:Button("Auto Drink", function()
     while true do
         wait(2.34)
         local remote = game.ReplicatedStorage.RemoteEvents.DrinkEvent
