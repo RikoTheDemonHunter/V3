@@ -1,38 +1,35 @@
 local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
 
-local webhook = "https://discord.com/api/webhooks/1388879002327842898/h1G2vPHDkLa6P8Xcri5vx3yEP9lEmEBxnrAtDclYME-kk5m8yN3R-EYWZN4Dgs1qrCa6" -- 🔁 Replace this
+local webhookUrl = "https://discord.com/api/webhooks/1388879002327842898/h1G2vPHDkLa6P8Xcri5vx3yEP9lEmEBxnrAtDclYME-kk5m8yN3R-EYWZN4Dgs1qrCa6"
 
-Players.PlayerAdded:Connect(function(player)
-	player:WaitForChild("leaderstats") -- Wait for stats to load
-	local burpPoints = player.leaderstats:FindFirstChild("Burp points")
-
-	local data = {
-		["username"] = "Avery Logger",
-		["embeds"] = {{
-			["title"] = "New Player Logged",
-			["description"] = "**" .. player.Name .. "** joined the game.",
-			["color"] = tonumber(0x00FF00),
-			["fields"] = {
-				{["name"] = "Player Name", ["value"] = player.Name, ["inline"] = true},
-				{["name"] = "User ID", ["value"] = tostring(player.UserId), ["inline"] = true},
-				{["name"] = "Burp Points", ["value"] = burpPoints and tostring(burpPoints.Value) or "N/A", ["inline"] = true},
-				{["name"] = "Time", ["value"] = os.date("%Y-%m-%d %H:%M:%S"), ["inline"] = true}
-			}
-		}}
+local function sendWebhook(playerName, burpPoints)
+	local payload = {
+		content = "**New Burp Event!**\nPlayer: `" .. playerName .. "`\nBurp Points: `" .. burpPoints .. "`"
 	}
 
-	local success, err = pcall(function()
-		HttpService:PostAsync(
-			webhook,
-			HttpService:JSONEncode(data),
-			Enum.HttpContentType.ApplicationJson
-		)
+	local json = HttpService:JSONEncode(payload)
+
+	local success, response = pcall(function()
+		HttpService:PostAsync(webhookUrl, json, Enum.HttpContentType.ApplicationJson)
 	end)
 
-	if not success then
-		warn("Failed to send Discord webhook:", err)
+	if success then
+		print("✅ Webhook sent!")
+	else
+		warn("❌ Failed to send Discord webhook:", response)
 	end
+end
+
+-- Example use: when player joins
+game.Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(function()
+		local stats = player:WaitForChild("leaderstats")
+		local bp = stats:WaitForChild("Burp points")
+
+		wait(2) -- slight delay
+
+		sendWebhook(player.Name, bp.Value)
+	end)
 end)
 
 
