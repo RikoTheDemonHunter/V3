@@ -15,7 +15,6 @@ end
 
 -- If not whitelisted, stop execution or kick
 if not isWhitelisted(player.UserId) then
-    
     return
 
     -- Option 2: Kick player (can only be done server-side)
