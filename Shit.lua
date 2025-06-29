@@ -1,7 +1,6 @@
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-end)
 
 -- Whitelist your own user ID(s) here
 local whitelist = {
@@ -10,8 +9,7 @@ local whitelist = {
 }
 
 -- Kill switch URL (must be a direct/raw .json link)
-local remoteConfigUrl = loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"))() -- Replace this
-end)
+local remoteConfigUrl = https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json -- Replace this
 
 -- Fetch and check the remote config
 local success, result = pcall(function()
