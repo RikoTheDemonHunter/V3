@@ -9,7 +9,7 @@ local whitelist = {
 }
 
 -- Kill switch URL (must be a direct/raw .json link)
-local remoteConfigUrl = "https://github.com/RikoTheDemonHunter/V3/blob/main/switcher.json" -- Replace this
+local remoteConfigUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json" -- Replace this
 
 -- Fetch and check the remote config
 local success, result = pcall(function()
