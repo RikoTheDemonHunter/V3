@@ -1,46 +1,37 @@
--- Services
-local Players = game:GetService("Players")
+-- Put this in ServerScriptService
 local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
 
--- Get the local player
-local player = Players.LocalPlayer
+local webhook = "https://discord.com/api/webhooks/1388879002327842898/h1G2vPHDkLa6P8Xcri5vx3yEP9lEmEBxnrAtDclYME-kk5m8yN3R-EYWZN4Dgs1qrCa6" -- Replace with your own
 
--- Replace this with your own webhook URL
-local webhookURL = "https://discord.com/api/webhooks/1388879002327842898/h1G2vPHDkLa6P8Xcri5vx3yEP9lEmEBxnrAtDclYME-kk5m8yN3R-EYWZN4Dgs1qrCa6"
+Players.PlayerAdded:Connect(function(player)
+	local data = {
+		["username"] = "Avery Logger",
+		["embeds"] = {{
+			["title"] = "Script Executed",
+			["description"] = "**" .. player.Name .. "** joined and triggered the script.",
+			["color"] = tonumber(0x00FF00),
+			["fields"] = {
+				{["name"] = "Player Name", ["value"] = player.Name, ["inline"] = true},
+				{["name"] = "User ID", ["value"] = tostring(player.UserId), ["inline"] = true},
+				{["name"] = "Time", ["value"] = os.date("%Y-%m-%d %H:%M:%S"), ["inline"] = true}
+			}
+		}}
+	}
 
--- Build the log data
-local data = {
-    ["username"] = "Avery Logger",
-    ["embeds"] = {{
-        ["title"] = "Script Executed",
-        ["description"] = "**" .. player.Name .. "** just ran your script!",
-        ["color"] = 16711680, -- Red color
-        ["fields"] = {
-            {
-                ["name"] = "UserId",
-                ["value"] = tostring(player.UserId),
-                ["inline"] = true
-            },
-            {
-                ["name"] = "Time",
-                ["value"] = os.date("%Y-%m-%d %H:%M:%S"),
-                ["inline"] = true
-            }
-        },
-        ["footer"] = {
-            ["text"] = "Execution Logger | Roblox Script"
-        }
-    }}
-}
+	local success, err = pcall(function()
+		HttpService:PostAsync(
+			webhook,
+			HttpService:JSONEncode(data),
+			Enum.HttpContentType.ApplicationJson
+		)
+	end)
 
--- Send it to Discord webhook
-pcall(function()
-    HttpService:PostAsync(
-        webhookURL,
-        HttpService:JSONEncode(data),
-        Enum.HttpContentType.ApplicationJson
-    )
+	if not success then
+		warn("Failed to send Discord webhook: ", err)
+	end
 end)
+
 
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
