@@ -2,38 +2,36 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Whitelist your own user ID(s) here
-local whitelist = {
-    [1497286101] = true, -- Replace with your own userId
-    [4441876607] = true, -- Optional: add trusted friends or testers
-}
+-- Replace with your actual GitHub raw URL
+local url = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/killswitch.json"
 
--- Kill switch URL (must be a direct/raw .json link)
-local remoteConfigUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json" -- Replace this
-
--- Fetch and check the remote config
-local success, result = pcall(function()
-    return game:HttpGet(remoteConfigUrl)
-end)
-
-if success then
-    local config = HttpService:JSONDecode(result)
-    
-    if config and config.online == true then
-        if not whitelist[player.UserId] then
-            player:Kick("Script has been disabled by the owner.")
-            return
-        else
-            warn("Owner override: Kill switch enabled, but you are whitelisted.")
-        end
-    end
-else
-    warn("Failed to fetch kill switch config. Proceeding anyway.")
+local function isWhitelisted(userId, whitelist)
+	for _, id in ipairs(whitelist) do
+		if id == userId then
+			return true
+		end
+	end
+	return false
 end
 
--- If you get here, you’re allowed to execute the script
--- Put your main script logic here:
-loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Shit.lua"))()
+local success, result = pcall(function()
+	local response = game:HttpGet(url, true)
+	return HttpService:JSONDecode(response)
+end)
+
+if success and result then
+	local enabled = result.enabled
+	local whitelist = result.whitelist or {}
+
+	if not enabled and not isWhitelisted(player.UserId, whitelist) then
+		player:Kick("This script has been disabled by the owner.")
+		return
+	else
+		print("Kill switch OFF or user whitelisted. Continuing...")
+	end
+else
+	warn("Failed to fetch kill switch status. Script may proceed anyway.")
+end
 
 local lib = {}
 		
