@@ -633,7 +633,7 @@ AutoFarm:Toggle("Auto Drink", function(v)
 
 			autofarm:Toggle("Auto Drink", function(v)
 				getgenv().autodrink = v
-				while getgenv().autodrink do wait(2.34)
+				while getgenv().autodrink do wait(2.4)
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
 					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
