@@ -1,19 +1,22 @@
--- Put this in ServerScriptService
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
-local webhook = "https://discord.com/api/webhooks/1388879002327842898/h1G2vPHDkLa6P8Xcri5vx3yEP9lEmEBxnrAtDclYME-kk5m8yN3R-EYWZN4Dgs1qrCa6" -- Replace with your own
+local webhook = "https://discord.com/api/webhooks/1388879002327842898/h1G2vPHDkLa6P8Xcri5vx3yEP9lEmEBxnrAtDclYME-kk5m8yN3R-EYWZN4Dgs1qrCa6" -- 🔁 Replace this
 
 Players.PlayerAdded:Connect(function(player)
+	player:WaitForChild("leaderstats") -- Wait for stats to load
+	local burpPoints = player.leaderstats:FindFirstChild("Burp points")
+
 	local data = {
 		["username"] = "Avery Logger",
 		["embeds"] = {{
-			["title"] = "Script Executed",
-			["description"] = "**" .. player.Name .. "** joined and triggered the script.",
+			["title"] = "New Player Logged",
+			["description"] = "**" .. player.Name .. "** joined the game.",
 			["color"] = tonumber(0x00FF00),
 			["fields"] = {
 				{["name"] = "Player Name", ["value"] = player.Name, ["inline"] = true},
 				{["name"] = "User ID", ["value"] = tostring(player.UserId), ["inline"] = true},
+				{["name"] = "Burp Points", ["value"] = burpPoints and tostring(burpPoints.Value) or "N/A", ["inline"] = true},
 				{["name"] = "Time", ["value"] = os.date("%Y-%m-%d %H:%M:%S"), ["inline"] = true}
 			}
 		}}
@@ -28,9 +31,10 @@ Players.PlayerAdded:Connect(function(player)
 	end)
 
 	if not success then
-		warn("Failed to send Discord webhook: ", err)
+		warn("Failed to send Discord webhook:", err)
 	end
 end)
+
 
 
 local HttpService = game:GetService("HttpService")
