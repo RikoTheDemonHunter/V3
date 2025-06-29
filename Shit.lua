@@ -678,6 +678,15 @@ LocalPlayer:Toggle("Sit", function(v)
 				game.Players.LocalPlayer.Character.Humanoid.Sit = getgenv().sit
 			end)
 
+LocalPlayer:Toggle("AutoRejoin", function(v)
+		function(v)
+getgenv().Settings.autorejoin = v
+Save()
+if v then
+doAutoRejoin()
+end
+end)
+
 Teleport:Button("Safe Zone", function()
 	local New_CFrame = CFrame.new(-46, 48, -15)
 
