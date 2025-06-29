@@ -1,28 +1,24 @@
-local whitelist = { "macmacinRoblox", "Rikothedev12", } 
- 
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer -- 
- 
-local function isWhitelisted(name)
-    for _, whitelistedName in ipairs(whitelist) do
-        if name == whitelistedName then
-            return true
-        end
+
+
+local whitelist = {
+    [1497286101] = true,
+    [87654321] = true,
+    
+}
+
+local function isWhitelisted(userId)
+    return whitelist[userId] == true
+end
+
+Players.PlayerAdded:Connect(function(player)
+    if not isWhitelisted(player.UserId) then
+        player:Kick("You are not whitelisted to execute this script!.")
+        warn(player.Name .. " was kicked: Not on whitelist.")
+    else
+        print(player.Name .. " joined and is whitelisted.")
     end
-    return false
-end
- 
-if not isWhitelisted(player.Name) then
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Access Denied";
-        Text = "You are not whitelisted Dumbass!";
-        Duration = 5;
-    })
-    script.Parent:Destroy() -- 
-    return
-end
- 
-print("Access granted to " .. player.Name)
+end)
 
 function AutoEquipDrink()
 
