@@ -21,7 +21,7 @@ if not isWhitelisted(player.UserId) then
 end
 
 -- For whitelisted users only
-print("Access granted. To" .. player.Name)
+print("Access granted. To " .. player.Name)
 
 local lib = {}
 		
