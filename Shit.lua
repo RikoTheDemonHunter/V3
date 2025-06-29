@@ -33,7 +33,7 @@ end
 
 -- If you get here, you’re allowed to execute the script
 -- Put your main script logic here:
-loadstring(game:HttpGet("loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/Lua-Scripts/refs/heads/main/V3.lua"))()"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/Lua-Scripts/refs/heads/main/V3.lua"))()
 
 local lib = {}
 		
