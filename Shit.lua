@@ -1,27 +1,39 @@
+local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer 
+local player = Players.LocalPlayer
 
--- Whitelisted UserIds only works for this  type of users
+-- Whitelist your own user ID(s) here
 local whitelist = {
-    [1497286101] = true,
-    [4441876607] = true,
-   
+    [1497286101] = true, -- Replace with your own userId
+    [4441876607] = true, -- Optional: add trusted friends or testers
 }
 
--- Check if player is whitelisted
-local function isWhitelisted(userId)
-    return whitelist[userId] == true
+-- Kill switch URL (must be a direct/raw .json link)
+local remoteConfigUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Shit.lua" -- Replace this
+
+-- Fetch and check the remote config
+local success, result = pcall(function()
+    return game:HttpGet(remoteConfigUrl)
+end)
+
+if success then
+    local config = HttpService:JSONDecode(result)
+    
+    if config and config.online == true then
+        if not whitelist[player.UserId] then
+            player:Kick("Script has been disabled by the owner.")
+            return
+        else
+            warn("Owner override: Kill switch enabled, but you are whitelisted.")
+        end
+    end
+else
+    warn("Failed to fetch kill switch config. Proceeding anyway.")
 end
 
--- If not whitelisted, your access has been denied
-if not isWhitelisted(player.UserId) then
-    return
-
--- this script is automated by my bot
-end
-
--- For whitelisted users only
-print("Access granted. To " .. player.Name)
+-- If you get here, you’re allowed to execute the script
+-- Put your main script logic here:
+loadstring(game:HttpGet("loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/Lua-Scripts/refs/heads/main/V3.lua"))()"))()
 
 local lib = {}
 		
