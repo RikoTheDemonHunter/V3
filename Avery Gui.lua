@@ -1,6 +1,6 @@
 local Players = game:GetService("Players")
 
--- Whitelist usernames (case-sensitive)
+
 local whitelist = {
     "macmacinRoblox",
    
@@ -22,7 +22,6 @@ Players.PlayerAdded:Connect(function(player)
         print("Access granted to " .. player.Name)
     end
 end)
-
 
 function AutoEquipDrink()
 
