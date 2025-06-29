@@ -30,3 +30,32 @@ if not isWhitelisted(player.Name) then
 end
  
 print("Access granted to " .. player.Name)
+
+
+
+
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer 
+
+-- Whitelisted UserIds only works for this  type of users
+local whitelist = {
+    [1497286101] = true,
+    [4441876607] = true,
+   
+}
+
+-- Check if player is whitelisted
+local function isWhitelisted(userId)
+    return whitelist[userId] == true
+end
+
+-- If not whitelisted, your access has been denied
+if not isWhitelisted(player.UserId) then
+    return
+
+-- this script is automated by my bot
+end
+
+-- For whitelisted users only
+print("Access granted. To" .. player.Name)
