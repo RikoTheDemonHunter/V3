@@ -2,21 +2,24 @@ local Players = game:GetService("Players")
 
 
 local whitelist = {
-    [1497286101] = true,
-    
+    1497286101,  
     
 }
 
 local function isWhitelisted(userId)
-    return whitelist[userId] == true
+    for _, id in ipairs(whitelist) do
+        if userId == id then
+            return true
+        end
+    end
+    return false
 end
 
 Players.PlayerAdded:Connect(function(player)
     if not isWhitelisted(player.UserId) then
-        player:Kick("You are not whitelisted to execute this script!.")
-        warn(player.Name .. " was kicked: Not on whitelist.")
+        player:Kick("You are not whitelisted to execute!.")
     else
-        print(player.Name .. " joined and is whitelisted.")
+        print("Access granted to " .. player.Name)
     end
 end)
 
