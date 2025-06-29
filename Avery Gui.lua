@@ -1,11 +1,11 @@
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer -- This is client-side executor check
+local player = Players.LocalPlayer 
 
 -- Whitelisted UserIds
 local whitelist = {
     [1497286101] = true,
   
-    -- add more UserIds here
+   
 }
 
 -- Check if player is whitelisted
