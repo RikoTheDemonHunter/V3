@@ -17,13 +17,14 @@ end
 if not isWhitelisted(player.UserId) then
     -- Option 1: Stop script execution
     return
-    
+
+    game.Players.LocalPlayer:Kick("You are not authorized to use this script.")
     -- Option 2: Kick player (can only be done server-side)
     -- game.Players.LocalPlayer:Kick("You are not authorized to use this script.")
 end
 
 -- Your script continues here for whitelisted users only
-print("Access granted. Script running".. player.Name)
+print("Access granted. Script running" .. player.Name)
 
 function AutoEquipDrink()
 
