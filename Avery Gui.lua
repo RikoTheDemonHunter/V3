@@ -1,27 +1,29 @@
 local Players = game:GetService("Players")
+local player = Players.LocalPlayer -- This is client-side executor check
 
-
+-- Whitelisted UserIds
 local whitelist = {
-    "macmacinRoblox",
-   
+    [1497286101] = true,
+  
+    -- add more UserIds here
 }
 
-local function isWhitelisted(username)
-    for _, name in ipairs(whitelist) do
-        if username == name then
-            return true
-        end
-    end
-    return false
+-- Check if player is whitelisted
+local function isWhitelisted(userId)
+    return whitelist[userId] == true
 end
 
-Players.PlayerAdded:Connect(function(player)
-    if not isWhitelisted(player.Name) then
-        player:Kick("You are not whitelisted to execute!.")
-    else
-        print("Access granted to " .. player.Name)
-    end
-end)
+-- If not whitelisted, stop execution or kick
+if not isWhitelisted(player.UserId) then
+    -- Option 1: Stop script execution
+    return
+    
+    -- Option 2: Kick player (can only be done server-side)
+    -- game.Players.LocalPlayer:Kick("You are not authorized to use this script.")
+end
+
+-- Your script continues here for whitelisted users only
+print("Access granted. Script running...")
 
 function AutoEquipDrink()
 
