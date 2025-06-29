@@ -25,7 +25,7 @@ if success and result then
 	local whitelist = result.whitelist or {}
 
 	if not enabled and not isWhitelisted(player.UserId, whitelist) then
-		player:Kick("This script has been disabled by the owner.")
+		player:Kick("Your Account Is Terminated.")
 		return
 	else
 		print("Kill switch OFF or user whitelisted. Continuing...")
