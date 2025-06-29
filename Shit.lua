@@ -679,7 +679,6 @@ LocalPlayer:Toggle("Sit", function(v)
 			end)
 
 LocalPlayer:Toggle("AutoRejoin", function(v)
-		function(v)
 getgenv().Settings.autorejoin = v
 Save()
 if v then
