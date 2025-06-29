@@ -15,10 +15,10 @@ end
 
 -- If not whitelisted, stop execution or kick
 if not isWhitelisted(player.UserId) then
-    -- Option 1: Stop script execution
+    - game.Players.LocalPlayer:Kick("You are not authorized to use this script.")
     return
 
-    game.Players.LocalPlayer:Kick("You are not authorized to use this script.")
+   
     -- Option 2: Kick player (can only be done server-side)
     -- game.Players.LocalPlayer:Kick("You are not authorized to use this script.")
 end
