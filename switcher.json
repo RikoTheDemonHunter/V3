@@ -1,3 +1,4 @@
 {
-    "online": true
+  "enabled": true,
+  "whitelist": [1497286101, 1234567890]
 }
