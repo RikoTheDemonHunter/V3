@@ -1,7 +1,6 @@
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-
 -- Whitelist your own user ID(s) here
 local whitelist = {
     [1497286101] = true, -- Replace with your own userId
