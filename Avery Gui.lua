@@ -1,14 +1,14 @@
 local Players = game:GetService("Players")
 
-
+-- Whitelist usernames (case-sensitive)
 local whitelist = {
-    1497286101,  
-    
+    "macmacinRoblox",
+   
 }
 
-local function isWhitelisted(userId)
-    for _, id in ipairs(whitelist) do
-        if userId == id then
+local function isWhitelisted(username)
+    for _, name in ipairs(whitelist) do
+        if username == name then
             return true
         end
     end
@@ -16,12 +16,13 @@ local function isWhitelisted(userId)
 end
 
 Players.PlayerAdded:Connect(function(player)
-    if not isWhitelisted(player.UserId) then
+    if not isWhitelisted(player.Name) then
         player:Kick("You are not whitelisted to execute!.")
     else
         print("Access granted to " .. player.Name)
     end
 end)
+
 
 function AutoEquipDrink()
 
