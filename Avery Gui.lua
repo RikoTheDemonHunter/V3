@@ -15,7 +15,8 @@ end
 
 -- If not whitelisted, stop execution or kick
 if not isWhitelisted(player.UserId) then
-    - game.Players.LocalPlayer:Kick("You are not authorized to use this script.")
+    print("Access Denied" .. player.Name)
+
     return
 
    
