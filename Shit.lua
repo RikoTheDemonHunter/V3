@@ -686,6 +686,7 @@ doAutoRejoin()
 end
 end)
 
+
 Teleport:Button("Safe Zone", function()
 	local New_CFrame = CFrame.new(-46, 48, -15)
 
