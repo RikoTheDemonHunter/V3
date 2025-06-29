@@ -3,7 +3,7 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
 -- Replace with your actual GitHub raw URL
-local url = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/killswitch.json"
+local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
 
 local function isWhitelisted(userId, whitelist)
 	for _, id in ipairs(whitelist) do
