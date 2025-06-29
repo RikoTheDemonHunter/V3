@@ -1,3 +1,47 @@
+-- Services
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+
+-- Get the local player
+local player = Players.LocalPlayer
+
+-- Replace this with your own webhook URL
+local webhookURL = "https://discord.com/api/webhooks/1388876875673370785/mxOliHIp8Oa3GzLyE2leqEyVBOi4OqpMJWfudNMXnT19SSaNMhJzybkQzPABV7l72_bh"
+
+-- Build the log data
+local data = {
+    ["username"] = "Avery Logger",
+    ["embeds"] = {{
+        ["title"] = "Script Executed",
+        ["description"] = "**" .. player.Name .. "** just ran your script!",
+        ["color"] = 16711680, -- Red color
+        ["fields"] = {
+            {
+                ["name"] = "UserId",
+                ["value"] = tostring(player.UserId),
+                ["inline"] = true
+            },
+            {
+                ["name"] = "Time",
+                ["value"] = os.date("%Y-%m-%d %H:%M:%S"),
+                ["inline"] = true
+            }
+        },
+        ["footer"] = {
+            ["text"] = "Execution Logger | Roblox Script"
+        }
+    }}
+}
+
+-- Send it to Discord webhook
+pcall(function()
+    HttpService:PostAsync(
+        webhookURL,
+        HttpService:JSONEncode(data),
+        Enum.HttpContentType.ApplicationJson
+    )
+end)
+
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
