@@ -18,15 +18,9 @@ if not isWhitelisted(player.UserId) then
     
     return
 
-   Players.PlayerAdded:Connect(function(player)
-    if not whitelist[player.UserId] then
-        player:Kick("You are not whitelisted!.")
-        warn(player.Name .. " was kicked for not being whitelisted.")
-    end
-end)
     -- Option 2: Kick player (can only be done server-side)
     -- game.Players.LocalPlayer:Kick("You are not authorized to use this script.")
-
+end
 
 -- Your script continues here for whitelisted users only
 print("Access granted. Script running" .. player.Name)
