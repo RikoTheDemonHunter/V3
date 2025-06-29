@@ -1,38 +1,3 @@
-local HttpService = game:GetService("HttpService")
-
-local webhookUrl = "https://discord.com/api/webhooks/1388879002327842898/h1G2vPHDkLa6P8Xcri5vx3yEP9lEmEBxnrAtDclYME-kk5m8yN3R-EYWZN4Dgs1qrCa6"
-
-local function sendWebhook(playerName, burpPoints)
-	local payload = {
-		content = "**New Burp Event!**\nPlayer: `" .. playerName .. "`\nBurp Points: `" .. burpPoints .. "`"
-	}
-
-	local json = HttpService:JSONEncode(payload)
-
-	local success, response = pcall(function()
-		HttpService:PostAsync(webhookUrl, json, Enum.HttpContentType.ApplicationJson)
-	end)
-
-	if success then
-		print("✅ Webhook sent!")
-	else
-		warn("❌ Failed to send Discord webhook:", response)
-	end
-end
-
--- Example use: when player joins
-game.Players.PlayerAdded:Connect(function(player)
-	player.CharacterAdded:Connect(function()
-		local stats = player:WaitForChild("leaderstats")
-		local bp = stats:WaitForChild("Burp points")
-
-		wait(2) -- slight delay
-
-		sendWebhook(player.Name, bp.Value)
-	end)
-end)
-
-
 
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
