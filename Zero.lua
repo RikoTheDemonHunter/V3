@@ -1,3 +1,63 @@
+local player = game.Players.LocalPlayer
+local leaderstats = player:WaitForChild("leaderstats")
+
+-- Create GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "StatsGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+-- Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 100)
+frame.Position = UDim2.new(1, -210, 0, 10)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BackgroundTransparency = 0.3
+frame.BorderSizePixel = 0
+frame.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = frame
+
+-- Label Creator
+local function createLabel(statName, order)
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, -10, 0, 20)
+	label.Position = UDim2.new(0, 5, 0, 5 + (order * 22))
+	label.BackgroundTransparency = 1
+	label.TextColor3 = Color3.new(1, 1, 1)
+	label.Font = Enum.Font.Gotham
+	label.TextScaled = true
+	label.Text = statName .. ": 0"
+	label.Name = statName .. "Label"
+	label.Parent = frame
+	return label
+end
+
+-- Create labels
+local burpsLabel = createLabel("Burps", 0)
+local drinksLabel = createLabel("Drinks", 1)
+local prestigeLabel = createLabel("Prestige", 2)
+
+-- Live Updates
+leaderstats.Burps:GetPropertyChangedSignal("Value"):Connect(function()
+	burpsLabel.Text = "Burps: " .. leaderstats.Burps.Value
+end)
+
+leaderstats.Drinks:GetPropertyChangedSignal("Value"):Connect(function()
+	drinksLabel.Text = "Drinks: " .. leaderstats.Drinks.Value
+end)
+
+leaderstats.Prestige:GetPropertyChangedSignal("Value"):Connect(function()
+	prestigeLabel.Text = "Prestige: " .. leaderstats.Prestige.Value
+end)
+
+-- Set default text
+burpsLabel.Text = "Burps: " .. leaderstats.Burps.Value
+drinksLabel.Text = "Drinks: " .. leaderstats.Drinks.Value
+prestigeLabel.Text = "Prestige: " .. leaderstats.Prestige.Value
+
 local whitelist = { "macmacinRoblox", "Rikothedev12", } 
  
 local Players = game:GetService("Players")
