@@ -10,6 +10,7 @@ local whitelist = {
 
 -- Kill switch URL (must be a direct/raw .json link)
 local remoteConfigUrl = loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"))() -- Replace this
+end)
 
 -- Fetch and check the remote config
 local success, result = pcall(function()
