@@ -609,7 +609,7 @@ end)
 
 AutoFarm:Button("Auto Drink", function()
     while true do
-        wait(2.34)
+        wait(2.4)
         local remote = game.ReplicatedStorage.RemoteEvents.DrinkEvent
         local drinks = {
             "Starter Drink",
