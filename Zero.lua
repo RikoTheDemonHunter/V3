@@ -593,11 +593,12 @@ AutoFarm:Toggle("Auto Prestige", function(v)
 end)
 
 AutoFarm:Toggle("Auto Equip", function(v)
-	getgenv().equip = v
-	if bool then
-		AutoEquip()
-	end
-end)
+				getgenv().equipdrink = v
+				while getgenv().equipdrink do wait(0.8)
+					AutoEquipDrink()
+				end
+			end)
+
 
 AutoFarm:Toggle("Auto Collect Gem", function(v)
 	while wait(0.6) do
