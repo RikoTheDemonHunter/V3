@@ -599,6 +599,7 @@ AutoFarm:Toggle("Auto Equip", function(v)
 				end
 			end)
 
+loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua"))()
 
 AutoFarm:Toggle("Auto Collect Gem", function(v)
 	while wait(0.6) do
