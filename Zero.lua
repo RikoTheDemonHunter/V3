@@ -1,30 +1,54 @@
-
-
-local whitelist = { "macmacinRoblox", "Rikothedev12", } 
- 
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer -- 
- 
-local function isWhitelisted(name)
-    for _, whitelistedName in ipairs(whitelist) do
-        if name == whitelistedName then
-            return true
-        end
-    end
-    return false
-end
- 
-if not isWhitelisted(player.Name) then
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Access Denied";
-        Text = "You are not whitelisted Dumbass!";
-        Duration = 5;
-    })
-    script.Parent:Destroy() -- 
-    return
-end
- 
-print("Access granted to " .. player.Name)
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Configuration
+local correctKey = "147358" -- Change this to your desired key
+
+-- Create GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "KeySystemGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 150)
+frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+frame.Parent = screenGui
+
+local textbox = Instance.new("TextBox")
+textbox.PlaceholderText = "Enter key here"
+textbox.Size = UDim2.new(0.8, 0, 0, 40)
+textbox.Position = UDim2.new(0.1, 0, 0.2, 0)
+textbox.Text = ""
+textbox.Parent = frame
+
+local submitButton = Instance.new("TextButton")
+submitButton.Size = UDim2.new(0.5, 0, 0, 40)
+submitButton.Position = UDim2.new(0.25, 0, 0.55, 0)
+submitButton.Text = "Submit"
+submitButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+submitButton.TextColor3 = Color3.new(1, 1, 1)
+submitButton.Parent = frame
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, 0, 0, 30)
+statusLabel.Position = UDim2.new(0, 0, 0.85, 0)
+statusLabel.Text = ""
+statusLabel.TextColor3 = Color3.new(1, 1, 1)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Parent = frame
+
+submitButton.MouseButton1Click:Connect(function()
+	if textbox.Text == correctKey then
+		statusLabel.Text = "Access Granted"
+		wait(1)
+		screenGui:Destroy()
+	else
+		statusLabel.Text = "Invalid Key. Try Again."
+	end
+end)
 
 local lib = {}
 
