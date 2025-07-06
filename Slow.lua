@@ -580,7 +580,7 @@ AutoFarm:Button("Auto Collect Gem", function()
 end)
 
 AutoFarm:Toggle("Slow Auto Drink", function()
-	while wait(3) do
+	while wait(3.3) do
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
 		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
