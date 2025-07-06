@@ -1,19 +1,16 @@
--- GUI for Burp Points Counter in Burping Simulator
--- Features: Draggable, Minimize/Expand, Animated updates
-
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-local LocalPlayer = Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = Players.LocalPlayer
 
--- Replace with your actual event and stat access
-local burpStatName = "BurpPoints" -- The stat name in leaderstats
+-- Replace if your game uses different names
+local burpStatName = "BurpPoints"
+local drinkEvent = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("DrinkEvent")
 
 -- GUI setup
-local screenGui = Instance.new("ScreenGui")
+local screenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 screenGui.Name = "BurpPointsGUI"
 screenGui.ResetOnSpawn = false
-screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 200, 0, 100)
@@ -64,32 +61,30 @@ burpLabel.Font = Enum.Font.FredokaOne
 burpLabel.TextScaled = true
 burpLabel.Parent = frame
 
--- Animation scale tween
+-- Animate label
 local function animateLabel()
-    local grow = TweenService:Create(burpLabel, TweenInfo.new(0.15, Enum.EasingStyle.Back), {
-        TextSize = 50
-    })
-    local shrink = TweenService:Create(burpLabel, TweenInfo.new(0.15, Enum.EasingStyle.Sine), {
-        TextSize = 40
-    })
-    grow:Play()
-    grow.Completed:Connect(function()
-        shrink:Play()
-    end)
+	local grow = TweenService:Create(burpLabel, TweenInfo.new(0.15, Enum.EasingStyle.Back), {TextSize = 50})
+	local shrink = TweenService:Create(burpLabel, TweenInfo.new(0.15, Enum.EasingStyle.Sine), {TextSize = 40})
+	grow:Play()
+	grow.Completed:Connect(function()
+		shrink:Play()
+	end)
 end
 
--- Update loop
+-- Update burp points
 local function updateBurpPoints()
-    local leaderstats = LocalPlayer:FindFirstChild("leaderstats")
-    if leaderstats and leaderstats:FindFirstChild(burpStatName) then
-        local value = leaderstats[burpStatName].Value
-        burpLabel.Text = tostring(value)
-        animateLabel()
-    end
+	local leaderstats = LocalPlayer:FindFirstChild("leaderstats")
+	if leaderstats and leaderstats:FindFirstChild(burpStatName) then
+		local value = leaderstats[burpStatName].Value
+		burpLabel.Text = tostring(value)
+		animateLabel()
+	end
 end
 
--- Listen for changes
-LocalPlayer:WaitForChild("leaderstats"):WaitForChild(burpStatName).Changed:Connect(updateBurpPoints)
+-- Update on sip (burp/drink)
+drinkEvent.OnClientEvent:Connect(function()
+	updateBurpPoints()
+end)
 
 -- Initial update
 updateBurpPoints()
@@ -97,15 +92,15 @@ updateBurpPoints()
 -- Minimize toggle
 local minimized = false
 minimizeButton.MouseButton1Click:Connect(function()
-    minimized = not minimized
-    local goalSize = minimized and UDim2.new(0, 200, 0, 30) or UDim2.new(0, 200, 0, 100)
-    TweenService:Create(frame, TweenInfo.new(0.3), {Size = goalSize}):Play()
-    burpLabel.Visible = not minimized
+	minimized = not minimized
+	local goalSize = minimized and UDim2.new(0, 200, 0, 30) or UDim2.new(0, 200, 0, 100)
+	TweenService:Create(frame, TweenInfo.new(0.3), {Size = goalSize}):Play()
+	burpLabel.Visible = not minimized
 end)
 
 -- Close GUI
 closeButton.MouseButton1Click:Connect(function()
-    TweenService:Create(frame, TweenInfo.new(0.3), {Size = UDim2.new(0, 200, 0, 0)}):Play()
-    task.wait(0.35)
-    screenGui:Destroy()
+	TweenService:Create(frame, TweenInfo.new(0.3), {Size = UDim2.new(0, 200, 0, 0)}):Play()
+	task.wait(0.1)
+	screenGui:Destroy()
 end)
