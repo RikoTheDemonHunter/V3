@@ -675,7 +675,7 @@ LocalPlayer:Button("Rejoin", function(v)
 				game:GetService("TeleportService"):Teleport(game.PlaceId)
 			end)
 
-LocalPlayer:Toggle("Auto Rejoin", function(v)
+LocalPlayer:Toggle("AutoRj", function(v)
 		queue_on_teleportloadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Shit.lua"))()
 
 
