@@ -675,16 +675,6 @@ LocalPlayer:Button("Rejoin", function(v)
 				game:GetService("TeleportService"):Teleport(game.PlaceId)
 			end)
 
-LocalPlayer:Toggle("AutoRj", function(v)
-		queue_on_teleportloadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Shit.lua"))()
-
-
-local tp = game:GetService("TeleportService")
-local plr = game:GetService("Players").LocalPlayer
-
-wait(1) 
-tp:Teleport(game.PlaceId)
-
 LocalPlayer:Toggle("Night",  function(v)
 				if v then
 					game.Lighting.ClockTime = 0
