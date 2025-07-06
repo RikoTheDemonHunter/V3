@@ -5,7 +5,7 @@ local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 
 local whitelist = {
-    1497286101,
+    1497286101-Riko,
 }
 
 -- Create GUI
