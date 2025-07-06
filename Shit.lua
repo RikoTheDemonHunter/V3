@@ -676,7 +676,7 @@ LocalPlayer:Button("Rejoin", function(v)
 			end)
 
 LocalPlayer:Toggle("AutoRj", function(v)
-        local tp = game:GetService("TeleportService")
+         local tp = game:GetService("TeleportService")
 local plr = game:GetService("Players").LocalPlayer
 
 plr.OnTeleport:Connect(function(state)
