@@ -59,3 +59,45 @@ end
 
 -- For whitelisted users only
 print("Access granted. To" .. player.Name)
+
+
+
+
+
+
+
+
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Replace with your actual GitHub raw URL
+local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
+
+local function isWhitelisted(userId, whitelist)
+	for _, id in ipairs(whitelist) do
+		if id == userId then
+			return true
+		end
+	end
+	return false
+end
+
+local success, result = pcall(function()
+	local response = game:HttpGet(url, true)
+	return HttpService:JSONDecode(response)
+end)
+
+if success and result then
+	local enabled = result.enabled
+	local whitelist = result.whitelist or {}
+
+	if not enabled and not isWhitelisted(player.UserId, whitelist) then
+		player:Kick("Your Account Is Terminated.")
+		return
+	else
+		print("Kill switch OFF or user whitelisted. Continuing...")
+	end
+else
+	warn("Failed to fetch kill switch status. Script may proceed anyway.")
+end
