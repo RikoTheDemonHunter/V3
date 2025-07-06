@@ -688,6 +688,11 @@ LocalPlayer:Toggle("Sit", function(v)
 				game.Players.LocalPlayer.Character.Humanoid.Sit = getgenv().sit
 			end)
 
+
+LocalPlayer:Button("List", function(v)
+	       loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/User's.lua"))()
+	end)
+
 Teleport:Button("Safe Zone", function()
 	local New_CFrame = CFrame.new(-46, 48, -15)
 
