@@ -634,32 +634,41 @@ AutoFarm:Toggle("Auto Collect Gem", function(v)
 end)
 
 AutoFarm:Button("Auto Drink", function()
-    while true do
-        wait(2.4)
-        local remote = game.ReplicatedStorage.RemoteEvents.DrinkEvent
-        local drinks = {
-            "Starter Drink",
-            "Second Drink",
-            "Third Drink",
-            "Fourth Drink",
-            "Fifth Drink",
-            "Sixth Drink",
-            "Seventh Drink",
-            "Eighth Drink",
-            "Ninth Drink",
-            "Atomic Drink",
-            "Omega Burp Juice",
-            "Thunder Fizz",
-            "Garlic Juice"
-        }
+  local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
-        for _, drink in ipairs(drinks) do
-            remote:FireServer(drink)
+local drinkEvent = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("DrinkEvent")
+
+local drinks = {
+    "Starter Drink",
+    "Second Drink",
+    "Third Drink",
+    "Fourth Drink",
+    "Fifth Drink",
+    "Sixth Drink",
+    "Seventh Drink",
+    "Eighth Drink",
+    "Ninth Drink",
+    "Atomic Drink",
+    "Omega Burp Juice",
+    "Thunder Fizz",
+    "Garlic Juice",
+}
+
+-- Fast fire rate (every 0.25 seconds)
+local delayTime = 0.25
+local lastFire = 0
+
+RunService.Heartbeat:Connect(function()
+    if tick() - lastFire >= delayTime then
+        lastFire = tick()
+        for _, drinkName in ipairs(drinks) do
+            pcall(function()
+                drinkEvent:FireServer(drinkName)
+            end)
         end
     end
 end)
-
-
 
 LocalPlayer:Button("Remove Fps Cap", function(v)
 	if setfpscap and type(setfpscap) == "function" then
