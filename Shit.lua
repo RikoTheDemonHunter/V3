@@ -357,7 +357,7 @@ local ScriptsTab = Library:Tab("Scripts")
 
 local Scripts = ScriptsTab:Section("Scripts")
 
-local GamesTab = Library:Tab("GamesTab")
+local GamesTab = Library:Tab("Games")
 
 local Games = GamesTab:Section("Games")
 
