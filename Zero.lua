@@ -634,9 +634,10 @@ AutoFarm:Toggle("Auto Collect Gem", function(v)
 end)
 
 AutoFarm:Button("Auto Drink", function()
-  local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
+ -- Fast Drink Script for Multiple Drinks using while true do (Loop-based, Fast)
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
 local drinkEvent = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("DrinkEvent")
 
 local drinks = {
@@ -655,20 +656,18 @@ local drinks = {
     "Garlic Juice",
 }
 
--- Fast fire rate (every 0.25 seconds)
+-- Delay between cycles (adjust for speed/safety)
 local delayTime = 0.25
-local lastFire = 0
 
-RunService.Heartbeat:Connect(function()
-    if tick() - lastFire >= delayTime then
-        lastFire = tick()
-        for _, drinkName in ipairs(drinks) do
-            pcall(function()
-                drinkEvent:FireServer(drinkName)
-            end)
-        end
+while true do
+    for _, drinkName in ipairs(drinks) do
+        pcall(function()
+            drinkEvent:FireServer(drinkName)
+        end)
     end
-end)
+    task.wait(delayTime)
+end
+
 
 LocalPlayer:Button("Remove Fps Cap", function(v)
 	if setfpscap and type(setfpscap) == "function" then
