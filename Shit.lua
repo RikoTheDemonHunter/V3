@@ -357,6 +357,10 @@ local ScriptsTab = Library:Tab("Scripts")
 
 local Scripts = ScriptsTab:Section("Scripts")
 
+local GamesTab = Library:Tab("GamesTab")
+
+local Games = GamesTab:Section("Games")
+
 local CreditsTab =
 Library:Tab("Credits")
 
@@ -863,13 +867,26 @@ Misc:Button("Spam Burp", function()
                         game:GetService("ReplicatedStorage").RemoteEvents.BurpEvent:FireServer()
                     end
                     end)
-			          	
+
+Games:Button("Grow a Garden", function()
+		https://www.roblox.com/games/126884695634066/Grow-a-Garden
+end)
+
+Games:Button("Burping Sim"), function()
+	https://www.roblox.com/games/1747207098/Burping-Simulator
+end)
+
+Games:Button("AutoPilot"), function()
+         https://www.roblox.com/games/11832484500/UPDATE-Full-Self-Driving-Autopilot-Simulator
+end)
+
 Credits:Button("Made By Avery")
 
 Credits:Button("Discord: 90averyxx")
 Credits:Button("Note: Auto Drink is 2.4")
 Credits:Button("Note: Copy Stealers Fuck Off")
 Credits:Button("Update: Added WhiteList System")
+Credits:Button("Games: Added Games Tab")
 Scripts:Button("SimonHub", function()
            loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SimonHub"))()
 end)
