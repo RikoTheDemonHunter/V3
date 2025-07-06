@@ -1,31 +1,38 @@
+-- Roblox Lua GUI with whitelist display, draggable frame, minimize/close buttons, and animations
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 
--- Replace if your game uses different names
-local burpStatName = "BurpPoints"
-local drinkEvent = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("DrinkEvent")
+local whitelist = {
+    1497286101,
+}
 
--- GUI setup
-local screenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-screenGui.Name = "BurpPointsGUI"
+-- Create GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "WhitelistGUI"
 screenGui.ResetOnSpawn = false
+screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 200, 0, 100)
-frame.Position = UDim2.new(0, 10, 0, 100)
-frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+frame.Size = UDim2.new(0, 300, 0, 0) -- Start collapsed
+frame.Position = UDim2.new(0, 10, 0, 10)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
 frame.Parent = screenGui
 
+-- Animate open
+TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+    Size = UDim2.new(0, 300, 0, 200)
+}):Play()
+
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, -60, 0, 30)
 title.Position = UDim2.new(0, 0, 0, 0)
 title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-title.Text = "Burp Points"
+title.Text = "Whitelisted UserIds"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.SourceSansBold
 title.TextSize = 18
@@ -50,57 +57,42 @@ closeButton.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
 closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 closeButton.Parent = frame
 
--- Burp counter label
-local burpLabel = Instance.new("TextLabel")
-burpLabel.Size = UDim2.new(1, 0, 0, 70)
-burpLabel.Position = UDim2.new(0, 0, 0, 30)
-burpLabel.BackgroundTransparency = 1
-burpLabel.Text = "0"
-burpLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
-burpLabel.Font = Enum.Font.FredokaOne
-burpLabel.TextScaled = true
-burpLabel.Parent = frame
+-- Scrollable whitelist
+local scroll = Instance.new("ScrollingFrame")
+scroll.Size = UDim2.new(1, 0, 1, -30)
+scroll.Position = UDim2.new(0, 0, 0, 30)
+scroll.CanvasSize = UDim2.new(0, 0, 0, #whitelist * 30)
+scroll.ScrollBarThickness = 6
+scroll.BackgroundTransparency = 1
+scroll.Parent = frame
 
--- Animate label
-local function animateLabel()
-	local grow = TweenService:Create(burpLabel, TweenInfo.new(0.15, Enum.EasingStyle.Back), {TextSize = 50})
-	local shrink = TweenService:Create(burpLabel, TweenInfo.new(0.15, Enum.EasingStyle.Sine), {TextSize = 40})
-	grow:Play()
-	grow.Completed:Connect(function()
-		shrink:Play()
-	end)
+for i, userId in ipairs(whitelist) do
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -10, 0, 25)
+    label.Position = UDim2.new(0, 5, 0, (i - 1) * 30)
+    label.BackgroundTransparency = 1
+    label.Text = tostring(userId)
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.Font = Enum.Font.SourceSans
+    label.TextSize = 16
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = scroll
 end
 
--- Update burp points
-local function updateBurpPoints()
-	local leaderstats = LocalPlayer:FindFirstChild("leaderstats")
-	if leaderstats and leaderstats:FindFirstChild(burpStatName) then
-		local value = leaderstats[burpStatName].Value
-		burpLabel.Text = tostring(value)
-		animateLabel()
-	end
-end
-
--- Update on sip (burp/drink)
-drinkEvent.OnClientEvent:Connect(function()
-	updateBurpPoints()
-end)
-
--- Initial update
-updateBurpPoints()
-
--- Minimize toggle
+-- Minimize/Expand animation
 local minimized = false
 minimizeButton.MouseButton1Click:Connect(function()
-	minimized = not minimized
-	local goalSize = minimized and UDim2.new(0, 200, 0, 30) or UDim2.new(0, 200, 0, 100)
-	TweenService:Create(frame, TweenInfo.new(0.3), {Size = goalSize}):Play()
-	burpLabel.Visible = not minimized
+    minimized = not minimized
+    scroll.Visible = not minimized
+    local goalSize = minimized and UDim2.new(0, 300, 0, 30) or UDim2.new(0, 300, 0, 200)
+    TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine), {Size = goalSize}):Play()
 end)
 
--- Close GUI
+-- Close animation
 closeButton.MouseButton1Click:Connect(function()
-	TweenService:Create(frame, TweenInfo.new(0.3), {Size = UDim2.new(0, 200, 0, 0)}):Play()
-	task.wait(0.1)
-	screenGui:Destroy()
+    TweenService:Create(frame, TweenInfo.new(0.3), {
+        Size = UDim2.new(0, 300, 0, 0)
+    }):Play()
+    task.wait(0.35)
+    screenGui:Destroy()
 end)
