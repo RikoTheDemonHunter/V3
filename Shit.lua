@@ -675,6 +675,17 @@ LocalPlayer:Button("Rejoin", function(v)
 				game:GetService("TeleportService"):Teleport(game.PlaceId)
 			end)
 
+LocalPlayer:Toggle("AutoRj", function(v)
+                                local tp = game:GetService("TeleportService")
+local plr = game:GetService("Players").LocalPlayer
+
+plr.OnTeleport:Connect(function(state)
+	if state == Enum.TeleportState.Failed then
+		wait(3)
+		tp:Teleport(game.PlaceId)
+	end
+end)
+ 
 LocalPlayer:Toggle("Night",  function(v)
 				if v then
 					game.Lighting.ClockTime = 0
