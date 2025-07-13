@@ -846,6 +846,10 @@ Misc:Button("SafePlace", function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace%20v1"))()
 end)
 
+Misc:Button("Plate", function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Plate.lua"))()
+end)
+
 Misc:Button("Animation-Hub", function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Animated/main/G"))()
 end)	
