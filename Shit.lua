@@ -881,6 +881,10 @@ Misc:Button("FPS Gui", function()
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FPS.lua"))()
 	end)
 
+Misc:Button("Spectate Gui", function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Spectate.lua"))()
+	end)
+
 Credits:Button("Made By Avery")
 
 Credits:Button("Discord: 90averyxx")
