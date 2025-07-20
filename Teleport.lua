@@ -57,7 +57,7 @@ closeButton.Font = Enum.Font.Gotham
 closeButton.TextSize = 16
 closeButton.Parent = frame
 
--- Player List Container
+-- Scrollable Player List
 local scroll = Instance.new("ScrollingFrame")
 scroll.Size = UDim2.new(1, -10, 1, -45)
 scroll.Position = UDim2.new(0, 5, 0, 45)
@@ -68,20 +68,20 @@ scroll.BorderSizePixel = 0
 scroll.ClipsDescendants = true
 scroll.Parent = frame
 
-local layout = Instance.new("UIListLayout", scroll)
+-- Layout (DO NOT reparent later!)
+local layout = Instance.new("UIListLayout")
 layout.SortOrder = Enum.SortOrder.LayoutOrder
 layout.Padding = UDim.new(0, 2)
+layout.Parent = scroll
 
--- Populate list
+-- Populate player list
 local function updatePlayerList()
 	scroll:ClearAllChildren()
-	layout.Parent = scroll
 
 	for _, plr in pairs(Players:GetPlayers()) do
 		if plr ~= LocalPlayer then
 			local btn = Instance.new("TextButton")
 			btn.Size = UDim2.new(1, -10, 0, 30)
-			btn.Position = UDim2.new(0, 5, 0, 0)
 			btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 			btn.TextColor3 = Color3.fromRGB(200, 200, 255)
 			btn.Font = Enum.Font.Gotham
@@ -94,8 +94,7 @@ local function updatePlayerList()
 				local targetChar = plr.Character
 				local myChar = LocalPlayer.Character
 				if targetChar and targetChar:FindFirstChild("HumanoidRootPart") and myChar then
-					local root = targetChar.HumanoidRootPart
-					myChar:MoveTo(root.Position + Vector3.new(2, 0, 2))
+					myChar:MoveTo(targetChar.HumanoidRootPart.Position + Vector3.new(2, 0, 2))
 				end
 			end)
 		end
@@ -104,13 +103,12 @@ local function updatePlayerList()
 	scroll.CanvasSize = UDim2.new(0, 0, 0, #Players:GetPlayers() * 32)
 end
 
--- Listen for player join/leave
+-- Refresh on player join/leave
 Players.PlayerAdded:Connect(updatePlayerList)
 Players.PlayerRemoving:Connect(updatePlayerList)
-
 updatePlayerList()
 
--- Minimize
+-- Minimize functionality
 local minimized = false
 minimizeButton.MouseButton1Click:Connect(function()
 	minimized = not minimized
@@ -119,7 +117,7 @@ minimizeButton.MouseButton1Click:Connect(function()
 	TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine), {Size = goalSize}):Play()
 end)
 
--- Close GUI
+-- Close button
 closeButton.MouseButton1Click:Connect(function()
 	TweenService:Create(frame, TweenInfo.new(0.3), {
 		Size = UDim2.new(0, 400, 0, 0)
