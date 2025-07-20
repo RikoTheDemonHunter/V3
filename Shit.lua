@@ -877,6 +877,10 @@ Misc:Button("Spam Burp", function()
                     end
                     end)
 
+Misc:Button("FPS Gui", function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FPS.lua"))()
+	end)
+
 Credits:Button("Made By Avery")
 
 Credits:Button("Discord: 90averyxx")
