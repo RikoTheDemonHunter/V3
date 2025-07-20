@@ -1,112 +1,129 @@
---// SERVICES
+--// Services
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 
---// GUI CREATION
-local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-ScreenGui.Name = "TeleportGUI"
-ScreenGui.ResetOnSpawn = false
+--// GUI Setup
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TeleportPanel"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
-local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 250, 0, 140)
-MainFrame.Position = UDim2.new(0.5, -125, 0.4, 0)
-MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-MainFrame.BorderSizePixel = 0
-MainFrame.Active = true
-MainFrame.Draggable = true
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 400, 0, 0)
+frame.Position = UDim2.new(0.5, -200, 0.5, -100)
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = screenGui
 
-local UICorner = Instance.new("UICorner", MainFrame)
-UICorner.CornerRadius = UDim.new(0, 8)
+TweenService:Create(frame, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
+    Size = UDim2.new(0, 400, 0, 250)
+}):Play()
 
-local Title = Instance.new("TextLabel", MainFrame)
-Title.Text = "Teleport GUI"
-Title.Size = UDim2.new(1, 0, 0, 30)
-Title.BackgroundTransparency = 1
-Title.TextColor3 = Color3.new(1, 1, 1)
-Title.Font = Enum.Font.GothamBold
-Title.TextSize = 16
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -60, 0, 40)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+title.Text = "🧭 Teleport Panel"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = frame
 
-local Dropdown = Instance.new("TextButton", MainFrame)
-Dropdown.Size = UDim2.new(1, -20, 0, 30)
-Dropdown.Position = UDim2.new(0, 10, 0, 40)
-Dropdown.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-Dropdown.TextColor3 = Color3.new(1, 1, 1)
-Dropdown.Text = "Select Player"
-Dropdown.Font = Enum.Font.Gotham
-Dropdown.TextSize = 14
+-- Minimize
+local minimizeButton = Instance.new("TextButton")
+minimizeButton.Size = UDim2.new(0, 30, 0, 30)
+minimizeButton.Position = UDim2.new(1, -60, 0, 5)
+minimizeButton.Text = "-"
+minimizeButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+minimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+minimizeButton.Font = Enum.Font.Gotham
+minimizeButton.TextSize = 16
+minimizeButton.Parent = frame
 
-local PlayerList = Instance.new("Frame", MainFrame)
-PlayerList.Size = UDim2.new(1, -20, 0, 60)
-PlayerList.Position = UDim2.new(0, 10, 0, 75)
-PlayerList.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-PlayerList.Visible = false
-PlayerList.ClipsDescendants = true
+-- Close
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -30, 0, 5)
+closeButton.Text = "X"
+closeButton.BackgroundColor3 = Color3.fromRGB(80, 20, 20)
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Font = Enum.Font.Gotham
+closeButton.TextSize = 16
+closeButton.Parent = frame
 
-local UIListLayout = Instance.new("UIListLayout", PlayerList)
-UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+-- Player List Container
+local scroll = Instance.new("ScrollingFrame")
+scroll.Size = UDim2.new(1, -10, 1, -45)
+scroll.Position = UDim2.new(0, 5, 0, 45)
+scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+scroll.ScrollBarThickness = 4
+scroll.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+scroll.BorderSizePixel = 0
+scroll.ClipsDescendants = true
+scroll.Parent = frame
 
-local MinimizeButton = Instance.new("TextButton", MainFrame)
-MinimizeButton.Size = UDim2.new(0, 20, 0, 20)
-MinimizeButton.Position = UDim2.new(1, -25, 0, 5)
-MinimizeButton.Text = "-"
-MinimizeButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-MinimizeButton.TextColor3 = Color3.new(1, 1, 1)
-MinimizeButton.Font = Enum.Font.Gotham
-MinimizeButton.TextSize = 14
+local layout = Instance.new("UIListLayout", scroll)
+layout.SortOrder = Enum.SortOrder.LayoutOrder
+layout.Padding = UDim.new(0, 2)
 
---// FUNCTION TO POPULATE PLAYER LIST
-local function updatePlayers()
-	PlayerList:ClearAllChildren()
-	UIListLayout.Parent = PlayerList
+-- Populate list
+local function updatePlayerList()
+	scroll:ClearAllChildren()
+	layout.Parent = scroll
 
-	for _, plr in ipairs(Players:GetPlayers()) do
+	for _, plr in pairs(Players:GetPlayers()) do
 		if plr ~= LocalPlayer then
-			local Btn = Instance.new("TextButton")
-			Btn.Size = UDim2.new(1, 0, 0, 25)
-			Btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-			Btn.TextColor3 = Color3.new(1, 1, 1)
-			Btn.Font = Enum.Font.Gotham
-			Btn.TextSize = 12
-			Btn.Text = plr.Name
-			Btn.Parent = PlayerList
+			local btn = Instance.new("TextButton")
+			btn.Size = UDim2.new(1, -10, 0, 30)
+			btn.Position = UDim2.new(0, 5, 0, 0)
+			btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+			btn.TextColor3 = Color3.fromRGB(200, 200, 255)
+			btn.Font = Enum.Font.Gotham
+			btn.TextSize = 14
+			btn.TextXAlignment = Enum.TextXAlignment.Left
+			btn.Text = "🧍 " .. plr.Name
+			btn.Parent = scroll
 
-			Btn.MouseButton1Click:Connect(function()
-				local char = plr.Character
-				if char and char:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character then
-					LocalPlayer.Character:MoveTo(char.HumanoidRootPart.Position + Vector3.new(2, 0, 2))
+			btn.MouseButton1Click:Connect(function()
+				local targetChar = plr.Character
+				local myChar = LocalPlayer.Character
+				if targetChar and targetChar:FindFirstChild("HumanoidRootPart") and myChar then
+					local root = targetChar.HumanoidRootPart
+					myChar:MoveTo(root.Position + Vector3.new(2, 0, 2))
 				end
-				Dropdown.Text = "Selected: " .. plr.Name
-				PlayerList.Visible = false
 			end)
 		end
 	end
+
+	scroll.CanvasSize = UDim2.new(0, 0, 0, #Players:GetPlayers() * 32)
 end
 
---// TOGGLE DROPDOWN
-Dropdown.MouseButton1Click:Connect(function()
-	PlayerList.Visible = not PlayerList.Visible
-	updatePlayers()
+-- Listen for player join/leave
+Players.PlayerAdded:Connect(updatePlayerList)
+Players.PlayerRemoving:Connect(updatePlayerList)
+
+updatePlayerList()
+
+-- Minimize
+local minimized = false
+minimizeButton.MouseButton1Click:Connect(function()
+	minimized = not minimized
+	scroll.Visible = not minimized
+	local goalSize = minimized and UDim2.new(0, 400, 0, 40) or UDim2.new(0, 400, 0, 250)
+	TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Sine), {Size = goalSize}):Play()
 end)
 
---// MINIMIZE BUTTON FUNCTION
-local minimized = false
-MinimizeButton.MouseButton1Click:Connect(function()
-	minimized = not minimized
-	if minimized then
-		for _, obj in pairs(MainFrame:GetChildren()) do
-			if obj:IsA("TextButton") or obj:IsA("Frame") or obj:IsA("TextLabel") then
-				if obj ~= MinimizeButton then obj.Visible = false end
-			end
-		end
-		MinimizeButton.Text = "+"
-		MainFrame.Size = UDim2.new(0, 250, 0, 30)
-	else
-		for _, obj in pairs(MainFrame:GetChildren()) do
-			if obj:IsA("TextButton") or obj:IsA("Frame") or obj:IsA("TextLabel") then
-				obj.Visible = true
-			end
-		end
-		MinimizeButton.Text = "-"
-		MainFrame.Size = UDim2.new(0, 250, 0, 140)
-	end
+-- Close GUI
+closeButton.MouseButton1Click:Connect(function()
+	TweenService:Create(frame, TweenInfo.new(0.3), {
+		Size = UDim2.new(0, 400, 0, 0)
+	}):Play()
+	task.wait(0.35)
+	screenGui:Destroy()
 end)
