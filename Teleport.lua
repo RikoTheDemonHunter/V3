@@ -1,46 +1,67 @@
--- // Services
+--// Services
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+--// Player
 local LocalPlayer = Players.LocalPlayer
 
--- // Load DarkLib
-local DarkLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Dark-Lib/main/source.lua"))()
-local Window = DarkLib:CreateWindow(" Avery Teleport GUI", Vector2.new(420, 370), Enum.KeyCode.RightControl)
+--// Load DarkLib from ReplicatedStorage
+local DarkLib = require(ReplicatedStorage:WaitForChild("DarkLib"))
 
--- // Tab and section
+--// Create GUI window
+local Window = DarkLib:CreateWindow("Player Teleporter", Vector2.new(400, 300), Enum.KeyCode.RightControl)
 local Tab = Window:CreateTab("Main")
-local Section = Tab:CreateSection("Teleport System")
+local Section = Tab:CreateSection("Teleport Menu")
 
--- // Minimize toggle
+--// Minimize Toggle
 local minimized = false
 Section:CreateButton("Minimize", function()
-    if not minimized then
-        Window:Minimize()
-    else
+    if minimized then
         Window:Maximize()
+    else
+        Window:Minimize()
     end
     minimized = not minimized
 end)
 
--- // Player dropdown setup
-local function getPlayerNames()
-    local names = {}
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer then
-            table.insert(names, player.Name)
-        end
-    end
-    return names
-end
-
--- // Create dropdown
+--// Dropdown Logic
 local selectedPlayer = nil
 
-local dropdown = Section:CreateDropdown("Select Player", getPlayerNames(), function(playerName)
-    selectedPlayer = playerName
+-- Get player names excluding LocalPlayer
+local function getPlayerList()
+    local list = {}
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer then
+            table.insert(list, plr.Name)
+        end
+    end
+    return list
+end
+
+-- Create dropdown
+local dropdown = Section:CreateDropdown("Select Player", getPlayerList(), function(selected)
+    selectedPlayer = selected
 end)
 
--- // Teleport Button
+-- Update dropdown when players join/leave
+local function updateDropdown()
+    local list = getPlayerList()
+    dropdown:Clear()
+    dropdown:Add(list)
+    if #list > 0 then
+        selectedPlayer = list[1]
+        dropdown:Set(list[1])
+    else
+        selectedPlayer = nil
+    end
+end
+
+Players.PlayerAdded:Connect(updateDropdown)
+Players.PlayerRemoving:Connect(updateDropdown)
+updateDropdown()
+
+--// Teleport Button
 Section:CreateButton("Teleport", function()
     if not selectedPlayer then return end
 
@@ -48,26 +69,14 @@ Section:CreateButton("Teleport", function()
     local myChar = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 
     if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        local myRoot = myChar:FindFirstChild("HumanoidRootPart")
-        local targetRoot = targetPlayer.Character.HumanoidRootPart
+        local myHRP = myChar:FindFirstChild("HumanoidRootPart")
+        local targetHRP = targetPlayer.Character.HumanoidRootPart
 
-        if myRoot then
+        if myHRP then
             local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            local goal = {CFrame = targetRoot.CFrame * CFrame.new(0, 3, 0)}
-            TweenService:Create(myRoot, tweenInfo, goal):Play()
+            local goal = {CFrame = targetHRP.CFrame * CFrame.new(0, 3, 0)}
+            local tween = TweenService:Create(myHRP, tweenInfo, goal)
+            tween:Play()
         end
-    else
-        warn("Target player not valid or missing HRP")
     end
-end)
-
--- // Update dropdown when players join/leave
-Players.PlayerAdded:Connect(function()
-    dropdown:Clear()
-    dropdown:Add(getPlayerNames())
-end)
-
-Players.PlayerRemoving:Connect(function()
-    dropdown:Clear()
-    dropdown:Add(getPlayerNames())
 end)
