@@ -636,10 +636,6 @@ end)
 AutoFarm:Button("Auto Drink", function()
  -- Fast Drink Script for Multiple Drinks using while true do (Loop-based, Fast)
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
-local drinkEvent = ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("DrinkEvent")
-
 local drinks = {
     "Starter Drink",
     "Second Drink",
