@@ -29,7 +29,7 @@ function lib:Gui(title)
 
 	Main.Name = "Main"
 	Main.Parent = DarkLib
-	Main.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+	Main.BackgroundColor3 = Color3.fromRGB(0, 255, 251)
 	Main.Position = UDim2.new(0.367263854, 0, 0.263959408, 0)
 	Main.Size = UDim2.new(0, 382, 0, 219)
 	
