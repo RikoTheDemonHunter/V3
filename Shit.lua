@@ -37,7 +37,7 @@ end
 task.wait(2) -- Slight delay to allow other parts of script to load (optional)
 
 -- SECONDARY KILL SWITCH CHECK
-if killSwitchActive then
+ if not enabled then
 	local stillAuthorized = false
 	local retrySuccess, retryResult = pcall(function()
 		local response = game:HttpGet(url, true)
