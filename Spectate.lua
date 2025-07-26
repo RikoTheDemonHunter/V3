@@ -1,103 +1,108 @@
---// Services
+-- Admin Panel GUI
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
-local Camera = workspace.CurrentCamera
 
---// Load DarkLib manually
-local DarkLib = require(ReplicatedStorage:WaitForChild("DarkLib"))
+-- GUI Setup
+local screenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+screenGui.Name = "AdminPanel"
+screenGui.ResetOnSpawn = false
 
---// GUI Setup
-local Window = DarkLib:CreateWindow("Spectate GUI", Vector2.new(450, 350), Enum.KeyCode.RightControl)
-local Tab = Window:CreateTab("Spectate")
-local Section = Tab:CreateSection("Spectate Player")
+local frame = Instance.new("Frame", screenGui)
+frame.Size = UDim2.new(0, 300, 0, 200)
+frame.Position = UDim2.new(0.5, -150, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
 
---// Minimize Button
-local minimized = false
-Section:CreateButton("Minimize", function()
-    if minimized then
-        Window:Maximize()
-    else
-        Window:Minimize()
-    end
-    minimized = not minimized
-end)
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Text = "Admin Panel"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+title.BorderSizePixel = 0
 
---// Dropdown Setup
+-- Dropdown
+local dropdown = Instance.new("TextButton", frame)
+dropdown.Position = UDim2.new(0, 10, 0, 40)
+dropdown.Size = UDim2.new(0, 280, 0, 30)
+dropdown.Text = "Select Player"
+dropdown.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+dropdown.TextColor3 = Color3.new(1, 1, 1)
+
 local selectedPlayer = nil
-local function getPlayerNames()
-    local names = {}
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer then
-            table.insert(names, player.Name)
-        end
-    end
-    return names
+
+-- Refresh dropdown
+local function refreshDropdown()
+	dropdown.Text = "Select Player"
+	local menu = Instance.new("Frame", frame)
+	menu.Name = "DropdownMenu"
+	menu.Position = UDim2.new(0, 10, 0, 70)
+	menu.Size = UDim2.new(0, 280, 0, 100)
+	menu.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	menu.BorderSizePixel = 0
+
+	for _, p in ipairs(Players:GetPlayers()) do
+		if p ~= LocalPlayer then
+			local btn = Instance.new("TextButton", menu)
+			btn.Size = UDim2.new(1, 0, 0, 25)
+			btn.Text = p.Name
+			btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+			btn.TextColor3 = Color3.new(1, 1, 1)
+
+			btn.MouseButton1Click:Connect(function()
+				selectedPlayer = p
+				dropdown.Text = "Selected: " .. p.Name
+				menu:Destroy()
+			end)
+		end
+	end
 end
 
-local dropdown = Section:CreateDropdown("Select Player", getPlayerNames(), function(name)
-    selectedPlayer = name
+dropdown.MouseButton1Click:Connect(function()
+	if frame:FindFirstChild("DropdownMenu") then
+		frame:FindFirstChild("DropdownMenu"):Destroy()
+	else
+		refreshDropdown()
+	end
 end)
 
---// Label: Current Spectated Player
-local spectateLabel = Section:CreateLabel("Not Spectating")
+-- Teleport Button
+local tpButton = Instance.new("TextButton", frame)
+tpButton.Position = UDim2.new(0, 10, 0, 110)
+tpButton.Size = UDim2.new(0, 135, 0, 30)
+tpButton.Text = "Teleport to Player"
+tpButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+tpButton.TextColor3 = Color3.new(1, 1, 1)
 
---// Update dropdown when players join/leave
-local function updateDropdown()
-    local names = getPlayerNames()
-    dropdown:Clear()
-    dropdown:Add(names)
-    if #names > 0 then
-        selectedPlayer = names[1]
-        dropdown:Set(names[1])
-    else
-        selectedPlayer = nil
-    end
-end
-
-Players.PlayerAdded:Connect(updateDropdown)
-Players.PlayerRemoving:Connect(updateDropdown)
-updateDropdown()
-
---// Spectate Logic
-local spectating = false
-local spectateConnection
-
-local function stopSpectate()
-    spectating = false
-    Camera.CameraSubject = LocalPlayer.Character:WaitForChild("Humanoid")
-    spectateLabel:Set("Not Spectating")
-    if spectateConnection then
-        spectateConnection:Disconnect()
-        spectateConnection = nil
-    end
-end
-
-local function startSpectate(playerName)
-    local player = Players:FindFirstChild(playerName)
-    if player and player.Character and player.Character:FindFirstChild("Humanoid") then
-        spectating = true
-        spectateLabel:Set("Spectating: " .. playerName)
-
-        spectateConnection = RunService.RenderStepped:Connect(function()
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-                Camera.CameraSubject = player.Character.Humanoid
-            else
-                stopSpectate()
-            end
-        end)
-    end
-end
-
---// Toggle Button
-Section:CreateButton("Toggle Spectate", function()
-    if not selectedPlayer then return end
-
-    if not spectating then
-        startSpectate(selectedPlayer)
-    else
-        stopSpectate()
-    end
+tpButton.MouseButton1Click:Connect(function()
+	if selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("HumanoidRootPart") then
+		LocalPlayer.Character:MoveTo(selectedPlayer.Character.HumanoidRootPart.Position + Vector3.new(2, 0, 2))
+	end
 end)
-Spec
+
+-- Kick Button (Client-side only visual; server required for real kick)
+local kickButton = Instance.new("TextButton", frame)
+kickButton.Position = UDim2.new(0, 155, 0, 110)
+kickButton.Size = UDim2.new(0, 135, 0, 30)
+kickButton.Text = "Fake Kick"
+kickButton.BackgroundColor3 = Color3.fromRGB(90, 30, 30)
+kickButton.TextColor3 = Color3.new(1, 1, 1)
+
+kickButton.MouseButton1Click:Connect(function()
+	if selectedPlayer then
+		warn("You would kick: " .. selectedPlayer.Name .. " (Needs server support)")
+	end
+end)
+
+-- Minimize Button
+local minimize = Instance.new("TextButton", frame)
+minimize.Position = UDim2.new(1, -30, 0, 0)
+minimize.Size = UDim2.new(0, 30, 0, 30)
+minimize.Text = "-"
+minimize.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+minimize.TextColor3 = Color3.new(1, 1, 1)
+
+minimize.MouseButton1Click:Connect(function()
+	frame.Visible = false
+end)
