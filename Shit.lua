@@ -56,7 +56,7 @@ task.wait(2) -- Slight delay to allow other parts of script to load (optional)
 		return
 	end
 end
-
+-- ENABLES THE SCRIPT AND LOADS THE GUI performs safety checks first
 local lib = {}
 		
 function lib:Gui(title)
