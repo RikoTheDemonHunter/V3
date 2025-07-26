@@ -25,13 +25,36 @@ if success and result then
 	local whitelist = result.whitelist or {}
 
 	if not enabled and not isWhitelisted(player.UserId, whitelist) then
-		player:Kick("Your Account Is Terminated.")
+		player:Kick("Your UserID IS Not Whitelisted.")
 		return
 	else
 		print("Kill switch OFF or user whitelisted. Continuing...")
 	end
 else
 	warn("Failed to fetch kill switch status. Script may proceed anyway.")
+end
+
+task.wait(2) -- Slight delay to allow other parts of script to load (optional)
+
+-- SECONDARY KILL SWITCH CHECK
+if killSwitchActive then
+	local stillAuthorized = false
+	local retrySuccess, retryResult = pcall(function()
+		local response = game:HttpGet(url, true)
+		return HttpService:JSONDecode(response)
+	end)
+
+	if retrySuccess and retryResult then
+		local whitelist = retryResult.whitelist or {}
+		if isWhitelisted(player.UserId, whitelist) then
+			stillAuthorized = true
+		end
+	end
+
+	if not stillAuthorized then
+		player:Kick("Unauthorized user detected.")
+		return
+	end
 end
 
 local lib = {}
