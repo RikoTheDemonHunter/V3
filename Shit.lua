@@ -8,7 +8,6 @@ local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/
 
 local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
 
--- 🔒 Check if player is banned
 local function isBanned(userId, banlist)
 	for _, id in ipairs(banlist) do
 		if id == userId then
