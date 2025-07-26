@@ -54,10 +54,10 @@ if success and result then
 		player:Kick("Your UserID IS Not Whitelisted.")
 		return
 	else
-		print("Kill switch OFF or user whitelisted. Continuing...")
+		print("✅ Kill switch OFF or user whitelisted. Continuing...")
 	end
 else
-	warn("Failed to fetch kill switch status. Script may proceed anyway.")
+	warn("⚠️ Failed to fetch kill switch status. Script may proceed anyway.")
 end
 
 task.wait(2) -- Slight delay to allow other parts of script to load (optional)
@@ -78,7 +78,7 @@ task.wait(2) -- Slight delay to allow other parts of script to load (optional)
 	end
 
 	if not stillAuthorized then
-		player:Kick("Unauthorized user detected.")
+		player:Kick("⚠️ Unauthorized user detected.")
 		return
 	end
 end
