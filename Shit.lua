@@ -6,6 +6,18 @@ local player = Players.LocalPlayer
 
 local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
 
+local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/main/banlist.json"
+
+-- 🔒 Check if player is banned
+local function isBanned(userId, banlist)
+	for _, id in ipairs(banlist) do
+		if id == userId then
+			return true
+		end
+	end
+	return false
+end
+
 local function isWhitelisted(userId, whitelist)
 	for _, id in ipairs(whitelist) do
 		if id == userId then
@@ -13,6 +25,21 @@ local function isWhitelisted(userId, whitelist)
 		end
 	end
 	return false
+end
+
+local banSuccess, banData = pcall(function()
+	local response = game:HttpGet(banlistUrl, true)
+	return HttpService:JSONDecode(response)
+end)
+
+if banSuccess and banData then
+	local banlist = banData.banned or {}
+	if isBanned(player.UserId, banlist) then
+		player:Kick("🚫 You are permanently banned from using this script.")
+		return
+	end
+else
+	warn("⚠️ Could not fetch banlist.")
 end
 
 local success, result = pcall(function()
