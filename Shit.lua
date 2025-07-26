@@ -6,7 +6,7 @@ local player = Players.LocalPlayer
 
 local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
 
-local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/main/banlist.json"
+local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
 
 -- 🔒 Check if player is banned
 local function isBanned(userId, banlist)
