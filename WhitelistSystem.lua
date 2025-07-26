@@ -101,3 +101,88 @@ if success and result then
 else
 	warn("Failed to fetch kill switch status. Script may proceed anyway.")
 end
+
+
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+
+local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
+
+local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
+
+local function isBanned(userId, banlist)
+	for _, id in ipairs(banlist) do
+		if id == userId then
+			return true
+		end
+	end
+	return false
+end
+
+local function isWhitelisted(userId, whitelist)
+	for _, id in ipairs(whitelist) do
+		if id == userId then
+			return true
+		end
+	end
+	return false
+end
+
+local banSuccess, banData = pcall(function()
+	local response = game:HttpGet(banlistUrl, true)
+	return HttpService:JSONDecode(response)
+end)
+
+if banSuccess and banData then
+	local banlist = banData.banned or {}
+	if isBanned(player.UserId, banlist) then
+		player:Kick("🚫 You are permanently banned from using this script.")
+		return
+	end
+else
+	warn("⚠️ Could not fetch banlist.")
+end
+
+local success, result = pcall(function()
+	local response = game:HttpGet(url, true)
+	return HttpService:JSONDecode(response)
+end)
+
+if success and result then
+	local enabled = result.enabled
+	local whitelist = result.whitelist or {}
+
+	if not enabled and not isWhitelisted(player.UserId, whitelist) then
+		player:Kick("Your UserID IS Not Whitelisted.")
+		return
+	else
+		print("✅ Kill switch OFF or user whitelisted. Continuing...")
+	end
+else
+	warn("⚠️ Failed to fetch kill switch status. Script may proceed anyway.")
+end
+
+task.wait(2) -- Slight delay to allow other parts of script to load (optional)
+
+-- SECONDARY KILL SWITCH CHECK
+ if not enabled then
+	local stillAuthorized = false
+	local retrySuccess, retryResult = pcall(function()
+		local response = game:HttpGet(url, true)
+		return HttpService:JSONDecode(response)
+	end)
+
+	if retrySuccess and retryResult then
+		local whitelist = retryResult.whitelist or {}
+		if isWhitelisted(player.UserId, whitelist) then
+			stillAuthorized = true
+		end
+	end
+
+	if not stillAuthorized then
+		player:Kick("⚠️ Unauthorized user detected.")
+		return
+	end
+end
