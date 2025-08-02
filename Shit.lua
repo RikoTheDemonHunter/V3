@@ -60,7 +60,7 @@ else
 	warn("⚠️ Failed to fetch kill switch status. Script may proceed anyway.")
 end
 
-task.wait(2) -- Slight delay to allow other parts of script to load (optional)
+task.wait(1) -- Slight delay to allow other parts of script to load (optional)
 
 -- SECONDARY KILL SWITCH CHECK
  if not enabled then
