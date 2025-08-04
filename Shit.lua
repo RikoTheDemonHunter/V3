@@ -89,15 +89,6 @@ if trapRemote then
     trapRemote:FireServer()
 end
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local trapRemote = Instance.new("RemoteEvent")
-trapRemote.Name = "ExploitTrap"
-trapRemote.Parent = ReplicatedStorage
-
-trapRemote.OnServerEvent:Connect(function(player)
-    warn("Exploit attempt by:", player.Name, "UserId:", player.UserId)
-    player:Kick("Unauthorized script detected.")
-end)
 -- ENABLES THE SCRIPT AND LOADS THE GUI performs safety checks first
 local lib = {}
 		
