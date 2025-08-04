@@ -82,6 +82,13 @@ task.wait(1) -- Slight delay to allow other parts of script to load (optional)
 		return
 	end
 end
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local trapRemote = ReplicatedStorage:WaitForChild("ExploitTrap", 5)
+if trapRemote then
+    trapRemote:FireServer()
+end
+
 -- ENABLES THE SCRIPT AND LOADS THE GUI performs safety checks first
 local lib = {}
 		
