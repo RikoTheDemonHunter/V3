@@ -84,7 +84,7 @@ task.wait(1) -- Slight delay to allow other parts of script to load (optional)
 end
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local trapRemote = ReplicatedStorage:WaitForChild("ExploitTrap", 5)
+local trapRemote = ReplicatedStorage:WaitForChild("ExploitTrap", 1)
 if trapRemote then
     trapRemote:FireServer()
 end
