@@ -88,7 +88,6 @@ local trapRemote = ReplicatedStorage:WaitForChild("ExploitTrap", 5)
 if trapRemote then
     trapRemote:FireServer()
 end
-
 -- ENABLES THE SCRIPT AND LOADS THE GUI performs safety checks first
 local lib = {}
 		
