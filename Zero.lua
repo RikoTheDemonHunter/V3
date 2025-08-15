@@ -1,815 +1,171 @@
+--========================================================
+-- 🔒 WHITELIST / BANLIST / KILL SWITCH
+--========================================================
+local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+local LocalPlayer = Players.LocalPlayer
 
--- Configuration
-local correctKey = "147358" -- Change this to your desired key
-
--- Create GUI
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "KeySystemGUI"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = playerGui
-
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 150)
-frame.Position = UDim2.new(0.5, -150, 0.5, -75)
-frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-frame.Parent = screenGui
-
-local textbox = Instance.new("TextBox")
-textbox.PlaceholderText = "Enter key here"
-textbox.Size = UDim2.new(0.8, 0, 0, 40)
-textbox.Position = UDim2.new(0.1, 0, 0.2, 0)
-textbox.Text = ""
-textbox.Parent = frame
-
-local submitButton = Instance.new("TextButton")
-submitButton.Size = UDim2.new(0.5, 0, 0, 40)
-submitButton.Position = UDim2.new(0.25, 0, 0.55, 0)
-submitButton.Text = "Submit"
-submitButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-submitButton.TextColor3 = Color3.new(1, 1, 1)
-submitButton.Parent = frame
-
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(1, 0, 0, 30)
-statusLabel.Position = UDim2.new(0, 0, 0.85, 0)
-statusLabel.Text = ""
-statusLabel.TextColor3 = Color3.new(1, 1, 1)
-statusLabel.BackgroundTransparency = 1
-statusLabel.Parent = frame
-
-submitButton.MouseButton1Click:Connect(function()
-	if textbox.Text == correctKey then
-		statusLabel.Text = "Access Granted"
-		wait(1)
-		screenGui:Destroy()
-	else
-		statusLabel.Text = "Invalid Key. Try Again."
-	end
-end)
-
-local lib = {}
-
-function lib:Gui(title)
-	local DarkLib = Instance.new("ScreenGui")
-	local Main = Instance.new("Frame")
-	local TabSide = Instance.new("ScrollingFrame")
-	local UICorner = Instance.new("UICorner")
-	local UIListLayout_1 = Instance.new("UIListLayout")
-	local UICorner_3 = Instance.new("UICorner")
-	local UICorner_5 = Instance.new("UICorner")
-	local SectionSide = Instance.new("Frame")
-	local close = Instance.new("ImageButton")
-	local SectionCorner = Instance.new("UICorner")
-	local Title = Instance.new("TextLabel")
-
-	DarkLib.Name = "DarkLib"
-	DarkLib.Parent = game.CoreGui
-	DarkLib.ResetOnSpawn = false
-	
-	game:GetService("UserInputService").InputBegan:Connect(function(key, gameProcessedEvent)
-		if key.KeyCode == Enum.KeyCode.LeftAlt then
-			if DarkLib.Enabled then
-			DarkLib.Enabled = false
-		else
-			DarkLib.Enabled = true
-			end
-		end
-	end)
-
-	Main.Name = "Main"
-	Main.Parent = DarkLib
-	Main.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-	Main.Position = UDim2.new(0.367263854, 0, 0.263959408, 0)
-	Main.Size = UDim2.new(0, 382, 0, 219)
-	
-	local Drag = Main
-	local CoreGui = game:GetService("CoreGui")
-	local Tween = game:GetService("TweenService")
-	local UserInputService = game:GetService("UserInputService")
-	local dragging
-	local dragInput
-	local dragStart
-	local startPos
-	local function update(input)
-		local delta = input.Position - dragStart
-		local dragTime = 0.06
-		local SmoothDrag = {}
-		SmoothDrag.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-		local dragSmoothFunction = Tween:Create(Drag, TweenInfo.new(dragTime, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), SmoothDrag)
-		dragSmoothFunction:Play()
-	end
-	Drag.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			dragStart = input.Position
-			startPos = Drag.Position
-			input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then
-					dragging = false
-				end
-			end)
-		end
-	end)
-	Drag.InputChanged:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-			dragInput = input
-		end
-	end)
-	UserInputService.InputChanged:Connect(function(input)
-		if input == dragInput and dragging and Drag.Size then
-			update(input)
-		end
-	end)
-
-	TabSide.Name = "TabSide"
-	TabSide.Parent = Main
-	TabSide.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-	TabSide.BorderSizePixel = 0
-	TabSide.Position = UDim2.new(0.021, 0,0.038, 0)
-	TabSide.Size = UDim2.new(0, 92,0, 203)
-	TabSide.ScrollingDirection = Enum.ScrollingDirection.Y
-	TabSide.ScrollBarThickness = 5
-	TabSide.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
-	TabSide.ClipsDescendants = true
-
-	UICorner.Parent = TabSide
-	UICorner.CornerRadius = UDim.new(0, 8)
-
-	UIListLayout_1.Parent = TabSide
-	UIListLayout_1.SortOrder = Enum.SortOrder.LayoutOrder
-	UIListLayout_1.Padding = UDim.new(0, 10)
-	UIListLayout_1.VerticalAlignment = Enum.VerticalAlignment.Center
-	UIListLayout_1.Changed:Connect(function()
-		TabSide.CanvasSize = UDim2.new(0, 0, 0, UIListLayout_1.AbsoluteContentSize.Y)
-	end)
-
-	SectionSide.Name = "SectionSide"
-	SectionSide.Parent = Main
-	SectionSide.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-	SectionSide.Position = UDim2.new(0.29842931, 0, 0.146118715, 0)
-	SectionSide.Size = UDim2.new(0, 255, 0, 173)
-	SectionSide.ClipsDescendants = true
-	SectionSide.Visible = true
-	
-	SectionCorner.Parent = SectionSide
-	SectionCorner.CornerRadius = UDim.new(0, 8)
-
-	UICorner_5.Parent = Main
-	
-	close.Name = "close"
-	close.Parent = Main
-	close.BackgroundTransparency = 2.000
-	close.Position = UDim2.new(0.934554935, 0, -0.00228309631, 0)
-	close.Size = UDim2.new(0, 25, 0, 25)
-	close.ZIndex = 2
-	close.Image = "rbxassetid://3926305904"
-	close.ImageRectOffset = Vector2.new(284, 4)
-	close.ImageRectSize = Vector2.new(24, 24)
-	close.MouseButton1Click:Connect(function()
-		DarkLib:Destroy()
-	end)
-	
-	Title.Name = "Title"
-	Title.Parent = Main
-	Title.BackgroundColor3 = Color3.fromRGB(155, 255, 255)
-	Title.BackgroundTransparency = 1.000
-	Title.BorderSizePixel = 0
-	Title.Position = UDim2.new(0, 90, 0, 0)
-	Title.Size = UDim2.new(0, 200, 0, 46)
-	Title.Font = Enum.Font.FredokaOne
-	Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-	Title.TextScaled = false
-	Title.TextSize = 30.000
-	Title.TextWrapped = true
-	Title.Text = title
-
-	local Tabs = {}
-
-	function Tabs:Tab(name)
-		local TextButton = Instance.new("TextButton")
-		local UICorner_2 = Instance.new("UICorner")
-
-		TextButton.Parent = TabSide
-		TextButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-		TextButton.Position = UDim2.new(0, 0, 0.0821917802, 0)
-		TextButton.Size = UDim2.new(0, 70, 0, 30)
-		TextButton.Font = Enum.Font.Highway
-		TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-		TextButton.TextScaled = true
-		TextButton.TextSize = 14.000
-		TextButton.TextWrapped = true
-		TextButton.Text = name
-		TextButton.Name = name
-
-		UICorner_2.Parent = TextButton
-		UICorner_2.CornerRadius = UDim.new(0, 8)
-
-		local Sections = {}
-
-		function Sections:Section(name)
-			local Page = Instance.new("ScrollingFrame")
-			local UIListLayout = Instance.new("UIListLayout")
-
-			Page.Name = name
-			Page.Parent = SectionSide
-			Page.Active = true
-			Page.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-			Page.BorderSizePixel = 0
-			Page.Position = UDim2.new(0.0470588244, 0, 0.10404624, 0)
-			Page.Size = UDim2.new(0, 237, 0, 145)
-			Page.ScrollingDirection = Enum.ScrollingDirection.Y
-			Page.ScrollBarThickness = 5
-			Page.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
-
-			UIListLayout.Parent = Page
-			UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-			UIListLayout.Padding = UDim.new(0, 10)
-			UIListLayout.Changed:Connect(function()
-				Page.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y)
-			end)
-
-			TextButton.MouseButton1Click:Connect(function()
-				for i,v in next, SectionSide:GetChildren() do
-					if v:IsA("ScrollingFrame") then
-						v.Visible = false
-					end
-				end
-				Page.Visible = true
-			end)
-
-			local Elements = {}
-			
-			function Elements:Toggle(name, callback)
-				local ToggleElement = Instance.new("Frame")
-				local UICorner = Instance.new("UICorner")
-				local ToggleState = Instance.new("TextLabel")
-				local Click = Instance.new("TextButton")
-				
-				ToggleElement.Name = name
-				ToggleElement.Parent = Page
-				ToggleElement.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-				ToggleElement.Size = UDim2.new(0, 220, 0, 30)
-
-				UICorner.Parent = ToggleElement
-
-				ToggleState.Name = "ToggleState"
-				ToggleState.Parent = ToggleElement
-				ToggleState.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				ToggleState.BackgroundTransparency = 1.000
-				ToggleState.BorderSizePixel = 0
-				ToggleState.Size = UDim2.new(0, 46, 0, 30)
-				ToggleState.Font = Enum.Font.FredokaOne
-				ToggleState.Text = ""
-				ToggleState.TextColor3 = Color3.fromRGB(255, 255, 255)
-				ToggleState.TextScaled = true
-				ToggleState.TextSize = 14.000
-				ToggleState.TextWrapped = true
-
-				Click.Name = "Click"
-				Click.Parent = ToggleElement
-				Click.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				Click.BackgroundTransparency = 1.000
-				Click.BorderSizePixel = 0
-				Click.Size = UDim2.new(0, 220, 0, 30)
-				Click.Font = Enum.Font.Highway
-				Click.Text = name
-				Click.TextColor3 = Color3.fromRGB(255, 255, 255)
-				Click.TextScaled = true
-				Click.TextSize = 14.000
-				Click.TextWrapped = true
-				local toggle = false
-				local debounce = false
-				Click.MouseButton1Click:Connect(function()
-					if debounce == false then
-						if toggle == false then
-						debounce = true
-							ToggleState.Text = "X"
-							wait(0.25)
-							debounce = false
-							toggle = true
-							pcall(callback, toggle)
-						elseif toggle == true then
-							debounce = true
-							ToggleState.Text = ""
-							wait(0.25)
-							debounce = false
-							toggle = false
-							pcall(callback, toggle)
-						end
-					end
-				end)
-			end
-			
-			function Elements:Label(name)
-				local TextLabel = Instance.new("TextLabel")
-
-				TextLabel.Parent = Page
-				TextLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-				TextLabel.BackgroundTransparency = 1
-				TextLabel.Position = UDim2.new(0, 0, 0.0821917802, 0)
-				TextLabel.Size = UDim2.new(0, 220, 0, 30)
-				TextLabel.Font = Enum.Font.Highway
-				TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-				TextLabel.TextScaled = true
-				TextLabel.TextSize = 14.000
-				TextLabel.TextWrapped = true
-				TextLabel.Text = name
-				TextLabel.Name = name
-				
-			end
-			function Elements:Button(name, callback)
-				local TextButton_2 = Instance.new("TextButton")
-				local UICorner_4 = Instance.new("UICorner")
-
-				callback = callback or function() end
-
-				TextButton_2.Parent = Page
-				TextButton_2.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-				TextButton_2.Position = UDim2.new(0, 0, 0.0821917802, 0)
-				TextButton_2.Size = UDim2.new(0, 220, 0, 30)
-				TextButton_2.Font = Enum.Font.Highway
-				TextButton_2.TextColor3 = Color3.fromRGB(255, 255, 255)
-				TextButton_2.TextScaled = true
-				TextButton_2.TextSize = 14.000
-				TextButton_2.TextWrapped = true
-				TextButton_2.Text = name
-				TextButton_2.Name = name
-				TextButton_2.MouseButton1Click:Connect(function()
-					callback()
-				end)
-
-				UICorner_4.Parent = TextButton_2
-			end
-			return Elements
-		end
-		return Sections
-	end
-	return Tabs
+local function fetchJSON(url)
+    local success, result = pcall(function()
+        return HttpService:JSONDecode(game:HttpGet(url))
+    end)
+    return success and result or nil
 end
 
-local Library = lib:Gui("Zero Hub")
-
-local AutoFarmTab = Library:Tab("AutoDrink")
-
-local AutoFarm = AutoFarmTab:Section("AutoDrink")
-
-local LocalPlayerTab = Library:Tab("LocalPlayer")
-
-local LocalPlayer = LocalPlayerTab:Section("LocalPlayer")
-
-local TeleportTab = Library:Tab("Teleport")
-
-local Teleport = TeleportTab:Section("Teleport")
-
-local MiscTab = Library:Tab("Misc")
-
-local Misc = MiscTab:Section("Misc")
-
-local CreditsTab =
-Library:Tab("Credits")
-
-local Credits =
-CreditsTab:Section("Credits")
-
-function AutoEquip()spawn(function(v)
-		while getgenv().equip == true do
-			wait(0.8)
-
-			if not game.Players.LocalPlayer.Backpack:FindFirstChild("Starter Drink") then
-				if not game.Players.LocalPlayer.Character:FindFirstChild("Starter Drink") then
-					game.Players.LocalPlayer.Character:BreakJoints()
-				end
-			end
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value == 0 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Starter Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 0 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Starter Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 150 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Second Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 600 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Third Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 1600 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Fourth Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 3500 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Fifth Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 10000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Sixth Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 25000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Seventh Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 60000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Eighth Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 150000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Ninth Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 230000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Atomic Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 500000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Omega Burp Juice")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 1000000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Thunder Fizz")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-			
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 2000000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Garlic Juice")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-			
-			if game.Players.LocalPlayer.Backpack:FindFirstChild("Garlic Juice") then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Garlic Juice")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-		end
-	end)
+-- Kill switch
+local switchData = fetchJSON("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json")
+if switchData and switchData.Enabled == false then
+    LocalPlayer:Kick("Script disabled by owner.")
+    return
 end
 
-AutoFarm:Toggle("Auto Prestige", function(v)
-	while wait(0.8) do
-		game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
-	end
-end)
+-- Banlist
+local banData = fetchJSON("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json")
+if banData and table.find(banData.BannedUsers, LocalPlayer.UserId) then
+    LocalPlayer:Kick("You are banned from using this script.")
+    return
+end
 
-AutoFarm:Toggle("Auto Equip", function(v)
-				getgenv().equipdrink = v
-				while getgenv().equipdrink do wait(0.8)
-					AutoEquipDrink()
-				end
-			end)
+-- Whitelist
+local whitelistData = fetchJSON("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json")
+if whitelistData and not table.find(whitelistData.WhitelistedUsers, LocalPlayer.UserId) then
+    LocalPlayer:Kick("You are not whitelisted to use this script.")
+    return
+end
 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua"))()
+-- Exploit trap
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local trapRemote = ReplicatedStorage:FindFirstChild("ExploitTrap")
+if trapRemote then
+    trapRemote:FireServer()
+end
 
-AutoFarm:Toggle("Auto Collect Gem", function(v)
-	while wait(0.6) do
-		local gem = game.Workspace.Diamonds:WaitForChild("Diamond")
-		local Char = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-		gem.CFrame = Char.CFrame
-	end
-end)
+--========================================================
+-- 🎨 MODERN GUI CREATION
+--========================================================
+local UIS = game:GetService("UserInputService")
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ResetOnSpawn = false
 
-AutoFarm:Button("Auto Drink", function()
- -- Fast Drink Script for Multiple Drinks using while true do (Loop-based, Fast)
+-- Main Frame
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 400, 0, 300)
+MainFrame.Position = UDim2.new(0.5, -200, 0.5, -150)
+MainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 12)
 
-local drinks = {
-    "Starter Drink",
-    "Second Drink",
-    "Third Drink",
-    "Fourth Drink",
-    "Fifth Drink",
-    "Sixth Drink",
-    "Seventh Drink",
-    "Eighth Drink",
-    "Ninth Drink",
-    "Atomic Drink",
-    "Omega Burp Juice",
-    "Thunder Fizz",
-    "Garlic Juice",
-}
+-- Title Bar
+local TitleBar = Instance.new("TextLabel")
+TitleBar.Size = UDim2.new(1, 0, 0, 30)
+TitleBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+TitleBar.Text = "Custom Script Hub"
+TitleBar.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleBar.TextSize = 18
+TitleBar.Font = Enum.Font.GothamBold
+TitleBar.Parent = MainFrame
+Instance.new("UICorner", TitleBar).CornerRadius = UDim.new(0, 12)
 
--- Delay between cycles (adjust for speed/safety)
-local delayTime = 0.25
+-- Tab Buttons Holder
+local TabHolder = Instance.new("Frame")
+TabHolder.Size = UDim2.new(1, 0, 0, 30)
+TabHolder.Position = UDim2.new(0, 0, 0, 30)
+TabHolder.BackgroundTransparency = 1
+TabHolder.Parent = MainFrame
 
-while true do
-    for _, drinkName in ipairs(drinks) do
-        pcall(function()
-            drinkEvent:FireServer(drinkName)
-        end)
+-- Content Frame
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Size = UDim2.new(1, -20, 1, -70)
+ContentFrame.Position = UDim2.new(0, 10, 0, 60)
+ContentFrame.BackgroundTransparency = 1
+ContentFrame.Parent = MainFrame
+
+-- Create Tabs
+local Tabs = {}
+local function createTab(name)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 100, 0, 30)
+    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 14
+    btn.Parent = TabHolder
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+
+    local page = Instance.new("Frame")
+    page.Size = UDim2.new(1, 0, 1, 0)
+    page.BackgroundTransparency = 1
+    page.Visible = false
+    page.Parent = ContentFrame
+
+    Tabs[name] = {Button = btn, Page = page}
+    btn.MouseButton1Click:Connect(function()
+        for _, t in pairs(Tabs) do t.Page.Visible = false end
+        page.Visible = true
+    end)
+    return page
+end
+
+-- Create Tab Pages
+local MainTab = createTab("Main")
+local TeleportTab = createTab("Teleports")
+local PlayerTab = createTab("Player Mods")
+local FunTab = createTab("Fun Stuff")
+
+-- Position Tab Buttons
+local offset = 0
+for _, t in pairs(Tabs) do
+    t.Button.Position = UDim2.new(0, offset, 0, 0)
+    offset = offset + 105
+end
+
+--========================================================
+-- ⚙ FEATURES (WIRED TO BUTTONS)
+--========================================================
+local function createButton(parent, text, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 150, 0, 35)
+    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    btn.Text = text
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 14
+    btn.Parent = parent
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
+    btn.MouseButton1Click:Connect(callback)
+    return btn
+end
+
+-- Example features (replace with your real ones)
+createButton(MainTab, "Auto Drink", function()
+    print("Auto Drink Enabled")
+    -- Your auto drink logic here
+end).Position = UDim2.new(0, 10, 0, 10)
+
+createButton(TeleportTab, "Teleport to Spawn", function()
+    LocalPlayer.Character:MoveTo(Vector3.new(0, 5, 0))
+end).Position = UDim2.new(0, 10, 0, 10)
+
+createButton(PlayerTab, "Set WalkSpeed 50", function()
+    LocalPlayer.Character.Humanoid.WalkSpeed = 50
+end).Position = UDim2.new(0, 10, 0, 10)
+
+createButton(FunTab, "Spam Burp", function()
+    print("Burp spam started")
+    -- Your burp spam code here
+end).Position = UDim2.new(0, 10, 0, 10)
+
+-- Show first tab by default
+Tabs["Main"].Page.Visible = true
+
+-- Hotkey to toggle GUI
+UIS.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.RightControl then
+        MainFrame.Visible = not MainFrame.Visible
     end
-    task.wait(delayTime)
-end
-
-
-LocalPlayer:Button("Remove Fps Cap", function(v)
-	if setfpscap and type(setfpscap) == "function" then
-		local num = 100000 or 1e6
-		if num == 'none' then
-			return setfpscap(1e6)
-		elseif num > 0 then
-			return setfpscap(num)
-		end
-	end
 end)
-
-LocalPlayer:Button("WalkSpeed", function(v)
-	while wait() do
-		game.Players.LocalPlayer.Character:WaitForChild("Humanoid").WalkSpeed = 200
-	end
-end)
-
-LocalPlayer:Button("Inf Jump", function(v)
-	game:GetService("UserInputService").JumpRequest:connect(function()
-		game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
-	end)
-end)
-
-Teleport:Button("Safe Zone", function()
-	local New_CFrame = CFrame.new(-46, 48, -15)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("Pet Shop", function()
-	local New_CFrame = CFrame.new(311, 52, 103)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("Disco Island", function()
-	local New_CFrame = CFrame.new(63, 48, 636)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("Cloud One", function()
-	local New_CFrame = CFrame.new(296, 566, 689)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("Cloud Second", function()
-	local New_CFrame = CFrame.new(-1224, 557, -318)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("Sky Island", function()
-	local New_CFrame = CFrame.new(2132, 1456, -1034)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("SafePlace", function()
-	local New_CFrame = CFrame.new(167, 48.18, -5357)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(1, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Misc:Button("Prestige_Bp",
-function()
-
-loadstring(game:HttpGet("https://pastebin.com/raw/CCj0zCeD"))()
-end)
-
-Misc:Button("Infinity Yield", function()
-	loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-end)
-
-Misc:Button("Anti Kick", function()
-	local mt = getrawmetatable(game)
-	local old = mt.__namecall
-	local protect = newcclosure or protect_function
-
-	setreadonly(mt, false)
-	mt.__namecall = protect(function(self, ...)
-		local method = getnamecallmethod()
-		if method == "Kick" then
-			wait(9e9)
-			return
-		end
-		return old(self, ...)
-	end)
-	hookfunction(game.Players.LocalPlayer.Kick,protect(function() wait(9e9) end))
-end)
-
-Misc:Button("Anti Afk", function()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
-end)
-Misc:Button("SafePlace", function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace"))()
-end)
-Misc:Button("Animation-Hub", function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Animated/main/G"))()
-end)
-Credits:Button("Made By 90Averyxx")
-
-Credits:Button("Discord: 90Averyxx")
-Credits:Button("Note: Copy Stealers Go fuck Urself")
-Credits:Button("Update: Whitelist System")
