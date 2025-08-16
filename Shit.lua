@@ -744,8 +744,8 @@ LocalPlayer:Toggle("Sit", function(v)
 			end)
 
 LocalPlayer:Toggle("Lay", function(v)
-			    getgenv().lay = v
-				game.Players.LocalPlayer.Character.Humanoid.Lay = getgenv().lay
+			    getgenv().headsit = v
+				game.Players.LocalPlayer.Character.Humanoid.Headsit = getgenv().headsit
 			end)
 
 LocalPlayer:Button("List", function(v)
