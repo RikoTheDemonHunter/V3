@@ -83,28 +83,6 @@ task.wait(1) -- Slight delay to allow other parts of script to load (optional)
 	end
 end
 
-local HttpService = game:GetService("HttpService")
-local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
-
-local success, result = pcall(function()
-    local response = game:HttpGet(url, true)
-    return HttpService:JSONDecode(response)
-end)
-
-if success and result then
-    local expectedHash = result.hash
-    local currentHash = "631Q@344Y9" -- your local hash
-
-    if currentHash ~= expectedHash then
-        game.Players.LocalPlayer:Kick("Remote integrity check failed.")
-        return
-    else
-        print("Integrity check passed!")
-    end
-else
-    warn("Integrity check could not contact server.")
-end
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local trapRemote = ReplicatedStorage:WaitForChild("ExploitTrap", 1)
 if trapRemote then
