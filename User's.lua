@@ -6,6 +6,7 @@ local LocalPlayer = Players.LocalPlayer
 
 local whitelist = {
     1497286101,
+    4441876607,
 }
 
 -- Create GUI
