@@ -1,9 +1,13 @@
--- Clean Spawn Point GUI with Drag, Minimize, Close, Clear
--- Works even if old code calls TeleporttoSpawn()
+-- Place this AS A LOCALSCRIPT in StarterGui
+-- Clean Spawn Point GUI (Drag + Minimize + Close + Clear)
+-- No helper function calls (so no "call a nil value" errors)
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UIS = game:GetService("UserInputService")
+
+-- Works in all environments (falls back if task.wait isn't available)
+local sleep = (task and task.wait) or wait
 
 -- GUI
 local screenGui = Instance.new("ScreenGui")
@@ -44,8 +48,8 @@ minimizeBtn.Position = UDim2.new(1, -55, 0, 0)
 minimizeBtn.Text = "–"
 minimizeBtn.Font = Enum.Font.GothamBold
 minimizeBtn.TextSize = 16
-minimizeBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(45,45,45)
+minimizeBtn.TextColor3 = Color3.fromRGB(255,255,255)
 minimizeBtn.BorderSizePixel = 0
 minimizeBtn.Parent = titleBar
 Instance.new("UICorner", minimizeBtn).CornerRadius = UDim.new(0, 6)
@@ -56,15 +60,15 @@ closeBtn.Position = UDim2.new(1, -28, 0, 0)
 closeBtn.Text = "X"
 closeBtn.Font = Enum.Font.GothamBold
 closeBtn.TextSize = 14
-closeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.BackgroundColor3 = Color3.fromRGB(200,50,50)
+closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
 closeBtn.BorderSizePixel = 0
 closeBtn.Parent = titleBar
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
 
 local container = Instance.new("Frame")
 container.Size = UDim2.new(1, 0, 1, -28)
-container.Position = UDim2.new(0, 0, 0, 28)
+container.Position = UDim2.new(0,0,0,28)
 container.BackgroundTransparency = 1
 container.Parent = frame
 
@@ -74,8 +78,8 @@ setSpawnBtn.Position = UDim2.new(0, 10, 0, 8)
 setSpawnBtn.Text = "Set Spawn Point"
 setSpawnBtn.Font = Enum.Font.GothamBold
 setSpawnBtn.TextSize = 14
-setSpawnBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-setSpawnBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+setSpawnBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+setSpawnBtn.TextColor3 = Color3.fromRGB(255,255,255)
 setSpawnBtn.BorderSizePixel = 0
 setSpawnBtn.Parent = container
 Instance.new("UICorner", setSpawnBtn).CornerRadius = UDim.new(0, 8)
@@ -99,25 +103,12 @@ infoLabel.BackgroundTransparency = 1
 infoLabel.Font = Enum.Font.Gotham
 infoLabel.TextSize = 13
 infoLabel.Text = "No spawn point set"
-infoLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+infoLabel.TextColor3 = Color3.fromRGB(200,200,200)
 infoLabel.TextWrapped = true
 infoLabel.Parent = container
 
--- Spawn logic
+-- Spawn logic (pure client)
 local spawnPointCFrame = nil
-
-local function teleportToSpawn(char)
-    if spawnPointCFrame then
-        task.wait(0.5)
-        local hrp = char:WaitForChild("HumanoidRootPart")
-        hrp.CFrame = spawnPointCFrame
-        infoLabel.Text = "📍 Returned to spawn"
-    end
-end
-
--- Backwards-compatibility aliases
-local TeleporttoSpawn = teleportToSpawn
-local TeleportToSpawn = teleportToSpawn
 
 setSpawnBtn.MouseButton1Click:Connect(function()
     local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -133,8 +124,14 @@ clearSpawnBtn.MouseButton1Click:Connect(function()
     infoLabel.Text = "❌ Spawn point cleared"
 end)
 
+-- Auto-TP on respawn/reset/prestige
 LocalPlayer.CharacterAdded:Connect(function(char)
-    teleportToSpawn(char)
+    if spawnPointCFrame then
+        sleep(0.5)
+        local hrp = char:WaitForChild("HumanoidRootPart")
+        hrp.CFrame = spawnPointCFrame
+        infoLabel.Text = "📍 Returned to spawn"
+    end
 end)
 
 -- Minimize
@@ -144,10 +141,10 @@ minimizeBtn.MouseButton1Click:Connect(function()
     container.Visible = not minimized
     if minimized then
         minimizeBtn.Text = "+"
-        frame.Size = UDim2.new(0, 220, 0, 28)
+        frame.Size = UDim2.new(0,220,0,28)
     else
         minimizeBtn.Text = "–"
-        frame.Size = UDim2.new(0, 220, 0, 140)
+        frame.Size = UDim2.new(0,220,0,140)
     end
 end)
 
@@ -156,7 +153,7 @@ closeBtn.MouseButton1Click:Connect(function()
     screenGui:Destroy()
 end)
 
--- Dragging
+-- Drag by title bar
 local dragging, dragStart, startPos
 titleBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
