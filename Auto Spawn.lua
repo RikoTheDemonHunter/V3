@@ -1,5 +1,5 @@
--- Permanent Spawn Point GUI (Draggable, Minimize, Close, Clear)
--- Saves across sessions (permanent until cleared)
+-- Clean Spawn Point GUI with Drag, Minimize, Close, Clear
+-- Works even if old code calls TeleporttoSpawn()
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -106,10 +106,77 @@ infoLabel.Parent = container
 -- Spawn logic
 local spawnPointCFrame = nil
 
--- Load saved spawn from Attributes
-if LocalPlayer:GetAttribute("SavedSpawnX") then
-    local x, y, z, rx, ry, rz = 
-        LocalPlayer:GetAttribute("SavedSpawnX"),
-        LocalPlayer:GetAttribute("SavedSpawnY"),
-        LocalPlayer:GetAttribute("SavedSpawnZ"),
-        Loc
+local function teleportToSpawn(char)
+    if spawnPointCFrame then
+        task.wait(0.5)
+        local hrp = char:WaitForChild("HumanoidRootPart")
+        hrp.CFrame = spawnPointCFrame
+        infoLabel.Text = "📍 Returned to spawn"
+    end
+end
+
+-- Backwards-compatibility aliases
+local TeleporttoSpawn = teleportToSpawn
+local TeleportToSpawn = teleportToSpawn
+
+setSpawnBtn.MouseButton1Click:Connect(function()
+    local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        spawnPointCFrame = hrp.CFrame
+        infoLabel.Text = "✅ Spawn point saved!"
+    end
+end)
+
+clearSpawnBtn.MouseButton1Click:Connect(function()
+    spawnPointCFrame = nil
+    infoLabel.Text = "❌ Spawn point cleared"
+end)
+
+LocalPlayer.CharacterAdded:Connect(function(char)
+    teleportToSpawn(char)
+end)
+
+-- Minimize
+local minimized = false
+minimizeBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    container.Visible = not minimized
+    if minimized then
+        minimizeBtn.Text = "+"
+        frame.Size = UDim2.new(0, 220, 0, 28)
+    else
+        minimizeBtn.Text = "–"
+        frame.Size = UDim2.new(0, 220, 0, 140)
+    end
+end)
+
+-- Close
+closeBtn.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+-- Dragging
+local dragging, dragStart, startPos
+titleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
