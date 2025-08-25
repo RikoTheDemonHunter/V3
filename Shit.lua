@@ -743,10 +743,9 @@ LocalPlayer:Toggle("Sit", function(v)
 				game.Players.LocalPlayer.Character.Humanoid.Sit = getgenv().sit
 			end)
 
-LocalPlayer:Toggle("Lay", function(v)
-			    getgenv().headsit = v
-				game.Players.LocalPlayer.Character.Humanoid.Headsit = getgenv().headsit
-			end)
+LocalPlayer:Button("Auto Spawn", function(v)
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Spawn.lua"))()
+	end)
 
 LocalPlayer:Button("List", function(v)
 	       loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/User's.lua"))()
