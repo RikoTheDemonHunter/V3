@@ -1,4 +1,4 @@
---// Auto Set Spawn Point GUI (Safe Version)
+--// Auto Set Spawn Point GUI (Clean + Draggable + Close)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local UIS = game:GetService("UserInputService")
@@ -17,7 +17,10 @@ frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Parent = screenGui
-Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 12)
+
+-- Rounded corners
+local UICorner = Instance.new("UICorner", frame)
+UICorner.CornerRadius = UDim.new(0, 12)
 
 -- Title Bar
 local titleBar = Instance.new("Frame")
@@ -99,34 +102,24 @@ infoLabel.Parent = container
 -- Spawn point variable
 local spawnPoint = nil
 
--- Function: safe teleport check
-local function teleportToSpawn(char)
-    if spawnPoint then
-        local hrp = char:WaitForChild("HumanoidRootPart")
-        -- safety check: Y > 0 (not void), and HRP still exists
-        if spawnPoint.Y > 0 and hrp then
-            task.wait(0.5) -- delay for prestige/reset
-            hrp.CFrame = spawnPoint
-            infoLabel.Text = "📍 Returned to spawn"
-        else
-            infoLabel.Text = "⚠️ Saved spawn invalid"
-        end
-    end
-end
-
--- Set spawn button
+-- Function: set spawn
 setSpawnBtn.MouseButton1Click:Connect(function()
     local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
     local hrp = char:FindFirstChild("HumanoidRootPart")
     if hrp then
-        spawnPoint = hrp.CFrame.Position -- store position only
+        spawnPoint = hrp.CFrame
         infoLabel.Text = "✅ Spawn point saved!"
     end
 end)
 
 -- Respawn handler
 LocalPlayer.CharacterAdded:Connect(function(char)
-    teleportToSpawn(char)
+    if spawnPoint then
+        task.wait(0.5) -- safety delay (handles prestige/reset)
+        local hrp = char:WaitForChild("HumanoidRootPart")
+        hrp.CFrame = spawnPoint
+        infoLabel.Text = "📍 Returned to spawn"
+    end
 end)
 
 -- Minimize toggle
