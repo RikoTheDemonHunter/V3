@@ -8,7 +8,7 @@ local function teleportToSpawn(char)
 	if spawnPointCFrame then
 		task.wait(0.5)
 		local hrp = char:WaitForChild("HumanoidRootPart")
-		hrp.CFrame = spawnPointCFrame -- ✅ always CFrame
+		hrp.CFrame = spawnPointCFrame
 	end
 end
 
@@ -20,7 +20,7 @@ local screenGui = Instance.new("ScreenGui")
 screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 220, 0, 190)
+frame.Size = UDim2.new(0, 220, 0, 210)
 frame.Position = UDim2.new(0.35, 0, 0.35, 0)
 frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 frame.Active = true
@@ -45,10 +45,30 @@ minimizeBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 minimizeBtn.Parent = frame
 
+-- Status label
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, -20, 0, 30)
+statusLabel.Position = UDim2.new(0, 10, 0, 35)
+statusLabel.BackgroundTransparency = 1
+statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusLabel.Text = "No Spawn Set"
+statusLabel.TextScaled = true
+statusLabel.Parent = frame
+
+-- Flash feedback function
+local function flashStatus(text, color)
+	statusLabel.Text = text
+	statusLabel.TextColor3 = color
+	task.spawn(function()
+		task.wait(1.5)
+		statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	end)
+end
+
 -- Buttons
 local setBtn = Instance.new("TextButton")
 setBtn.Size = UDim2.new(1, -20, 0, 40)
-setBtn.Position = UDim2.new(0, 10, 0, 40)
+setBtn.Position = UDim2.new(0, 10, 0, 70)
 setBtn.Text = "Set Spawn Point"
 setBtn.BackgroundColor3 = Color3.fromRGB(60, 120, 200)
 setBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -56,7 +76,7 @@ setBtn.Parent = frame
 
 local clearBtn = Instance.new("TextButton")
 clearBtn.Size = UDim2.new(1, -20, 0, 40)
-clearBtn.Position = UDim2.new(0, 10, 0, 90)
+clearBtn.Position = UDim2.new(0, 10, 0, 120)
 clearBtn.Text = "Clear Spawn Point"
 clearBtn.BackgroundColor3 = Color3.fromRGB(120, 60, 60)
 clearBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -64,7 +84,7 @@ clearBtn.Parent = frame
 
 local tpNowBtn = Instance.new("TextButton")
 tpNowBtn.Size = UDim2.new(1, -20, 0, 40)
-tpNowBtn.Position = UDim2.new(0, 10, 0, 140)
+tpNowBtn.Position = UDim2.new(0, 10, 0, 170)
 tpNowBtn.Text = "Teleport Now"
 tpNowBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 120)
 tpNowBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -75,12 +95,19 @@ setBtn.MouseButton1Click:Connect(function()
 	local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 	local hrp = char:FindFirstChild("HumanoidRootPart")
 	if hrp then
-		spawnPointCFrame = hrp.CFrame -- ✅ store full CFrame (position + look direction)
+		spawnPointCFrame = hrp.CFrame
+		local pos = hrp.Position
+		flashStatus(string.format("Spawn Set: (%.0f, %.0f, %.0f)", pos.X, pos.Y, pos.Z), Color3.fromRGB(0, 255, 0))
 	end
 end)
 
 clearBtn.MouseButton1Click:Connect(function()
-	spawnPointCFrame = nil
+	if spawnPointCFrame then
+		spawnPointCFrame = nil
+		flashStatus("Spawn Cleared", Color3.fromRGB(255, 200, 0))
+	else
+		flashStatus("No Spawn to Clear", Color3.fromRGB(255, 0, 0))
+	end
 end)
 
 tpNowBtn.MouseButton1Click:Connect(function()
@@ -89,10 +116,14 @@ tpNowBtn.MouseButton1Click:Connect(function()
 		local hrp = char:FindFirstChild("HumanoidRootPart")
 		if hrp then
 			hrp.CFrame = spawnPointCFrame
+			flashStatus("Teleported to Spawn", Color3.fromRGB(0, 255, 0))
 		end
+	else
+		flashStatus("No Spawn Set!", Color3.fromRGB(255, 0, 0))
 	end
 end)
 
+-- Close & Minimize
 closeBtn.MouseButton1Click:Connect(function()
 	frame.Visible = false
 end)
@@ -101,9 +132,11 @@ local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
 	minimized = not minimized
 	for _, child in pairs(frame:GetChildren()) do
-		if child:IsA("TextButton") and child ~= closeBtn and child ~= minimizeBtn then
-			child.Visible = not minimized
+		if child:IsA("TextButton") or child:IsA("TextLabel") then
+			if child ~= closeBtn and child ~= minimizeBtn then
+				child.Visible = not minimized
+			end
 		end
 	end
-	frame.Size = minimized and UDim2.new(0, 220, 0, 30) or UDim2.new(0, 220, 0, 190)
+	frame.Size = minimized and UDim2.new(0, 220, 0, 30) or UDim2.new(0, 220, 0, 210)
 end)
