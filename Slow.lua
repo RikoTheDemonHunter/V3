@@ -586,7 +586,7 @@ AutoFarm:Toggle("Auto Drink", function(v)
     
     task.spawn(function()
         while getgenv().AutoDrink do
-            task.wait(2.4)
+            task.wait(2.34)
 
             local ReplicatedStorage = game:GetService("ReplicatedStorage")
             local remotePath = ReplicatedStorage:FindFirstChild("RemoteEvents")
