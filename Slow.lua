@@ -579,40 +579,46 @@ AutoFarm:Button("Auto Collect Gem", function()
 	end
 end)
 
-local drinkSpeed = 2.34 -- default drink speed (seconds)
 
--- Slider to adjust speed
-AutoFarm:Slider("Drink Speed (Slider)", 0.1, 5, 2.34, function(value)
-    drinkSpeed = value
-end)
 
--- Textbox to input custom speed
-AutoFarm:Textbox("Drink Speed (Type Value)", "Enter seconds (e.g. 1.75)", true, function(value)
-    local num = tonumber(value)
-    if num and num > 0 then
-        drinkSpeed = num
-    end
-end)
-
--- Auto Drink toggle
 AutoFarm:Toggle("Auto Drink", function(v)
-    while v and task.wait(drinkSpeed) do
-        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
-        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
-        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
-        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
-        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
-        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
-        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
-        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
-        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
-        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
-        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
-        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
-        game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
-    end
-end)
+    getgenv().AutoDrink = v  -- toggle state
+    
+    task.spawn(function()
+        while getgenv().AutoDrink do
+            task.wait(2.4)
 
+            local ReplicatedStorage = game:GetService("ReplicatedStorage")
+            local remotePath = ReplicatedStorage:FindFirstChild("RemoteEvents")
+            if not remotePath then continue end
+
+            local drinkEvent = remotePath:FindFirstChild("DrinkEvent")
+            if not drinkEvent then continue end
+
+            local drinks = {
+                "Starter Drink",
+                "Second Drink",
+                "Third Drink",
+                "Fourth Drink",
+                "Fifth Drink",
+                "Sixth Drink",
+                "Seventh Drink",
+                "Eighth Drink",
+                "Ninth Drink",
+                "Atomic Drink",
+                "Omega Burp Juice",
+                "Thunder Fizz",
+                "Garlic Juice"
+            }
+
+            for _, drink in ipairs(drinks) do
+                pcall(function()
+                    drinkEvent:FireServer(drink)
+                end)
+            end
+        end
+    end)
+end)
 
 LocalPlayer:Button("Remove Fps Cap", function()
 	if setfpscap and type(setfpscap) == "function" then
