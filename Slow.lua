@@ -579,11 +579,19 @@ AutoFarm:Button("Auto Collect Gem", function()
 	end
 end)
 
-local drinkSpeed = 2.34 -- default speed (seconds)
+local drinkSpeed = 2.34 -- default drink speed (seconds)
 
 -- Slider to adjust speed
-AutoFarm:Slider("Drink Speed", 0.1, 5, 2.34, function(value)
+AutoFarm:Slider("Drink Speed (Slider)", 0.1, 5, 2.34, function(value)
     drinkSpeed = value
+end)
+
+-- Textbox to input custom speed
+AutoFarm:Textbox("Drink Speed (Type Value)", "Enter seconds (e.g. 1.75)", true, function(value)
+    local num = tonumber(value)
+    if num and num > 0 then
+        drinkSpeed = num
+    end
 end)
 
 -- Auto Drink toggle
