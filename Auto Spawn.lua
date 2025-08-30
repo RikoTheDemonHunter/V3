@@ -1,142 +1,126 @@
+-- Auto Spawn System with Double Spawn Slots + Toggle Button
+-- Put this in StarterGui > LocalScript
+
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+local player = Players.LocalPlayer
+local spawn1, spawn2 = nil, nil
+local lastSpawn = nil
 
-local spawnPointCFrame = nil
+-- GUI Setup
+local screenGui = Instance.new("ScreenGui", player.PlayerGui)
+screenGui.Name = "DoubleSpawnGUI"
 
--- Teleport function
-local function teleportToSpawn(char)
-	if spawnPointCFrame then
-		task.wait(0.5)
-		local hrp = char:WaitForChild("HumanoidRootPart")
-		hrp.CFrame = spawnPointCFrame
-	end
+-- Main Frame
+local mainFrame = Instance.new("Frame", screenGui)
+mainFrame.Size = UDim2.new(0, 250, 0, 160)
+mainFrame.Position = UDim2.new(0.5, -125, 0.5, -80)
+mainFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+
+-- Close Button
+local closeButton = Instance.new("TextButton", mainFrame)
+closeButton.Size = UDim2.new(0, 25, 0, 25)
+closeButton.Position = UDim2.new(1, -30, 0, 5)
+closeButton.Text = "X"
+closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+closeButton.TextColor3 = Color3.new(1,1,1)
+
+-- Toggle Button (floating)
+local toggleButton = Instance.new("TextButton", screenGui)
+toggleButton.Size = UDim2.new(0, 40, 0, 40)
+toggleButton.Position = UDim2.new(0, 10, 0.5, -20)
+toggleButton.Text = "☰"
+toggleButton.TextSize = 20
+toggleButton.BackgroundColor3 = Color3.fromRGB(50, 150, 200)
+toggleButton.TextColor3 = Color3.new(1,1,1)
+toggleButton.Active = true
+toggleButton.Draggable = true
+
+-- Hide / Show Main Frame
+closeButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+end)
+toggleButton.MouseButton1Click:Connect(function()
+    mainFrame.Visible = not mainFrame.Visible
+end)
+
+-- Helper: Mini flash near GUI
+local function flash(color)
+    local flashFrame = Instance.new("Frame", mainFrame)
+    flashFrame.Size = UDim2.new(0, 20, 0, 20)
+    flashFrame.Position = UDim2.new(1, -60, 1, -30)
+    flashFrame.BackgroundColor3 = color
+    flashFrame.BorderSizePixel = 0
+    flashFrame.BackgroundTransparency = 0.3
+
+    game:GetService("TweenService"):Create(
+        flashFrame,
+        TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out),
+        {BackgroundTransparency = 1}
+    ):Play()
+
+    game.Debris:AddItem(flashFrame, 0.6)
 end
 
--- Hook respawn
-LocalPlayer.CharacterAdded:Connect(teleportToSpawn)
+-- Spawn Slot Buttons
+local function makeSpawnSection(name, yPos, slot)
+    local label = Instance.new("TextLabel", mainFrame)
+    label.Size = UDim2.new(1, -10, 0, 20)
+    label.Position = UDim2.new(0, 5, 0, yPos)
+    label.Text = name
+    label.TextColor3 = Color3.new(1,1,1)
+    label.BackgroundTransparency = 1
 
--- GUI
-local screenGui = Instance.new("ScreenGui")
-screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    local setBtn = Instance.new("TextButton", mainFrame)
+    setBtn.Size = UDim2.new(0, 70, 0, 25)
+    setBtn.Position = UDim2.new(0, 5, 0, yPos + 25)
+    setBtn.Text = "Set"
+    setBtn.MouseButton1Click:Connect(function()
+        local char = player.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            if slot == 1 then spawn1 = hrp.CFrame; lastSpawn = 1
+            else spawn2 = hrp.CFrame; lastSpawn = 2 end
+            flash(Color3.fromRGB(0,255,0))
+        end
+    end)
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 220, 0, 210)
-frame.Position = UDim2.new(0.35, 0, 0.35, 0)
-frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-frame.Active = true
-frame.Draggable = true
-frame.Parent = screenGui
+    local tpBtn = Instance.new("TextButton", mainFrame)
+    tpBtn.Size = UDim2.new(0, 70, 0, 25)
+    tpBtn.Position = UDim2.new(0, 85, 0, yPos + 25)
+    tpBtn.Text = "Teleport"
+    tpBtn.MouseButton1Click:Connect(function()
+        local char = player.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            if slot == 1 and spawn1 then hrp.CFrame = spawn1 end
+            if slot == 2 and spawn2 then hrp.CFrame = spawn2 end
+        end
+    end)
 
--- Close button
-local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0, 24, 0, 24)
-closeBtn.Position = UDim2.new(1, -26, 0, 2)
-closeBtn.Text = "X"
-closeBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeBtn.Parent = frame
-
--- Minimize button
-local minimizeBtn = Instance.new("TextButton")
-minimizeBtn.Size = UDim2.new(0, 24, 0, 24)
-minimizeBtn.Position = UDim2.new(1, -52, 0, 2)
-minimizeBtn.Text = "-"
-minimizeBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-minimizeBtn.Parent = frame
-
--- Status label
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(1, -20, 0, 30)
-statusLabel.Position = UDim2.new(0, 10, 0, 35)
-statusLabel.BackgroundTransparency = 1
-statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-statusLabel.Text = "No Spawn Set"
-statusLabel.TextScaled = true
-statusLabel.Parent = frame
-
--- Flash feedback function
-local function flashStatus(text, color)
-	statusLabel.Text = text
-	statusLabel.TextColor3 = color
-	task.spawn(function()
-		task.wait(1.5)
-		statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-	end)
+    local clrBtn = Instance.new("TextButton", mainFrame)
+    clrBtn.Size = UDim2.new(0, 70, 0, 25)
+    clrBtn.Position = UDim2.new(0, 165, 0, yPos + 25)
+    clrBtn.Text = "Clear"
+    clrBtn.MouseButton1Click:Connect(function()
+        if slot == 1 then spawn1 = nil
+        else spawn2 = nil end
+        flash(Color3.fromRGB(255,0,0))
+    end)
 end
 
--- Buttons
-local setBtn = Instance.new("TextButton")
-setBtn.Size = UDim2.new(1, -20, 0, 40)
-setBtn.Position = UDim2.new(0, 10, 0, 70)
-setBtn.Text = "Set Spawn Point"
-setBtn.BackgroundColor3 = Color3.fromRGB(60, 120, 200)
-setBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-setBtn.Parent = frame
+makeSpawnSection("Spawn 1", 5, 1)
+makeSpawnSection("Spawn 2", 70, 2)
 
-local clearBtn = Instance.new("TextButton")
-clearBtn.Size = UDim2.new(1, -20, 0, 40)
-clearBtn.Position = UDim2.new(0, 10, 0, 120)
-clearBtn.Text = "Clear Spawn Point"
-clearBtn.BackgroundColor3 = Color3.fromRGB(120, 60, 60)
-clearBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-clearBtn.Parent = frame
-
-local tpNowBtn = Instance.new("TextButton")
-tpNowBtn.Size = UDim2.new(1, -20, 0, 40)
-tpNowBtn.Position = UDim2.new(0, 10, 0, 170)
-tpNowBtn.Text = "Teleport Now"
-tpNowBtn.BackgroundColor3 = Color3.fromRGB(60, 200, 120)
-tpNowBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-tpNowBtn.Parent = frame
-
--- Logic
-setBtn.MouseButton1Click:Connect(function()
-	local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-	local hrp = char:FindFirstChild("HumanoidRootPart")
-	if hrp then
-		spawnPointCFrame = hrp.CFrame
-		local pos = hrp.Position
-		flashStatus(string.format("Spawn Set: (%.0f, %.0f, %.0f)", pos.X, pos.Y, pos.Z), Color3.fromRGB(0, 255, 0))
-	end
-end)
-
-clearBtn.MouseButton1Click:Connect(function()
-	if spawnPointCFrame then
-		spawnPointCFrame = nil
-		flashStatus("Spawn Cleared", Color3.fromRGB(255, 200, 0))
-	else
-		flashStatus("No Spawn to Clear", Color3.fromRGB(255, 0, 0))
-	end
-end)
-
-tpNowBtn.MouseButton1Click:Connect(function()
-	if spawnPointCFrame then
-		local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-		local hrp = char:FindFirstChild("HumanoidRootPart")
-		if hrp then
-			hrp.CFrame = spawnPointCFrame
-			flashStatus("Teleported to Spawn", Color3.fromRGB(0, 255, 0))
-		end
-	else
-		flashStatus("No Spawn Set!", Color3.fromRGB(255, 0, 0))
-	end
-end)
-
--- Close & Minimize
-closeBtn.MouseButton1Click:Connect(function()
-	frame.Visible = false
-end)
-
-local minimized = false
-minimizeBtn.MouseButton1Click:Connect(function()
-	minimized = not minimized
-	for _, child in pairs(frame:GetChildren()) do
-		if child:IsA("TextButton") or child:IsA("TextLabel") then
-			if child ~= closeBtn and child ~= minimizeBtn then
-				child.Visible = not minimized
-			end
-		end
-	end
-	frame.Size = minimized and UDim2.new(0, 220, 0, 30) or UDim2.new(0, 220, 0, 210)
+-- Respawn Auto Teleport
+player.CharacterAdded:Connect(function(char)
+    char:WaitForChild("HumanoidRootPart")
+    task.wait(0.2)
+    if lastSpawn == 1 and spawn1 then
+        char:WaitForChild("HumanoidRootPart").CFrame = spawn1
+    elseif lastSpawn == 2 and spawn2 then
+        char:WaitForChild("HumanoidRootPart").CFrame = spawn2
+    end
 end)
