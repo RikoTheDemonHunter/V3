@@ -1,12 +1,13 @@
--- Local Cloud Stand Script
--- Put this in StarterPlayer > StarterPlayerScripts
+-- Local Cloud Stand Script (On Top of Clouds)
+-- Put this LocalScript in StarterPlayer > StarterPlayerScripts
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
+
+-- Folder to hold your local collision platforms
 local cloudFolder = Instance.new("Folder")
 cloudFolder.Name = "LocalCloudPlatforms"
 cloudFolder.Parent = Workspace
@@ -15,54 +16,63 @@ cloudFolder.Parent = Workspace
 local transparency = 1 -- 1 = invisible, 0 = visible
 local platformPrefix = "LocalCloudPlatform__"
 
--- Helper: Check if a part is a "cloud"
+-- Check if a part looks like a cloud
 local function isCloudPart(part)
-	if not part:IsA("BasePart") then return false end
+	if not part:IsA("BasePart") then
+		return false
+	end
 	local name = string.lower(part.Name)
 	return string.find(name, "cloud") ~= nil
 end
 
--- Create local platform under the cloud
+-- Create an invisible platform on top of the cloud
 local function createPlatform(cloudPart)
-	if cloudFolder:FindFirstChild(platformPrefix .. cloudPart:GetDebugId()) then return end
+	-- Prevent duplicates
+	if cloudFolder:FindFirstChild(platformPrefix .. cloudPart:GetDebugId()) then
+		return
+	end
 
 	local platform = Instance.new("Part")
 	platform.Name = platformPrefix .. cloudPart:GetDebugId()
-	platform.Size = cloudPart.Size
 	platform.Anchored = true
 	platform.CanCollide = true
 	platform.Transparency = transparency
 	platform.CastShadow = false
+	platform.Size = cloudPart.Size
 	platform.Parent = cloudFolder
 
-	-- Update position every frame
+	-- Keep platform following the top of the cloud
 	RunService.RenderStepped:Connect(function()
-		if cloudPart.Parent == nil or platform.Parent == nil then
-			if platform then platform:Destroy() end
+		if not cloudPart or not cloudPart.Parent or not platform or not platform.Parent then
+			if platform then
+				platform:Destroy()
+			end
 			return
 		end
-		local offsetY = -(cloudPart.Size.Y/2) + 0.01
+
+		-- Place the platform on *top* of the cloud
+		local offsetY = (cloudPart.Size.Y / 2) + 0.01
 		platform.CFrame = cloudPart.CFrame * CFrame.new(0, offsetY, 0)
 		platform.Size = cloudPart.Size
 	end)
 end
 
--- Scan workspace for clouds
+-- Scan for all existing clouds
 local function generatePlatforms()
-	for _, obj in ipairs(Workspace:GetDescendants()) do
+	for _, obj in Workspace:GetDescendants() do
 		if isCloudPart(obj) then
 			createPlatform(obj)
 		end
 	end
 end
 
--- Detect new clouds
+-- Listen for new clouds
 Workspace.DescendantAdded:Connect(function(desc)
 	if isCloudPart(desc) then
 		createPlatform(desc)
 	end
 end)
 
--- Run
+-- Run at startup
 generatePlatforms()
-print("[LocalCloudStand] Ready! You can now stand on clouds.")
+print("[LocalCloudStand] You can now stand on top of clouds!")
