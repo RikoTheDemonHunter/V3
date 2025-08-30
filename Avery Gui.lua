@@ -1,254 +1,288 @@
+--==============================
 -- Avery Hub Full Optimized Script
+--==============================
 
--- Services
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
+local player = Players.LocalPlayer
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+local Lighting = game:GetService("Lighting")
 
--- URLs
-local killSwitchUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
+--==============================
+-- Kill Switch & Whitelist
+--==============================
+local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
 local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
 
--- Safety Functions
-local function isInList(userId, list)
-	for _, id in ipairs(list or {}) do
-		if id == userId then return true end
-	end
-	return false
+local function isBanned(userId, banlist)
+    for _, id in ipairs(banlist) do
+        if id == userId then return true end
+    end
+    return false
 end
 
--- Ban check
-pcall(function()
-	local banData = HttpService:JSONDecode(game:HttpGet(banlistUrl, true))
-	if isInList(LocalPlayer.UserId, banData.banned) then
-		LocalPlayer:Kick("🚫 You are permanently banned from using this script.")
-	end
-end)
-
--- Kill switch
-local enabled, whitelist = false, {}
-pcall(function()
-	local data = HttpService:JSONDecode(game:HttpGet(killSwitchUrl, true))
-	enabled = data.enabled
-	whitelist = data.whitelist or {}
-end)
-if not enabled and not isInList(LocalPlayer.UserId, whitelist) then
-	LocalPlayer:Kick("⚠️ Your UserID is not whitelisted.")
+local function isWhitelisted(userId, whitelist)
+    for _, id in ipairs(whitelist) do
+        if id == userId then return true end
+    end
+    return false
 end
 
--- Exploit Trap Trigger
-local trapRemote = ReplicatedStorage:FindFirstChild("ExploitTrap")
+-- Fetch banlist
+local banSuccess, banData = pcall(function()
+    return HttpService:JSONDecode(game:HttpGet(banlistUrl, true))
+end)
+
+if banSuccess and banData then
+    local banlist = banData.banned or {}
+    if isBanned(player.UserId, banlist) then
+        player:Kick("🚫 You are permanently banned from using this script.")
+        return
+    end
+else
+    warn("⚠️ Could not fetch banlist.")
+end
+
+-- Fetch kill switch
+local enabled, whitelist = true, {}
+local success, result = pcall(function()
+    local response = game:HttpGet(url, true)
+    return HttpService:JSONDecode(response)
+end)
+
+if success and result then
+    enabled = result.enabled
+    whitelist = result.whitelist or {}
+    if not enabled and not isWhitelisted(player.UserId, whitelist) then
+        player:Kick("Your UserID IS Not Whitelisted.")
+        return
+    end
+else
+    warn("⚠️ Failed to fetch kill switch status.")
+end
+
+-- Secondary check
+if not enabled and not isWhitelisted(player.UserId, whitelist) then
+    player:Kick("⚠️ Unauthorized user detected.")
+    return
+end
+
+--==============================
+-- Exploit Trap
+--==============================
+local trapRemote = ReplicatedStorage:WaitForChild("ExploitTrap", 1)
 if trapRemote then trapRemote:FireServer() end
 
+--==============================
 -- GUI Library
-local function CreateGUI(title)
-	local DarkLib = Instance.new("ScreenGui")
-	DarkLib.Name = "DarkLib"
-	DarkLib.Parent = game.CoreGui
-	DarkLib.ResetOnSpawn = false
+--==============================
+local lib = {}
+function lib:Gui(title)
+    local DarkLib = Instance.new("ScreenGui", CoreGui)
+    DarkLib.Name = "DarkLib"
+    DarkLib.ResetOnSpawn = false
 
-	local Main = Instance.new("Frame", DarkLib)
-	Main.Size = UDim2.new(0, 382, 0, 219)
-	Main.Position = UDim2.new(0.367, 0, 0.264, 0)
-	Main.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    local Main = Instance.new("Frame", DarkLib)
+    Main.Name = "Main"
+    Main.BackgroundColor3 = Color3.fromRGB(35,35,35)
+    Main.Position = UDim2.new(0.35,0,0.25,0)
+    Main.Size = UDim2.new(0,382,0,219)
 
-	local TabSide = Instance.new("ScrollingFrame", Main)
-	TabSide.Size = UDim2.new(0, 92, 0, 203)
-	TabSide.Position = UDim2.new(0.021,0,0.038,0)
-	TabSide.BackgroundColor3 = Color3.fromRGB(30,30,30)
-	TabSide.ScrollBarThickness = 5
+    -- Drag functionality
+    local dragging, dragInput, dragStart, startPos
+    local function update(input)
+        local delta = input.Position - dragStart
+        TweenService:Create(Main, TweenInfo.new(0.06, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), 
+            {Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)}
+        ):Play()
+    end
+    Main.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = Main.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+    Main.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then update(input) end
+    end)
 
-	local SectionSide = Instance.new("Frame", Main)
-	SectionSide.Size = UDim2.new(0, 255, 0, 173)
-	SectionSide.Position = UDim2.new(0.298,0,0.146,0)
-	SectionSide.BackgroundColor3 = Color3.fromRGB(30,30,30)
+    local TabSide = Instance.new("ScrollingFrame", Main)
+    TabSide.Name = "TabSide"
+    TabSide.BackgroundColor3 = Color3.fromRGB(30,30,30)
+    TabSide.Position = UDim2.new(0.02,0,0.04,0)
+    TabSide.Size = UDim2.new(0,92,0,203)
+    TabSide.ScrollBarThickness = 5
+    TabSide.ClipsDescendants = true
 
-	local TitleLabel = Instance.new("TextLabel", Main)
-	TitleLabel.Text = title
-	TitleLabel.Size = UDim2.new(0, 200, 0, 46)
-	TitleLabel.Position = UDim2.new(0,90,0,0)
-	TitleLabel.Font = Enum.Font.FredokaOne
-	TitleLabel.TextSize = 30
-	TitleLabel.TextColor3 = Color3.fromRGB(255,0,0)
+    local SectionSide = Instance.new("Frame", Main)
+    SectionSide.Name = "SectionSide"
+    SectionSide.BackgroundColor3 = Color3.fromRGB(30,30,30)
+    SectionSide.Position = UDim2.new(0.3,0,0.15,0)
+    SectionSide.Size = UDim2.new(0,255,0,173)
+    SectionSide.ClipsDescendants = true
 
-	-- Tab/Section system
-	local Tabs = {}
-	function Tabs:Tab(tabName)
-		local btn = Instance.new("TextButton", TabSide)
-		btn.Size = UDim2.new(0,70,0,30)
-		btn.Text = tabName
-		local Sections = {}
-		function Sections:Section(secName)
-			local page = Instance.new("ScrollingFrame", SectionSide)
-			page.Name = secName
-			page.Size = UDim2.new(0,237,0,145)
-			page.BackgroundColor3 = Color3.fromRGB(30,30,30)
-			page.Visible = false
-			local Elements = {}
-			function Elements:Button(name, callback)
-				local btn = Instance.new("TextButton", page)
-				btn.Size = UDim2.new(0,220,0,30)
-				btn.Text = name
-				btn.MouseButton1Click:Connect(callback)
-			end
-			function Elements:Toggle(name, callback)
-				local frame = Instance.new("Frame", page)
-				frame.Size = UDim2.new(0,220,0,30)
-				local state = false
-				local btn = Instance.new("TextButton", frame)
-				btn.Size = UDim2.new(1,0,1,0)
-				btn.Text = name
-				btn.MouseButton1Click:Connect(function()
-					state = not state
-					pcall(callback,state)
-				end)
-			end
-			return Elements
-		end
-		return Sections
-	end
-	return Tabs
+    local Tabs = {}
+    function Tabs:Tab(name)
+        local TextButton = Instance.new("TextButton", TabSide)
+        TextButton.Text = name
+        TextButton.Size = UDim2.new(0,70,0,30)
+        local Sections = {}
+        function Sections:Section(name)
+            local Page = Instance.new("ScrollingFrame", SectionSide)
+            Page.Name = name
+            Page.Visible = false
+            Page.Size = UDim2.new(0,237,0,145)
+            Page.ScrollBarThickness = 5
+            local Elements = {}
+            function Elements:Toggle(name, callback)
+                local Frame = Instance.new("Frame", Page)
+                Frame.Size = UDim2.new(0,220,0,30)
+                local Btn = Instance.new("TextButton", Frame)
+                Btn.Size = UDim2.new(1,0,1,0)
+                Btn.Text = name
+                local toggle = false
+                Btn.MouseButton1Click:Connect(function()
+                    toggle = not toggle
+                    pcall(callback, toggle)
+                end)
+            end
+            function Elements:Button(name, callback)
+                local Btn = Instance.new("TextButton", Page)
+                Btn.Size = UDim2.new(0,220,0,30)
+                Btn.Text = name
+                Btn.MouseButton1Click:Connect(callback)
+            end
+            return Elements
+        end
+        return Sections
+    end
+    return Tabs
 end
 
-local Library = CreateGUI("⚡Avery-Hub⚡")
-
--- AutoDrink Tab
-local AutoDrinkTab = Library:Tab("AutoDrink")
-local AutoDrink = AutoDrinkTab:Section("AutoDrink")
-
--- Auto Equip Function
-local function AutoEquipDrink()
-	spawn(function()
-		for _, toolName in ipairs({
-			"Starter Drink","Second Drink","Third Drink","Fourth Drink","Fifth Drink",
-			"Sixth Drink","Seventh Drink","Eighth Drink","Ninth Drink","Atomic Drink",
-			"Omega Burp Juice","Thunder Fizz","Garlic Juice"
-		}) do
-			local tool = LocalPlayer.Backpack:FindFirstChild(toolName)
-			local humanoid = Character:FindFirstChildOfClass("Humanoid")
-			if tool and humanoid then
-				humanoid:EquipTool(tool)
-			end
-		end
-	end)
-end
-
--- Auto Drink Toggle
-AutoDrink:Toggle("Auto Drink", function(v)
-	spawn(function()
-		while v do
-			for _, drink in ipairs({
-				"Starter Drink","Second Drink","Third Drink","Fourth Drink","Fifth Drink",
-				"Sixth Drink","Seventh Drink","Eighth Drink","Ninth Drink","Atomic Drink",
-				"Omega Burp Juice","Thunder Fizz","Garlic Juice"
-			}) do
-				ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(drink)
-			end
-			task.wait(2.4)
-		end
-	end)
-end)
-
-AutoDrink:Toggle("Auto Equip", function(v)
-	spawn(function()
-		while v do
-			AutoEquipDrink()
-			task.wait(0.8)
-		end
-	end)
-end)
-
--- Cloud Stand
+local Library = lib:Gui("⚡Avery-Hub⚡")
+local AutoFarmTab = Library:Tab("AutoDrink")
+local AutoFarm = AutoFarmTab:Section("AutoDrink")
 local LocalPlayerTab = Library:Tab("LocalPlayer")
-local LocalPlayerSection = LocalPlayerTab:Section("LocalPlayer")
-
-LocalPlayerSection:Toggle("Cloud Stand", function(v)
-	if v then
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Cloud.lua"))()
-	end
-end)
-
--- WalkSpeed Toggle
-LocalPlayerSection:Toggle("WalkSpeed", function(v)
-	spawn(function()
-		while v do
-			Character:WaitForChild("Humanoid").WalkSpeed = 459
-			task.wait(0.1)
-		end
-	end)
-end)
-
--- Inf Jump
-LocalPlayerSection:Toggle("Inf Jump", function(v)
-	if v then
-		UserInputService.JumpRequest:Connect(function()
-			local humanoid = Character:FindFirstChildOfClass("Humanoid")
-			if humanoid then
-				humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
-			end
-		end)
-	end
-end)
-
--- Sit Toggle
-LocalPlayerSection:Toggle("Sit", function(v)
-	Character.Humanoid.Sit = v
-end)
-
--- Teleport Tab
+local LocalPlayer = LocalPlayerTab:Section("LocalPlayer")
 local TeleportTab = Library:Tab("Teleports")
-local TeleportSection = TeleportTab:Section("Teleports")
-local function TeleportTo(pos)
-	local hrp = Character:FindFirstChild("HumanoidRootPart")
-	if hrp then
-		TweenService:Create(hrp,TweenInfo.new(0.2),{CFrame=CFrame.new(pos)}):Play()
-	end
+local Teleport = TeleportTab:Section("Teleport")
+local MiscTab = Library:Tab("Misc")
+local Misc = MiscTab:Section("Misc")
+local ScriptsTab = Library:Tab("Scripts")
+local Scripts = ScriptsTab:Section("Scripts")
+local CreditsTab = Library:Tab("Credits")
+local Credits = CreditsTab:Section("Credits")
+
+--==============================
+-- AutoDrink System (Optimized)
+--==============================
+local allDrinks = {
+    "Starter Drink","Second Drink","Third Drink","Fourth Drink",
+    "Fifth Drink","Sixth Drink","Seventh Drink","Eighth Drink",
+    "Ninth Drink","Atomic Drink","Omega Burp Juice","Thunder Fizz","Garlic Juice"
+}
+
+AutoFarm:Toggle("Full Auto Drink", function(v)
+    getgenv().fullAutoDrink = v
+    spawn(function()
+        while getgenv().fullAutoDrink do
+            for _, drinkName in ipairs(allDrinks) do
+                local drinkEvent = ReplicatedStorage:FindFirstChild("RemoteEvents") and ReplicatedStorage.RemoteEvents:FindFirstChild("DrinkEvent")
+                if drinkEvent then
+                    drinkEvent:FireServer(drinkName)
+                end
+            end
+            task.wait(2.2)
+        end
+    end)
+end)
+
+--==============================
+-- FPS Cap Toggle
+--==============================
+AutoFarm:Toggle("FPS Cap (90)", function(v)
+    if setfpscap and type(setfpscap) == "function" then
+        setfpscap(v and 90 or 999)
+    end
+end)
+
+--==============================
+-- Teleport System
+--==============================
+local function teleportToPlayer(target)
+    if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.CFrame = target.Character.HumanoidRootPart.CFrame
+        end
+    end
 end
 
--- Example teleport buttons
-TeleportSection:Button("Safe Zone", function() TeleportTo(Vector3.new(-46,48,-15)) end)
-TeleportSection:Button("Cloud One", function() TeleportTo(Vector3.new(296,566,689)) end)
-
--- Misc Tab
-local MiscTab = Library:Tab("Misc")
-local MiscSection = MiscTab:Section("Misc")
-
-MiscSection:Toggle("Walk On Water", function(v)
-	spawn(function()
-		for _, part in pairs(workspace:GetChildren()) do
-			if part:IsA("Part") and part.Color == Color3.fromRGB(9,137,207) then
-				part.CanCollide = v
-			end
-		end
-	end)
+Teleport:Button("Teleport to Player", function()
+    local playersList = {}
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= player then table.insert(playersList, plr.Name) end
+    end
+    local targetName = playersList[1] -- pick first player
+    local target = Players:FindFirstChild(targetName)
+    teleportToPlayer(target)
 end)
 
-MiscSection:Button("Anti AFK", function()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
+--==============================
+-- LocalPlayer Utilities (WalkSpeed, Jump, Sit)
+--==============================
+LocalPlayer:Toggle("WalkSpeed", function(v)
+    spawn(function()
+        while v do
+            task.wait()
+            player.Character.Humanoid.WalkSpeed = 459
+        end
+    end)
 end)
 
-MiscSection:Button("Anti Kick", function()
-	local mt = getrawmetatable(game)
-	local old = mt.__namecall
-	local protect = newcclosure or protect_function
-	setreadonly(mt,false)
-	mt.__namecall = protect(function(self,...)
-		if getnamecallmethod()=="Kick" then wait(9e9) return end
-		return old(self,...)
-	end)
-	hookfunction(LocalPlayer.Kick,protect(function() wait(9e9) end))
+LocalPlayer:Toggle("Inf Jump", function(v)
+    UserInputService.JumpRequest:Connect(function()
+        player.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+    end)
 end)
 
--- Credits Tab
-local CreditsTab = Library:Tab("Credits")
-local CreditsSection = CreditsTab:Section("Credits")
-CreditsSection:Button("Made by Avery")
-CreditsSection:Button("Discord: 90averyxx")
-CreditsSection:Button("Note: Auto Drink is 2.4")
+LocalPlayer:Toggle("Sit", function(v)
+    player.Character.Humanoid.Sit = v
+end)
 
--- Script is ready to run
-print("✅ Avery Hub loaded successfully")
+--==============================
+-- Misc Utilities
+--==============================
+Misc:Button("Anti Kick", function()
+    local mt = getrawmetatable(game)
+    local old = mt.__namecall
+    local protect = newcclosure or protect_function
+    setreadonly(mt,false)
+    mt.__namecall = protect(function(self,...)
+        if getnamecallmethod() == "Kick" then wait(9e9) return end
+        return old(self,...)
+    end)
+    hookfunction(player.Kick, protect(function() wait(9e9) end))
+end)
+
+--==============================
+-- Credits
+--==============================
+Credits:Button("Made By Avery")
+Credits:Button("Discord: 90averyxx")
+Credits:Button("Update: Added WhiteList System")
+
