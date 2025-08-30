@@ -1,4 +1,4 @@
--- Local Cloud Stand Script (On Top of Clouds)
+-- Local Cloud Stand Script (Thin Platform, Correct Height)
 -- Put this LocalScript in StarterPlayer > StarterPlayerScripts
 
 local Players = game:GetService("Players")
@@ -7,7 +7,7 @@ local Workspace = game:GetService("Workspace")
 
 local player = Players.LocalPlayer
 
--- Folder to hold your local collision platforms
+-- Folder for local collision platforms
 local cloudFolder = Instance.new("Folder")
 cloudFolder.Name = "LocalCloudPlatforms"
 cloudFolder.Parent = Workspace
@@ -15,6 +15,10 @@ cloudFolder.Parent = Workspace
 -- Settings
 local transparency = 1 -- 1 = invisible, 0 = visible
 local platformPrefix = "LocalCloudPlatform__"
+local platformThickness = 1 -- how thick the collision sheet is
+
+-- Store cloud-to-platform pairs
+local cloudPlatforms = {}
 
 -- Check if a part looks like a cloud
 local function isCloudPart(part)
@@ -25,10 +29,9 @@ local function isCloudPart(part)
 	return string.find(name, "cloud") ~= nil
 end
 
--- Create an invisible platform on top of the cloud
+-- Create platform on top of cloud
 local function createPlatform(cloudPart)
-	-- Prevent duplicates
-	if cloudFolder:FindFirstChild(platformPrefix .. cloudPart:GetDebugId()) then
+	if cloudPlatforms[cloudPart] then
 		return
 	end
 
@@ -38,41 +41,55 @@ local function createPlatform(cloudPart)
 	platform.CanCollide = true
 	platform.Transparency = transparency
 	platform.CastShadow = false
-	platform.Size = cloudPart.Size
 	platform.Parent = cloudFolder
 
-	-- Keep platform following the top of the cloud
-	RunService.RenderStepped:Connect(function()
-		if not cloudPart or not cloudPart.Parent or not platform or not platform.Parent then
-			if platform then
-				platform:Destroy()
-			end
-			return
-		end
-
-		-- Place the platform on *top* of the cloud
-		local offsetY = (cloudPart.Size.Y / 2) + 0.01
-		platform.CFrame = cloudPart.CFrame * CFrame.new(0, offsetY, 0)
-		platform.Size = cloudPart.Size
-	end)
+	cloudPlatforms[cloudPart] = platform
 end
 
--- Scan for all existing clouds
-local function generatePlatforms()
-	for _, obj in Workspace:GetDescendants() do
-		if isCloudPart(obj) then
-			createPlatform(obj)
-		end
+-- Remove platform when cloud is gone
+local function removePlatform(cloudPart)
+	local platform = cloudPlatforms[cloudPart]
+	if platform then
+		platform:Destroy()
+		cloudPlatforms[cloudPart] = nil
 	end
 end
 
--- Listen for new clouds
+-- Update all platforms in one loop
+RunService.RenderStepped:Connect(function()
+	for cloudPart, platform in pairs(cloudPlatforms) do
+		if not cloudPart or not cloudPart.Parent then
+			removePlatform(cloudPart)
+		else
+			-- Match cloud X/Z size, but make Y very thin
+			platform.Size = Vector3.new(cloudPart.Size.X, platformThickness, cloudPart.Size.Z)
+
+			-- Place exactly on top surface of the cloud
+			local offsetY = (cloudPart.Size.Y / 2) + (platform.Size.Y / 2)
+			platform.CFrame = cloudPart.CFrame * CFrame.new(0, offsetY, 0)
+		end
+	end
+end)
+
+-- Initial scan
+for _, obj in Workspace:GetDescendants() do
+	if isCloudPart(obj) then
+		createPlatform(obj)
+	end
+end
+
+-- Watch for new clouds
 Workspace.DescendantAdded:Connect(function(desc)
 	if isCloudPart(desc) then
 		createPlatform(desc)
 	end
 end)
 
--- Run at startup
-generatePlatforms()
-print("[LocalCloudStand] You can now stand on top of clouds!")
+-- Cleanup when clouds are removed
+Workspace.DescendantRemoving:Connect(function(desc)
+	if cloudPlatforms[desc] then
+		removePlatform(desc)
+	end
+end)
+
+print("[LocalCloudStand] You can now stand perfectly on top of clouds!")
