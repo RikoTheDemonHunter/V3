@@ -1,105 +1,97 @@
-local HttpService = game:GetService("HttpService")
+-- Avery Cloud Stand GUI Script with Hotkey
+-- LocalScript in StarterPlayer > StarterPlayerScripts
+
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
 
--- URLs
-local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
-local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
+-- Folder for local collision platforms
+local cloudFolder = Instance.new("Folder")
+cloudFolder.Name = "LocalCloudPlatforms"
+cloudFolder.Parent = Workspace
 
--- Ban & Whitelist checks
-local function isBanned(userId, banlist)
-	for _, id in ipairs(banlist) do
-		if id == userId then return true end
-	end
-	return false
+-- Settings
+local transparency = 1 -- 1 = invisible
+local platformPrefix = "LocalCloudPlatform__"
+local platformThickness = 1 -- thin collision sheet
+
+-- Store cloud-to-platform pairs
+local cloudPlatforms = {}
+
+local function isCloudPart(part)
+	if not part:IsA("BasePart") then return false end
+	return string.find(string.lower(part.Name), "cloud") ~= nil
 end
 
-local function isWhitelisted(userId, whitelist)
-	for _, id in ipairs(whitelist) do
-		if id == userId then return true end
-	end
-	return false
+local function createPlatform(cloudPart)
+	if cloudPlatforms[cloudPart] then return end
+	local platform = Instance.new("Part")
+	platform.Name = platformPrefix .. cloudPart:GetDebugId()
+	platform.Anchored = true
+	platform.CanCollide = true
+	platform.Transparency = transparency
+	platform.CastShadow = false
+	platform.Parent = cloudFolder
+	cloudPlatforms[cloudPart] = platform
 end
 
-local banSuccess, banData = pcall(function()
-	return HttpService:JSONDecode(game:HttpGet(banlistUrl, true))
+local function removePlatform(cloudPart)
+	local platform = cloudPlatforms[cloudPart]
+	if platform then
+		platform:Destroy()
+		cloudPlatforms[cloudPart] = nil
+	end
+end
+
+-- Initial scan
+for _, obj in Workspace:GetDescendants() do
+	if isCloudPart(obj) then
+		createPlatform(obj)
+	end
+end
+
+-- Watch for new clouds
+Workspace.DescendantAdded:Connect(function(desc)
+	if isCloudPart(desc) then
+		createPlatform(desc)
+	end
 end)
 
-if banSuccess and banData then
-	if isBanned(player.UserId, banData.banned or {}) then
-		player:Kick("🚫 You are permanently banned from using this script.")
-		return
+Workspace.DescendantRemoving:Connect(function(desc)
+	if cloudPlatforms[desc] then
+		removePlatform(desc)
 	end
-else
-	warn("⚠️ Could not fetch banlist.")
-end
-
-local success, result = pcall(function()
-	return HttpService:JSONDecode(game:HttpGet(url, true))
 end)
-
-local enabled, whitelist = true, {}
-if success and result then
-	enabled = result.enabled
-	whitelist = result.whitelist or {}
-	if not enabled and not isWhitelisted(player.UserId, whitelist) then
-		player:Kick("Your UserID is not whitelisted.")
-		return
-	end
-else
-	warn("⚠️ Failed to fetch kill switch status.")
-end
-
--- Secondary kill switch check
-if not enabled then
-	local retrySuccess, retryResult = pcall(function()
-		return HttpService:JSONDecode(game:HttpGet(url, true))
-	end)
-	if retrySuccess and retryResult then
-		if not isWhitelisted(player.UserId, retryResult.whitelist or {}) then
-			player:Kick("⚠️ Unauthorized user detected.")
-			return
-		end
-	end
-end
-
--- Exploit trap
-local trapRemote = ReplicatedStorage:WaitForChild("ExploitTrap", 1)
-if trapRemote then trapRemote:FireServer() end
 
 -- GUI
-local DarkLib = Instance.new("ScreenGui")
-DarkLib.Name = "DarkLib"
-DarkLib.Parent = game.CoreGui
-DarkLib.ResetOnSpawn = false
+local ScreenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+ScreenGui.Name = "AveryCloudGUI"
 
-local Main = Instance.new("Frame")
-Main.Name = "Main"
-Main.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-Main.Position = UDim2.new(0.367, 0, 0.264, 0)
-Main.Size = UDim2.new(0, 382, 0, 219)
-Main.Parent = DarkLib
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 220, 0, 100)
+MainFrame.Position = UDim2.new(0.5, -110, 0.5, -50)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.Parent = ScreenGui
+MainFrame.Active = true
 
--- Drag & Drop Logic
+-- Dragging
 local dragging, dragInput, dragStart, startPos
+
 local function update(input)
 	local delta = input.Position - dragStart
-	local newPos = UDim2.new(
+	MainFrame.Position = UDim2.new(
 		startPos.X.Scale, startPos.X.Offset + delta.X,
 		startPos.Y.Scale, startPos.Y.Offset + delta.Y
 	)
-	local tween = TweenService:Create(Main, TweenInfo.new(0.1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Position = newPos})
-	tween:Play()
 end
 
-Main.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+MainFrame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
 		dragging = true
 		dragStart = input.Position
-		startPos = Main.Position
+		startPos = MainFrame.Position
 		input.Changed:Connect(function()
 			if input.UserInputState == Enum.UserInputState.End then
 				dragging = false
@@ -108,8 +100,8 @@ Main.InputBegan:Connect(function(input)
 	end
 end)
 
-Main.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+MainFrame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
 		dragInput = input
 	end
 end)
@@ -120,60 +112,87 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
--- Close button
-local closeButton = Instance.new("TextButton")
-closeButton.Size = UDim2.new(0, 25, 0, 25)
-closeButton.Position = UDim2.new(1, -30, 0, 5)
-closeButton.Text = "X"
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.Parent = Main
-closeButton.MouseButton1Click:Connect(function()
-	Main:Destroy()
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Title.Text = "Cloud Stand"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Parent = MainFrame
+
+-- Close Button
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 25, 0, 25)
+CloseBtn.Position = UDim2.new(1, -30, 0, 2)
+CloseBtn.Text = "X"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 0, 0)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+CloseBtn.Parent = MainFrame
+CloseBtn.MouseButton1Click:Connect(function()
+	ScreenGui.Enabled = false
 end)
 
--- Tabs & Sections setup
-local function createTab(name)
-	local btn = Instance.new("TextButton")
-	btn.Text = name
-	btn.Size = UDim2.new(0, 70, 0, 30)
-	btn.Font = Enum.Font.Highway
-	btn.TextColor3 = Color3.fromRGB(0, 255, 0)
-	btn.TextScaled = true
-	btn.Parent = Main
-	return btn
-end
+-- Minimize Button
+local MinBtn = Instance.new("TextButton")
+MinBtn.Size = UDim2.new(0, 25, 0, 25)
+MinBtn.Position = UDim2.new(1, -60, 0, 2)
+MinBtn.Text = "_"
+MinBtn.TextColor3 = Color3.fromRGB(0, 255, 0)
+MinBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+MinBtn.Parent = MainFrame
 
--- Example AutoDrink Toggle
-local function autoDrinkLoop()
-	spawn(function()
-		while wait(2.4) do
-			local drinks = {"Starter Drink","Second Drink","Third Drink","Fourth Drink","Fifth Drink",
-							"Sixth Drink","Seventh Drink","Eighth Drink","Ninth Drink","Atomic Drink",
-							"Omega Burp Juice","Thunder Fizz","Garlic Juice"}
-			for _, drink in ipairs(drinks) do
-				ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(drink)
-			end
+local minimized = false
+MinBtn.MouseButton1Click:Connect(function()
+	minimized = not minimized
+	for i, child in pairs(MainFrame:GetChildren()) do
+		if child ~= Title and child ~= CloseBtn and child ~= MinBtn then
+			child.Visible = not minimized
 		end
-	end)
-end
-
--- Add more buttons/toggles as needed, following the pattern above
--- Teleports, LocalPlayer functions, Misc, Scripts, Credits can be added similarly
-
--- Quick toggle example
-local autoDrinkButton = Instance.new("TextButton")
-autoDrinkButton.Size = UDim2.new(0, 120, 0, 40)
-autoDrinkButton.Position = UDim2.new(0, 20, 0, 50)
-autoDrinkButton.Text = "Auto Drink"
-autoDrinkButton.TextColor3 = Color3.fromRGB(0, 255, 0)
-autoDrinkButton.TextScaled = true
-autoDrinkButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-autoDrinkButton.Parent = Main
-local toggled = false
-autoDrinkButton.MouseButton1Click:Connect(function()
-	toggled = not toggled
-	if toggled then
-		autoDrinkLoop()
 	end
 end)
+
+-- Cloud Stand Toggle Button
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Size = UDim2.new(1, -10, 0, 40)
+ToggleBtn.Position = UDim2.new(0, 5, 0, 40)
+ToggleBtn.Text = "Enable Cloud Stand"
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleBtn.Parent = MainFrame
+
+local cloudEnabled = false
+ToggleBtn.MouseButton1Click:Connect(function()
+	cloudEnabled = not cloudEnabled
+	if cloudEnabled then
+		ToggleBtn.Text = "Disable Cloud Stand"
+		print("[CloudStand] Enabled!")
+	else
+		ToggleBtn.Text = "Enable Cloud Stand"
+		print("[CloudStand] Disabled!")
+	end
+end)
+
+-- Hotkey to show/hide GUI (RightControl by default)
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then return end
+	if input.KeyCode == Enum.KeyCode.RightControl then
+		ScreenGui.Enabled = not ScreenGui.Enabled
+	end
+end)
+
+-- Cloud Stand update loop
+RunService.RenderStepped:Connect(function()
+	if not cloudEnabled then return end
+	for cloudPart, platform in pairs(cloudPlatforms) do
+		if not cloudPart or not cloudPart.Parent then
+			removePlatform(cloudPart)
+		else
+			platform.Size = Vector3.new(cloudPart.Size.X, platformThickness, cloudPart.Size.Z)
+			local offsetY = (cloudPart.Size.Y / 2) + (platform.Size.Y / 2)
+			platform.CFrame = cloudPart.CFrame * CFrame.new(0, offsetY, 0)
+		end
+	end
+end)
+
+print("[AveryCloudStand] GUI Loaded! Drag, Minimize, Close, Toggle & Hotkey Ready!")
