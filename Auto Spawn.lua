@@ -14,8 +14,8 @@ screenGui.ResetOnSpawn = false
 
 -- Main Frame
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 250, 0, 250)
-frame.Position = UDim2.new(0.5, -125, 0.5, -125)
+frame.Size = UDim2.new(0, 250, 0, 300)
+frame.Position = UDim2.new(0.5, -125, 0.5, -150)
 frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 frame.Active = true
 frame.Draggable = true
@@ -85,6 +85,7 @@ local use1 = createButton("Use Spawn 1", 130)
 local use2 = createButton("Use Spawn 2", 165)
 local tp1 = createButton("Teleport to Spawn 1", 200)
 local tp2 = createButton("Teleport to Spawn 2", 235)
+local clearBtn = createButton("Clear Spawns", 270) -- NEW button
 
 -- Minimize Button
 local minimizeBtn = Instance.new("TextButton")
@@ -155,6 +156,13 @@ tp2.MouseButton1Click:Connect(function()
 	if spawn2 and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
 		player.Character.HumanoidRootPart.CFrame = spawn2
 	end
+end)
+
+-- Clear Spawns
+clearBtn.MouseButton1Click:Connect(function()
+	spawn1, spawn2, activeSpawn = nil, nil, nil
+	updateIndicator()
+	flash(Color3.fromRGB(255, 0, 0)) -- red flash
 end)
 
 -- Minimize
