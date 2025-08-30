@@ -1,4 +1,4 @@
--- Auto Spawn GUI with Dual Save, Indicator, and Toggleable Menu
+-- Auto Spawn GUI with Dual Save, Indicator, Clear Button, and Toggleable Menu
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
@@ -26,7 +26,7 @@ local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, -30, 0, 30)
 title.Position = UDim2.new(0, 0, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "Auto Spawn Manager"
+title.Text = "Avery's Auto Spawn"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.Font = Enum.Font.SourceSansBold
 title.TextSize = 18
@@ -43,6 +43,16 @@ indicator.Font = Enum.Font.SourceSans
 indicator.TextSize = 16
 indicator.Parent = frame
 
+-- Flash effect
+local function flash(color)
+	local flashFrame = Instance.new("Frame")
+	flashFrame.Size = UDim2.new(1, 0, 1, 0)
+	flashFrame.BackgroundColor3 = color
+	flashFrame.BackgroundTransparency = 0.5
+	flashFrame.Parent = frame
+	game:GetService("Debris"):AddItem(flashFrame, 0.3)
+end
+
 -- Function to update indicator
 local function updateIndicator()
 	if activeSpawn == spawn1 then
@@ -54,15 +64,14 @@ local function updateIndicator()
 	end
 end
 
--- Flash effect
-local function flash(color)
-	local flashFrame = Instance.new("Frame")
-	flashFrame.Size = UDim2.new(1, 0, 1, 0)
-	flashFrame.BackgroundColor3 = color
-	flashFrame.BackgroundTransparency = 0.5
-	flashFrame.Parent = frame
-	game:GetService("Debris"):AddItem(flashFrame, 0.3)
-end
+-- Scrolling container for buttons
+local buttonContainer = Instance.new("ScrollingFrame")
+buttonContainer.Size = UDim2.new(1, -10, 0, 210)
+buttonContainer.Position = UDim2.new(0, 5, 0, 55)
+buttonContainer.CanvasSize = UDim2.new(0, 0, 0, 280) -- extra space for buttons
+buttonContainer.ScrollBarThickness = 6
+buttonContainer.BackgroundTransparency = 1
+buttonContainer.Parent = frame
 
 -- Create Buttons
 local function createButton(text, posY)
@@ -74,18 +83,18 @@ local function createButton(text, posY)
 	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
 	btn.Font = Enum.Font.SourceSans
 	btn.TextSize = 16
-	btn.Parent = frame
+	btn.Parent = buttonContainer
 	return btn
 end
 
 -- Buttons
-local set1 = createButton("Set Spawn 1", 60)
-local set2 = createButton("Set Spawn 2", 95)
-local use1 = createButton("Use Spawn 1", 130)
-local use2 = createButton("Use Spawn 2", 165)
-local tp1 = createButton("Teleport to Spawn 1", 200)
-local tp2 = createButton("Teleport to Spawn 2", 235)
-local clearBtn = createButton("Clear Spawns", 270) -- NEW button
+local set1 = createButton("Set Spawn 1", 0)
+local set2 = createButton("Set Spawn 2", 35)
+local use1 = createButton("Use Spawn 1", 70)
+local use2 = createButton("Use Spawn 2", 105)
+local tp1 = createButton("Teleport to Spawn 1", 140)
+local tp2 = createButton("Teleport to Spawn 2", 175)
+local clearBtn = createButton("Clear Active Spawn", 210)
 
 -- Minimize Button
 local minimizeBtn = Instance.new("TextButton")
@@ -107,7 +116,7 @@ closeBtn.Parent = frame
 
 -- Open Menu Button
 local openBtn = Instance.new("TextButton")
-openBtn.Size = UDim2.new(0, 120, 0, 40)
+openBtn.Size = UDim2.new(0, 140, 0, 40)
 openBtn.Position = UDim2.new(0, 10, 0.8, 0)
 openBtn.Text = "Open Spawn Menu"
 openBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -158,22 +167,17 @@ tp2.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Clear Spawns
 clearBtn.MouseButton1Click:Connect(function()
-	spawn1, spawn2, activeSpawn = nil, nil, nil
+	activeSpawn = nil
 	updateIndicator()
-	flash(Color3.fromRGB(255, 0, 0)) -- red flash
+	flash(Color3.fromRGB(255, 0, 0))
 end)
 
 -- Minimize
 local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
 	minimized = not minimized
-	for _, child in ipairs(frame:GetChildren()) do
-		if child:IsA("TextButton") and child ~= minimizeBtn and child ~= closeBtn then
-			child.Visible = not minimized
-		end
-	end
+	buttonContainer.Visible = not minimized
 	indicator.Visible = not minimized
 end)
 
