@@ -1,4 +1,4 @@
---// Avery GUI with Spawn System //--
+--// Avery GUI with Spawn System + Teleport //--
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -20,13 +20,15 @@ reopenButton.Position = UDim2.new(0, 10, 0, 200)
 reopenButton.Text = "Open Avery GUI"
 reopenButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 reopenButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-reopenButton.Visible = false
 reopenButton.Parent = screenGui
+reopenButton.Visible = false
+reopenButton.Active = true
+reopenButton.Draggable = true -- ✅ Draggable reopen button
 
 -- Main Frame
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 250, 0, 300)
-frame.Position = UDim2.new(0.5, -125, 0.5, -150)
+frame.Size = UDim2.new(0, 250, 0, 340)
+frame.Position = UDim2.new(0.5, -125, 0.5, -170)
 frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 frame.Active = true
 frame.Draggable = true
@@ -89,6 +91,7 @@ local setSpawn1Btn = createButton("Set Spawn 1", 70)
 local useSpawn1Btn = createButton("Use Spawn 1", 120)
 local setSpawn2Btn = createButton("Set Spawn 2", 170)
 local useSpawn2Btn = createButton("Use Spawn 2", 220)
+local tpButton = createButton("Teleport to Active Spawn", 270) -- ✅ teleport button
 
 -- Watermark
 local watermark = Instance.new("TextLabel")
@@ -143,7 +146,15 @@ useSpawn2Btn.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Character Respawn
+-- Teleport Button
+tpButton.MouseButton1Click:Connect(function()
+	if activeSpawn and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+		LocalPlayer.Character.HumanoidRootPart.CFrame = activeSpawn
+		flash(Color3.fromRGB(255, 255, 0))
+	end
+end)
+
+-- Character Respawn Auto-Teleport
 LocalPlayer.CharacterAdded:Connect(function(char)
 	char:WaitForChild("HumanoidRootPart")
 	task.wait(0.2)
