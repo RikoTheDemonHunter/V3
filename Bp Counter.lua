@@ -1,4 +1,4 @@
--- Gain Tracker (De-Obfuscated + RGB Color Cycle + Draggable)
+-- Gain Tracker (Plain Text + RGB Color Cycle + Draggable)
 
 -- Remove existing GainUI if already running
 for _, v in pairs(game.CoreGui:GetChildren()) do
@@ -13,24 +13,23 @@ GainUI.Name = "GainUI"
 GainUI.Parent = game.CoreGui
 GainUI.ResetOnSpawn = false
 
--- Main Frame (Draggable container)
-local MainFrame = Instance.new("Frame")
-MainFrame.Name = "MainFrame"
-MainFrame.Parent = GainUI
-MainFrame.Size = UDim2.new(0, 220, 0, 120)
-MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
-MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-MainFrame.BorderSizePixel = 0
-MainFrame.Active = true
-MainFrame.Draggable = true
+-- Invisible Draggable Frame
+local DragFrame = Instance.new("Frame")
+DragFrame.Name = "DragFrame"
+DragFrame.Parent = GainUI
+DragFrame.Size = UDim2.new(0, 200, 0, 60)
+DragFrame.Position = UDim2.new(0.05, 0, 0.1, 0)
+DragFrame.BackgroundTransparency = 1
+DragFrame.Active = true
+DragFrame.Draggable = true
 
 -- Prestige Label
 local PrestigeGain = Instance.new("TextLabel")
 PrestigeGain.Name = "PrestigeGain"
-PrestigeGain.Parent = MainFrame
+PrestigeGain.Parent = DragFrame
 PrestigeGain.BackgroundTransparency = 1
-PrestigeGain.Position = UDim2.new(0.05, 0, 0.2, 0)
-PrestigeGain.Size = UDim2.new(0, 200, 0, 40)
+PrestigeGain.Position = UDim2.new(0, 0, 0, 0)
+PrestigeGain.Size = UDim2.new(0, 200, 0, 25)
 PrestigeGain.Font = Enum.Font.SourceSansBold
 PrestigeGain.TextColor3 = Color3.fromRGB(255, 0, 0)
 PrestigeGain.TextScaled = true
@@ -40,10 +39,10 @@ PrestigeGain.Text = "Prestige: 0"
 -- BP Gain Label
 local BpGain = Instance.new("TextLabel")
 BpGain.Name = "BpGain"
-BpGain.Parent = MainFrame
+BpGain.Parent = DragFrame
 BpGain.BackgroundTransparency = 1
-BpGain.Position = UDim2.new(0.05, 0, 0.55, 0)
-BpGain.Size = UDim2.new(0, 200, 0, 40)
+BpGain.Position = UDim2.new(0, 0, 25, 0)
+BpGain.Size = UDim2.new(0, 200, 0, 25)
 BpGain.Font = Enum.Font.SourceSansBold
 BpGain.TextColor3 = Color3.fromRGB(255, 0, 0)
 BpGain.TextScaled = true
