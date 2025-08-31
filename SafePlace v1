@@ -1,10 +1,10 @@
--- Avery's SafeZone Cube Version with Perfect Entrance and Sign Alignment
+-- Avery's SafeZone with Front Baseplate, Bright Pink Sign, and Avatar Statue
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- GUI
+-- GUI Setup
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "SafeZoneGui"
 screenGui.ResetOnSpawn = false
@@ -40,7 +40,7 @@ local function RGBEffect(label)
 	end)
 end
 
--- SafeZone creation
+-- Create SafeZone
 local function createSafeZone()
 	if safeZoneFolder then return end
 	safeZoneFolder = Instance.new("Folder")
@@ -102,7 +102,7 @@ local function createSafeZone()
 	frontRight.BrickColor = BrickColor.new("Bright blue")
 	frontRight.Parent = safeZoneFolder
 
-	-- "Made by Avery" sign above entrance, flush with wall
+	-- "Made by Avery" sign above entrance
 	local makerSign = Instance.new("Part")
 	makerSign.Size = Vector3.new(entranceWidth,30,5)
 	makerSign.Position = Vector3.new(0,yPos+cubeHeight/2 + entranceHeight + 15,-cubeSize/2 - wallThickness/2 + 2.5)
@@ -128,7 +128,7 @@ local function createSafeZone()
 	makerLabel.Parent = makerBillboard
 	RGBEffect(makerLabel)
 
-	-- Internal side signs, flush inside walls
+	-- Internal side signs
 	local function createInternalSign(xPos)
 		local sign = Instance.new("Part")
 		sign.Size = Vector3.new(150,30,5)
@@ -167,6 +167,55 @@ local function createSafeZone()
 	path.Material = Enum.Material.Concrete
 	path.BrickColor = BrickColor.new("Medium stone grey")
 	path.Parent = safeZoneFolder
+
+	-- Baseplate in front of path
+	local baseplate = Instance.new("Part")
+	baseplate.Size = Vector3.new(400,10,400)
+	baseplate.Position = Vector3.new(0,yPos-5,-cubeSize/2 - 350)
+	baseplate.Anchored = true
+	baseplate.Material = Enum.Material.Grass
+	baseplate.BrickColor = BrickColor.new("Bright green")
+	baseplate.Parent = safeZoneFolder
+
+	-- Standing front sign (Bright Pink)
+	local frontSign = Instance.new("Part")
+	frontSign.Size = Vector3.new(200,50,5)
+	frontSign.Position = Vector3.new(0,yPos+15,-cubeSize/2 - 550)
+	frontSign.Anchored = true
+	frontSign.Material = Enum.Material.SmoothPlastic
+	frontSign.Color = Color3.fromRGB(255,20,147) -- Bright Pink
+	frontSign.Parent = safeZoneFolder
+
+	local frontBillboard = Instance.new("BillboardGui")
+	frontBillboard.Size = UDim2.new(0,200,0,50)
+	frontBillboard.AlwaysOnTop = true
+	frontBillboard.Adornee = frontSign
+	frontBillboard.Parent = frontSign
+
+	local frontLabel = Instance.new("TextLabel")
+	frontLabel.Size = UDim2.new(1,0,1,0)
+	frontLabel.BackgroundTransparency = 1
+	frontLabel.Text = "Made by Avery Discord: 90averyxx"
+	frontLabel.TextScaled = true
+	frontLabel.Font = Enum.Font.GothamBold
+	frontLabel.TextColor3 = Color3.fromRGB(255,20,147) -- Bright Pink
+	frontLabel.Parent = frontBillboard
+	RGBEffect(frontLabel)
+
+	-- Avatar Statue in middle of baseplate
+	local character = player.Character or player.CharacterAdded:Wait()
+	local statue = character:Clone()
+	for _,part in pairs(statue:GetDescendants()) do
+		if part:IsA("BasePart") then
+			part.Anchored = true
+			part.Material = Enum.Material.SmoothPlastic
+			part.Reflectance = 0.3
+		end
+	end
+	if statue.PrimaryPart then
+		statue:SetPrimaryPartCFrame(CFrame.new(0,yPos+15,-cubeSize/2 - 350))
+	end
+	statue.Parent = safeZoneFolder
 end
 
 -- Remove SafeZone
