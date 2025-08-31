@@ -1,150 +1,172 @@
--- Avery's Safe Zone Script
--- Works on PC + Mobile (draggable toggle button)
+-- Avery's Full SafeZone Script with Lights and Avatar Statue
+repeat task.wait() until game:IsLoaded()
 
-repeat wait() until game:IsLoaded()
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Remove old SafePlace if it exists
-if workspace:FindFirstChild("SafePlace") then
-	workspace.SafePlace:Destroy()
-end
-
 -- GUI Setup
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "SafeZoneGUI"
-screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.Name = "SafeZoneGui"
 screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
 
 local toggleButton = Instance.new("TextButton")
-toggleButton.Parent = screenGui
 toggleButton.Size = UDim2.new(0, 160, 0, 50)
-toggleButton.Position = UDim2.new(0.1, 0, 0.1, 0)
+toggleButton.Position = UDim2.new(0.05, 0, 0.2, 0)
 toggleButton.Text = "Toggle SafeZone"
-toggleButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+toggleButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.TextScaled = true
+toggleButton.Font = Enum.Font.SourceSansBold
+toggleButton.TextSize = 20
+toggleButton.Draggable = true
 toggleButton.Active = true
-toggleButton.Draggable = true -- mobile/pc draggable
+toggleButton.Parent = screenGui
 
-local SafeZoneActive = false
-local folder
+local safeZoneFolder = nil
+local signLabel = nil
+local running = false
 
--- RGB Effect for sign
-local function startRGB(textLabel)
-	spawn(function()
-		local hue = 0
-		while textLabel.Parent do
-			hue = (hue + 1) % 360
-			textLabel.TextColor3 = Color3.fromHSV(hue/360,1,1)
-			wait(0.05)
+-- RGB text effect
+local function RGBEffect(label)
+	task.spawn(function()
+		while label and label.Parent do
+			for hue = 0, 255, 4 do
+				label.TextColor3 = Color3.fromHSV(hue/255, 1, 1)
+				task.wait(0.05)
+			end
 		end
 	end)
 end
 
--- Function to spawn SafeZone
-local function createSafeZone()
-	folder = Instance.new("Folder")
-	folder.Name = "SafePlace"
-	folder.Parent = workspace
+-- Add lights to part
+local function addLights(part, spacing)
+	local count = math.floor(part.Size.Z / spacing)
+	for i = 0, count do
+		local light = Instance.new("PointLight")
+		light.Range = 20
+		light.Brightness = 2
+		light.Color = Color3.fromRGB(0,255,0)
+		light.Parent = part
+		light.Position = Vector3.new(0,5,-part.Size.Z/2 + i*spacing)
+	end
+end
 
-	-- Main Floor (HUGE)
+-- Create SafeZone
+local function createSafeZone()
+	if safeZoneFolder then return end
+	safeZoneFolder = Instance.new("Folder")
+	safeZoneFolder.Name = "SafeZone"
+	safeZoneFolder.Parent = workspace
+
+	-- Floor
 	local floor = Instance.new("Part")
-	floor.Size = Vector3.new(2048, 10, 2048)
+	floor.Name = "MainFloor"
+	floor.Size = Vector3.new(1024, 10, 1024)
 	floor.Position = Vector3.new(0, 150, 0)
 	floor.Anchored = true
-	floor.Name = "Floor"
-	floor.Parent = folder
+	floor.Material = Enum.Material.Concrete
+	floor.Parent = safeZoneFolder
 
 	-- Walls
-	local wallThickness = 20
+	local wallThickness = 40
 	local wallHeight = 300
-	local size = 2048
+	local wallLength = 1024
 
-	local function makeWall(pos, sizeVec)
+	local function makeWall(pos, size)
 		local wall = Instance.new("Part")
-		wall.Size = sizeVec
+		wall.Size = size
 		wall.Position = pos
 		wall.Anchored = true
-		wall.Parent = folder
-		return wall
+		wall.Material = Enum.Material.Metal
+		wall.BrickColor = BrickColor.new("Really black")
+		wall.Parent = safeZoneFolder
 	end
 
-	makeWall(Vector3.new(0, 150 + wallHeight/2, -size/2), Vector3.new(size, wallHeight, wallThickness)) -- Back
-	makeWall(Vector3.new(0, 150 + wallHeight/2, size/2), Vector3.new(size, wallHeight, wallThickness)) -- Front
-	makeWall(Vector3.new(-size/2, 150 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, size)) -- Left
-	makeWall(Vector3.new(size/2, 150 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, size)) -- Right
+	makeWall(Vector3.new(0, 150 + wallHeight/2, -wallLength/2), Vector3.new(wallLength, wallHeight, wallThickness)) -- back
+	makeWall(Vector3.new(-wallLength/2, 150 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength)) -- left
+	makeWall(Vector3.new(wallLength/2, 150 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength)) -- right
 
-	-- Entrance Opening (front wall hole)
-	local entrance = Instance.new("Part")
-	entrance.Size = Vector3.new(40, wallHeight, wallThickness)
-	entrance.Position = Vector3.new(0, 150 + wallHeight/2, size/2)
-	entrance.Anchored = true
-	entrance.Transparency = 1
-	entrance.CanCollide = false
-	entrance.Parent = folder
+	-- Openings
+	local frontPos = -600
+	local backPos = 600
 
-	-- Pathway
-	local path = Instance.new("Part")
-	path.Size = Vector3.new(50, 5, 300)
-	path.Position = Vector3.new(0, 150, size/2 + 150)
-	path.Anchored = true
-	path.Parent = folder
+	-- Path + ramp with lights
+	local function makePath(zPos, rampAngle)
+		local path = Instance.new("Part")
+		path.Size = Vector3.new(200, 10, 400)
+		path.Position = Vector3.new(0, 100, zPos)
+		path.Anchored = true
+		path.Material = Enum.Material.Concrete
+		path.Parent = safeZoneFolder
+		addLights(path, 50)
 
-	-- Ramp Stairway
-	local ramp = Instance.new("Part")
-	ramp.Size = Vector3.new(50, 5, 100)
-	ramp.Position = Vector3.new(0, 125, size/2 + 50)
-	ramp.Anchored = true
-	ramp.CFrame = ramp.CFrame * CFrame.Angles(math.rad(-30), 0, 0)
-	ramp.Parent = folder
+		local ramp = Instance.new("Part")
+		ramp.Size = Vector3.new(200, 10, 100)
+		ramp.Position = Vector3.new(0, 125, zPos + (zPos < 0 and 250 or -250))
+		ramp.Anchored = true
+		ramp.Material = Enum.Material.Concrete
+		ramp.Orientation = Vector3.new(rampAngle, 0, 0)
+		ramp.Parent = safeZoneFolder
+		addLights(ramp, 25)
+	end
 
-	-- Sign
+	makePath(frontPos, -30) -- front entrance
+	makePath(backPos, 30)   -- back entrance
+
+	-- RGB sign
 	local signPart = Instance.new("Part")
-	signPart.Size = Vector3.new(60, 20, 2)
-	signPart.Position = Vector3.new(0, 300, size/2 + 5)
 	signPart.Anchored = true
-	signPart.Parent = folder
+	signPart.Size = Vector3.new(400, 20, 5)
+	signPart.Position = Vector3.new(0, 300, -wallLength/2 - 2)
+	signPart.Color = Color3.fromRGB(10, 10, 10)
+	signPart.Parent = safeZoneFolder
 
-	local surfaceGui = Instance.new("SurfaceGui", signPart)
-	surfaceGui.Face = Enum.NormalId.Front
-	surfaceGui.AlwaysOnTop = true
+	local billboard = Instance.new("BillboardGui")
+	billboard.Size = UDim2.new(0, 400, 0, 100)
+	billboard.StudsOffset = Vector3.new(0, 0, -2)
+	billboard.Adornee = signPart
+	billboard.AlwaysOnTop = true
+	billboard.Parent = signPart
 
-	local textLabel = Instance.new("TextLabel", surfaceGui)
-	textLabel.Size = UDim2.new(1, 0, 1, 0)
-	textLabel.BackgroundTransparency = 1
-	textLabel.Text = "Avery's Safe Zone"
-	textLabel.Font = Enum.Font.Fantasy
-	textLabel.TextScaled = true
-	textLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+	signLabel = Instance.new("TextLabel")
+	signLabel.Size = UDim2.new(1, 0, 1, 0)
+	signLabel.BackgroundTransparency = 1
+	signLabel.Text = "Avery's Safe Zone"
+	signLabel.TextScaled = true
+	signLabel.Font = Enum.Font.GothamBold
+	signLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+	signLabel.Parent = billboard
+	RGBEffect(signLabel)
 
-	startRGB(textLabel)
-
-	-- Avatar Statue
+	-- Avatar statue
 	local char = player.Character or player.CharacterAdded:Wait()
 	local clone = char:Clone()
-	clone.Parent = folder
-	clone.Name = "AveryStatue"
-	for _, v in pairs(clone:GetDescendants()) do
-		if v:IsA("BasePart") then
-			v.Anchored = true
-			v.CanCollide = true
-		elseif v:IsA("Humanoid") then
-			v:Destroy()
+	for _, part in ipairs(clone:GetDescendants()) do
+		if part:IsA("BasePart") then
+			part.Anchored = true
+			part.CanCollide = false
+		elseif part:IsA("Humanoid") then
+			part:Destroy()
 		end
 	end
+	clone.Parent = safeZoneFolder
 	clone:SetPrimaryPartCFrame(CFrame.new(0, 160, 0))
 end
 
--- Toggle Button
+-- Remove SafeZone
+local function removeSafeZone()
+	if safeZoneFolder then
+		safeZoneFolder:Destroy()
+		safeZoneFolder = nil
+	end
+end
+
+-- Toggle button
 toggleButton.MouseButton1Click:Connect(function()
-	if SafeZoneActive then
-		if folder then folder:Destroy() end
-		SafeZoneActive = false
-		toggleButton.Text = "Enable SafeZone"
+	if running then
+		removeSafeZone()
 	else
 		createSafeZone()
-		SafeZoneActive = true
-		toggleButton.Text = "Disable SafeZone"
 	end
+	running = not running
 end)
