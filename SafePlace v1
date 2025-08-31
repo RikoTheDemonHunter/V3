@@ -1,4 +1,4 @@
--- Avery's SafeZone Cube Version (Y=2000, Transparent Floor, Perfect Signs)
+-- Avery's SafeZone Cube Version (Y=2000, Sign Attached to Wall)
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -49,7 +49,7 @@ local function createSafeZone()
 
 	local cubeSize = 600
 	local cubeHeight = 600
-	local yPos = 2000 -- cube base position
+	local yPos = 2000 -- base height
 	local wallThickness = 20
 
 	-- Floor inside cube
@@ -63,8 +63,8 @@ local function createSafeZone()
 	floor.BrickColor = BrickColor.new("Bright blue")
 	floor.Parent = safeZoneFolder
 
-	-- Helper to create wall with sign
-	local function createWall(position, size, rotation)
+	-- Helper to create wall with attached sign
+	local function createWall(position, size, orientation)
 		local wall = Instance.new("Part")
 		wall.Size = size
 		wall.Position = position
@@ -72,26 +72,26 @@ local function createSafeZone()
 		wall.Material = Enum.Material.SmoothPlastic
 		wall.Transparency = 0.4
 		wall.BrickColor = BrickColor.new("Bright blue")
-		if rotation then wall.Orientation = rotation end
+		if orientation then wall.Orientation = orientation end
 		wall.Parent = safeZoneFolder
 
-		-- Sign perfectly centered and higher
-		local signPart = Instance.new("Part")
-		signPart.Anchored = true
-		signPart.Size = Vector3.new(150, 30, 5)
-		signPart.Position = position + Vector3.new(0, 150, 0) -- slightly higher
-		signPart.Material = Enum.Material.SmoothPlastic
-		signPart.Color = Color3.fromRGB(0,0,0)
-		signPart.Parent = safeZoneFolder
+		-- Sign attached directly to wall
+		local sign = Instance.new("Part")
+		sign.Size = Vector3.new(150, 30, 5)
+		sign.Anchored = true
+		sign.Material = Enum.Material.SmoothPlastic
+		sign.Color = Color3.fromRGB(0, 0, 0)
+		sign.Parent = safeZoneFolder
+
+		-- Attach sign to wall
+		sign.CFrame = wall.CFrame * CFrame.new(0, 150, size.Z/2 + sign.Size.Z/2) -- slightly higher, on wall surface
 
 		local billboard = Instance.new("BillboardGui")
 		billboard.Size = UDim2.new(0, 150, 0, 50)
 		billboard.StudsOffset = Vector3.new(0,0,0)
 		billboard.AlwaysOnTop = true
-		if signPart and signPart.Parent then
-			billboard.Adornee = signPart
-			billboard.Parent = signPart
-		end
+		billboard.Adornee = sign
+		billboard.Parent = sign
 
 		local label = Instance.new("TextLabel")
 		label.Size = UDim2.new(1,0,1,0)
@@ -100,20 +100,15 @@ local function createSafeZone()
 		label.TextScaled = true
 		label.Font = Enum.Font.GothamBold
 		label.TextColor3 = Color3.fromRGB(255,0,0)
-		if billboard and billboard.Parent then
-			label.Parent = billboard
-			RGBEffect(label)
-		end
+		label.Parent = billboard
+		RGBEffect(label)
 	end
 
-	-- Left Wall
-	createWall(Vector3.new(-cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(wallThickness, cubeHeight, cubeSize))
-	-- Right Wall
-	createWall(Vector3.new(cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(wallThickness, cubeHeight, cubeSize))
-	-- Back Wall
-	createWall(Vector3.new(0, yPos + cubeHeight/2, cubeSize/2), Vector3.new(cubeSize, cubeHeight, wallThickness))
-	-- Front Wall
-	createWall(Vector3.new(0, yPos + cubeHeight/2, -cubeSize/2), Vector3.new(cubeSize, cubeHeight, wallThickness))
+	-- Walls with signs attached
+	createWall(Vector3.new(-cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(wallThickness, cubeHeight, cubeSize)) -- left
+	createWall(Vector3.new(cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(wallThickness, cubeHeight, cubeSize))  -- right
+	createWall(Vector3.new(0, yPos + cubeHeight/2, cubeSize/2), Vector3.new(cubeSize, cubeHeight, wallThickness)) -- back
+	createWall(Vector3.new(0, yPos + cubeHeight/2, -cubeSize/2), Vector3.new(cubeSize, cubeHeight, wallThickness)) -- front
 end
 
 -- Remove SafeZone
