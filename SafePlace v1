@@ -1,4 +1,4 @@
--- Avery's SafeZone with Front Baseplate, Bright Pink Sign, and Avatar Statue
+-- Avery's SafeZone with Large Baseplate, Front Sign, and Avatar Statue
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -160,18 +160,22 @@ local function createSafeZone()
 	createInternalSign(cubeSize/2 - wallThickness - 2.5)
 
 	-- Path aligned with entrance
+	local pathWidth = 100
+	local pathLength = 300
 	local path = Instance.new("Part")
-	path.Size = Vector3.new(entranceWidth,10,300)
-	path.Position = Vector3.new(0,yPos+5,-cubeSize/2 - 150)
+	path.Size = Vector3.new(pathWidth,10,pathLength)
+	path.Position = Vector3.new(0,yPos+5,-cubeSize/2 - pathLength/2)
 	path.Anchored = true
 	path.Material = Enum.Material.Concrete
 	path.BrickColor = BrickColor.new("Medium stone grey")
 	path.Parent = safeZoneFolder
 
-	-- Baseplate in front of path
+	-- Larger Baseplate in front of path
+	local baseplateWidth = 400
+	local baseplateDepth = 600
 	local baseplate = Instance.new("Part")
-	baseplate.Size = Vector3.new(400,10,400)
-	baseplate.Position = Vector3.new(0,yPos-5,-cubeSize/2 - 350)
+	baseplate.Size = Vector3.new(baseplateWidth,10,baseplateDepth)
+	baseplate.Position = Vector3.new(0,yPos-5,-cubeSize/2 - pathLength - baseplateDepth/2)
 	baseplate.Anchored = true
 	baseplate.Material = Enum.Material.Grass
 	baseplate.BrickColor = BrickColor.new("Bright green")
@@ -180,7 +184,7 @@ local function createSafeZone()
 	-- Standing front sign (Bright Pink)
 	local frontSign = Instance.new("Part")
 	frontSign.Size = Vector3.new(200,50,5)
-	frontSign.Position = Vector3.new(0,yPos+15,-cubeSize/2 - 550)
+	frontSign.Position = Vector3.new(0,yPos+15,-cubeSize/2 - pathLength - baseplateDepth + 50)
 	frontSign.Anchored = true
 	frontSign.Material = Enum.Material.SmoothPlastic
 	frontSign.Color = Color3.fromRGB(255,20,147) -- Bright Pink
@@ -198,7 +202,7 @@ local function createSafeZone()
 	frontLabel.Text = "Made by Avery Discord: 90averyxx"
 	frontLabel.TextScaled = true
 	frontLabel.Font = Enum.Font.GothamBold
-	frontLabel.TextColor3 = Color3.fromRGB(255,20,147) -- Bright Pink
+	frontLabel.TextColor3 = Color3.fromRGB(255,20,147)
 	frontLabel.Parent = frontBillboard
 	RGBEffect(frontLabel)
 
@@ -213,7 +217,7 @@ local function createSafeZone()
 		end
 	end
 	if statue.PrimaryPart then
-		statue:SetPrimaryPartCFrame(CFrame.new(0,yPos+15,-cubeSize/2 - 350))
+		statue:SetPrimaryPartCFrame(CFrame.new(0,yPos+15,-cubeSize/2 - pathLength - baseplateDepth/2))
 	end
 	statue.Parent = safeZoneFolder
 end
