@@ -1,4 +1,4 @@
--- Avery's SafeZone Full Script with Floating Grass Sign
+-- Avery's SafeZone Full Script with Smooth Color Cycle
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -8,17 +8,17 @@ local safeZoneFolder = nil
 local running = false
 local safeZoneParts = {}
 
--- Function to smoothly cycle colors
+-- Smooth slower color cycle
 local function cycleColor()
 	while running do
-		for hue=0,1,0.002 do
-			local color = Color3.fromHSV(hue,0.8,1)
+		for hue=0,1,0.001 do  -- slower increment
+			local color = Color3.fromHSV(hue,0.7,1)  -- slightly less saturated
 			for _,part in pairs(safeZoneParts) do
 				if part:IsA("Part") then
 					part.Color = color
 				end
 			end
-			task.wait(0.03)
+			task.wait(0.05)  -- slower refresh
 		end
 	end
 end
@@ -32,7 +32,7 @@ local function createSafeZone()
 
 	local cubeSize = 600
 	local cubeHeight = 100
-	local yPos = 200
+	local yPos = 3600 -- Raised Y position
 	local wallThickness = 20
 	local entranceWidth = 100
 
@@ -132,20 +132,33 @@ local function createSafeZone()
 	label.TextColor3 = Color3.fromRGB(255,20,147)
 	label.Parent = billboard
 
-	-- Avatar Statue
-	local character = player.Character or player.CharacterAdded:Wait()
-	local statue = character:Clone()
-	for _,part in pairs(statue:GetDescendants()) do
-		if part:IsA("BasePart") then
-			part.Anchored = true
-			part.Material = Enum.Material.SmoothPlastic
-			part.Reflectance = 0.3
+	-- Avatar Statue (Safe)
+	local function spawnStatue()
+		local character = player.Character or player.CharacterAdded:Wait()
+		if not character.PrimaryPart then
+			character:WaitForChild("HumanoidRootPart")
 		end
+
+		local statue = Instance.new("Model")
+		statue.Name = "AvatarStatue"
+
+		for _,part in pairs(character:GetDescendants()) do
+			if part:IsA("BasePart") then
+				local clone = part:Clone()
+				clone.Anchored = true
+				clone.Material = Enum.Material.SmoothPlastic
+				clone.Reflectance = 0.3
+				clone.Parent = statue
+			end
+		end
+
+		if statue:FindFirstChild("HumanoidRootPart") then
+			statue:SetPrimaryPartCFrame(CFrame.new(0,yPos+15,-cubeSize/2 - pathLength - baseplateDepth/2))
+		end
+		statue.Parent = safeZoneFolder
 	end
-	if statue.PrimaryPart then
-		statue:SetPrimaryPartCFrame(CFrame.new(0,yPos+15,-cubeSize/2 - pathLength - baseplateDepth/2))
-	end
-	statue.Parent = safeZoneFolder
+
+	spawnStatue()
 end
 
 -- Remove SafeZone
