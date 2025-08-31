@@ -1,21 +1,21 @@
--- Avery's SafeZone Cube Version with Proper Entrance and Sign Alignment
+-- Avery's SafeZone Cube Version with Perfect Entrance and Sign Alignment
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- GUI Setup
+-- GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "SafeZoneGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
 local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 160, 0, 50)
-toggleButton.Position = UDim2.new(0.05, 0, 0.2, 0)
+toggleButton.Size = UDim2.new(0,160,0,50)
+toggleButton.Position = UDim2.new(0.05,0,0.2,0)
 toggleButton.Text = "Toggle SafeZone"
-toggleButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.BackgroundColor3 = Color3.fromRGB(30,30,30)
+toggleButton.TextColor3 = Color3.fromRGB(255,255,255)
 toggleButton.Font = Enum.Font.SourceSansBold
 toggleButton.TextSize = 20
 toggleButton.Draggable = true
@@ -30,9 +30,9 @@ local function RGBEffect(label)
 	if not label then return end
 	task.spawn(function()
 		while label and label.Parent do
-			for hue = 0, 255, 4 do
+			for hue=0,255,4 do
 				if label and label.Parent then
-					label.TextColor3 = Color3.fromHSV(hue/255, 1, 1)
+					label.TextColor3 = Color3.fromHSV(hue/255,1,1)
 					task.wait(0.05)
 				end
 			end
@@ -40,7 +40,7 @@ local function RGBEffect(label)
 	end)
 end
 
--- Create cube SafeZone
+-- SafeZone creation
 local function createSafeZone()
 	if safeZoneFolder then return end
 	safeZoneFolder = Instance.new("Folder")
@@ -51,13 +51,13 @@ local function createSafeZone()
 	local cubeHeight = 600
 	local yPos = 2000
 	local wallThickness = 20
-	local entranceWidth = 100  -- smaller entrance
+	local entranceWidth = 100
 	local entranceHeight = 200
 
-	-- Floor inside cube
+	-- Floor
 	local floor = Instance.new("Part")
-	floor.Size = Vector3.new(cubeSize, 10, cubeSize)
-	floor.Position = Vector3.new(0, yPos + 5, 0)
+	floor.Size = Vector3.new(cubeSize,10,cubeSize)
+	floor.Position = Vector3.new(0,yPos+5,0)
 	floor.Anchored = true
 	floor.Material = Enum.Material.SmoothPlastic
 	floor.Transparency = 0.5
@@ -65,8 +65,8 @@ local function createSafeZone()
 	floor.BrickColor = BrickColor.new("Bright blue")
 	floor.Parent = safeZoneFolder
 
-	-- Helper function for walls
-	local function createWall(position, size, orientation)
+	-- Walls
+	local function createWall(position,size,orientation)
 		local wall = Instance.new("Part")
 		wall.Size = size
 		wall.Position = position
@@ -79,17 +79,14 @@ local function createSafeZone()
 		return wall
 	end
 
-	-- Left wall
-	createWall(Vector3.new(-cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(wallThickness, cubeHeight, cubeSize))
-	-- Right wall
-	createWall(Vector3.new(cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(wallThickness, cubeHeight, cubeSize))
-	-- Back wall
-	createWall(Vector3.new(0, yPos + cubeHeight/2, cubeSize/2), Vector3.new(cubeSize, cubeHeight, wallThickness))
-	
-	-- Front wall: split for entrance
+	createWall(Vector3.new(-cubeSize/2,yPos+cubeHeight/2,0),Vector3.new(wallThickness,cubeHeight,cubeSize)) -- left
+	createWall(Vector3.new(cubeSize/2,yPos+cubeHeight/2,0),Vector3.new(wallThickness,cubeHeight,cubeSize))  -- right
+	createWall(Vector3.new(0,yPos+cubeHeight/2,cubeSize/2),Vector3.new(cubeSize,cubeHeight,wallThickness)) -- back
+
+	-- Front wall split for entrance
 	local frontLeft = Instance.new("Part")
-	frontLeft.Size = Vector3.new((cubeSize - entranceWidth)/2, cubeHeight, wallThickness)
-	frontLeft.Position = Vector3.new(-(cubeSize - entranceWidth)/4 - entranceWidth/2, yPos + cubeHeight/2, -cubeSize/2)
+	frontLeft.Size = Vector3.new((cubeSize-entranceWidth)/2,cubeHeight,wallThickness)
+	frontLeft.Position = Vector3.new(-(cubeSize-entranceWidth)/4 - entranceWidth/2,yPos+cubeHeight/2,-cubeSize/2)
 	frontLeft.Anchored = true
 	frontLeft.Material = Enum.Material.SmoothPlastic
 	frontLeft.Transparency = 0.4
@@ -97,18 +94,18 @@ local function createSafeZone()
 	frontLeft.Parent = safeZoneFolder
 
 	local frontRight = Instance.new("Part")
-	frontRight.Size = Vector3.new((cubeSize - entranceWidth)/2, cubeHeight, wallThickness)
-	frontRight.Position = Vector3.new((cubeSize - entranceWidth)/4 + entranceWidth/2, yPos + cubeHeight/2, -cubeSize/2)
+	frontRight.Size = Vector3.new((cubeSize-entranceWidth)/2,cubeHeight,wallThickness)
+	frontRight.Position = Vector3.new((cubeSize-entranceWidth)/4 + entranceWidth/2,yPos+cubeHeight/2,-cubeSize/2)
 	frontRight.Anchored = true
 	frontRight.Material = Enum.Material.SmoothPlastic
 	frontRight.Transparency = 0.4
 	frontRight.BrickColor = BrickColor.new("Bright blue")
 	frontRight.Parent = safeZoneFolder
 
-	-- "Made by Avery" sign above entrance
+	-- "Made by Avery" sign above entrance, flush with wall
 	local makerSign = Instance.new("Part")
-	makerSign.Size = Vector3.new(entranceWidth, 30, 5)
-	makerSign.Position = Vector3.new(0, yPos + cubeHeight/2 + entranceHeight + 15, -cubeSize/2)
+	makerSign.Size = Vector3.new(entranceWidth,30,5)
+	makerSign.Position = Vector3.new(0,yPos+cubeHeight/2 + entranceHeight + 15,-cubeSize/2 - wallThickness/2 + 2.5)
 	makerSign.Anchored = true
 	makerSign.Material = Enum.Material.SmoothPlastic
 	makerSign.Transparency = 0.5
@@ -116,7 +113,7 @@ local function createSafeZone()
 	makerSign.Parent = safeZoneFolder
 
 	local makerBillboard = Instance.new("BillboardGui")
-	makerBillboard.Size = UDim2.new(0, entranceWidth, 0, 50)
+	makerBillboard.Size = UDim2.new(0, entranceWidth,0,50)
 	makerBillboard.AlwaysOnTop = true
 	makerBillboard.Adornee = makerSign
 	makerBillboard.Parent = makerSign
@@ -131,15 +128,15 @@ local function createSafeZone()
 	makerLabel.Parent = makerBillboard
 	RGBEffect(makerLabel)
 
-	-- Two internal side signs inside walls
-	local function createInternalSign(wallX)
+	-- Internal side signs, flush inside walls
+	local function createInternalSign(xPos)
 		local sign = Instance.new("Part")
 		sign.Size = Vector3.new(150,30,5)
 		sign.Anchored = true
 		sign.Material = Enum.Material.SmoothPlastic
 		sign.Transparency = 0.5
 		sign.Color = Color3.fromRGB(0,0,0)
-		sign.Position = Vector3.new(wallX, yPos + cubeHeight/2, 0)
+		sign.Position = Vector3.new(xPos,yPos+cubeHeight/2,0)
 		sign.Parent = safeZoneFolder
 
 		local billboard = Instance.new("BillboardGui")
@@ -159,13 +156,13 @@ local function createSafeZone()
 		RGBEffect(label)
 	end
 
-	createInternalSign(-cubeSize/2 + wallThickness) -- left wall
-	createInternalSign(cubeSize/2 - wallThickness)  -- right wall
+	createInternalSign(-cubeSize/2 + wallThickness + 2.5)
+	createInternalSign(cubeSize/2 - wallThickness - 2.5)
 
 	-- Path aligned with entrance
 	local path = Instance.new("Part")
 	path.Size = Vector3.new(entranceWidth,10,300)
-	path.Position = Vector3.new(0, yPos + 5, -cubeSize/2 - 150)
+	path.Position = Vector3.new(0,yPos+5,-cubeSize/2 - 150)
 	path.Anchored = true
 	path.Material = Enum.Material.Concrete
 	path.BrickColor = BrickColor.new("Medium stone grey")
@@ -180,7 +177,6 @@ local function removeSafeZone()
 	end
 end
 
--- Toggle button
 toggleButton.MouseButton1Click:Connect(function()
 	if running then
 		removeSafeZone()
