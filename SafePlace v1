@@ -1,4 +1,4 @@
--- Avery's SafeZone Full Code (Higher Floor + Sign Inside Wall)
+-- Avery's SafeZone Cube Version (Y=2000, Blue Walls, RGB Signs)
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -40,107 +40,69 @@ local function RGBEffect(label)
 	end)
 end
 
--- Add lights along part
-local function addLights(part, spacing)
-	if not part then return end
-	local count = math.floor(part.Size.Z / spacing)
-	for i = 0, count do
-		local light = Instance.new("PointLight")
-		light.Range = 20
-		light.Brightness = 2
-		light.Color = Color3.fromRGB(0, 255, 0)
-		light.Parent = part
-		light.Position = Vector3.new(0, 5, -part.Size.Z/2 + i*spacing)
-	end
-end
-
--- Create SafeZone
+-- Create cube SafeZone
 local function createSafeZone()
 	if safeZoneFolder then return end
 	safeZoneFolder = Instance.new("Folder")
 	safeZoneFolder.Name = "SafeZone"
 	safeZoneFolder.Parent = workspace
 
-	-- Floor (Even Higher)
-	local floor = Instance.new("Part")
-	floor.Name = "MainFloor"
-	floor.Size = Vector3.new(600, 10, 600)
-	floor.Position = Vector3.new(0, 600, 0) -- raised floor
-	floor.Anchored = true
-	floor.Material = Enum.Material.SmoothPlastic
-	floor.Transparency = 0.7
-	floor.CanCollide = true
-	floor.Parent = safeZoneFolder
-
-	-- Walls
+	local cubeSize = 600
+	local cubeHeight = 600
+	local yPos = 2000 -- high position
 	local wallThickness = 20
-	local wallHeight = 350
-	local wallLength = 600
 
-	local function makeWall(pos, size)
+	-- Helper to create wall with sign
+	local function createWall(position, size, rotation)
 		local wall = Instance.new("Part")
 		wall.Size = size
-		wall.Position = pos
+		wall.Position = position
 		wall.Anchored = true
-		wall.Material = Enum.Material.Metal
-		wall.BrickColor = BrickColor.new("Really black")
+		wall.Material = Enum.Material.SmoothPlastic
+		wall.Transparency = 0.4
+		wall.BrickColor = BrickColor.new("Bright blue")
+		if rotation then wall.Orientation = rotation end
 		wall.Parent = safeZoneFolder
-		return wall
+
+		-- Sign
+		local signPart = Instance.new("Part")
+		signPart.Anchored = true
+		signPart.Size = Vector3.new(150, 30, 5)
+		signPart.Position = position + Vector3.new(0, 100, 0) -- inside wall
+		signPart.Material = Enum.Material.SmoothPlastic
+		signPart.Color = Color3.fromRGB(0,0,0)
+		signPart.Parent = safeZoneFolder
+
+		local billboard = Instance.new("BillboardGui")
+		billboard.Size = UDim2.new(0, 150, 0, 50)
+		billboard.StudsOffset = Vector3.new(0,0,0)
+		billboard.AlwaysOnTop = true
+		if signPart and signPart.Parent then
+			billboard.Adornee = signPart
+			billboard.Parent = signPart
+		end
+
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.new(1,0,1,0)
+		label.BackgroundTransparency = 1
+		label.Text = "Avery's Safe Zone"
+		label.TextScaled = true
+		label.Font = Enum.Font.GothamBold
+		label.TextColor3 = Color3.fromRGB(255,0,0)
+		if billboard and billboard.Parent then
+			label.Parent = billboard
+			RGBEffect(label)
+		end
 	end
 
-	local leftWall = makeWall(Vector3.new(-wallLength/2, 600 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
-	local rightWall = makeWall(Vector3.new(wallLength/2, 600 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
-	local backWall = makeWall(Vector3.new(0, 600 + wallHeight/2, wallLength/2), Vector3.new(wallLength, wallHeight, wallThickness))
-	local frontWall = makeWall(Vector3.new(0, 600 + wallHeight/2, -wallLength/2 + wallThickness), Vector3.new(wallLength-150, wallHeight, wallThickness))
-
-	-- Pathway
-	local path = Instance.new("Part")
-	path.Size = Vector3.new(150, 10, 300)
-	path.Position = Vector3.new(0, 550, -wallLength/2 - 150)
-	path.Anchored = true
-	path.Material = Enum.Material.Concrete
-	path.Parent = safeZoneFolder
-	addLights(path, 50)
-
-	-- Stairway at entrance
-	local stair = Instance.new("Part")
-	stair.Size = Vector3.new(150, 10, 80)
-	stair.Position = Vector3.new(0, 575, -wallLength/2 - 90)
-	stair.Anchored = true
-	stair.Material = Enum.Material.Concrete
-	stair.Orientation = Vector3.new(-25, 0, 0)
-	stair.Parent = safeZoneFolder
-	addLights(stair, 25)
-
-	-- Avery's RGB Wall Sign (Smaller and inside wall)
-	local signPart = Instance.new("Part")
-	signPart.Anchored = true
-	signPart.Size = Vector3.new(150, 30, 5) -- smaller
-	signPart.Position = Vector3.new(0, 600 + 200, -wallLength/2 + wallThickness/2 + 1) -- inside wall
-	signPart.Material = Enum.Material.SmoothPlastic
-	signPart.Color = Color3.fromRGB(0,0,0)
-	signPart.Parent = safeZoneFolder
-
-	local billboard = Instance.new("BillboardGui")
-	billboard.Size = UDim2.new(0, 150, 0, 50)
-	billboard.StudsOffset = Vector3.new(0, 0, 0)
-	billboard.AlwaysOnTop = true
-	if signPart and signPart.Parent then
-		billboard.Adornee = signPart
-		billboard.Parent = signPart
-	end
-
-	local signLabel = Instance.new("TextLabel")
-	signLabel.Size = UDim2.new(1, 0, 1, 0)
-	signLabel.BackgroundTransparency = 1
-	signLabel.Text = "Avery's Safe Zone"
-	signLabel.TextScaled = true
-	signLabel.Font = Enum.Font.GothamBold
-	signLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-	if billboard and billboard.Parent then
-		signLabel.Parent = billboard
-		RGBEffect(signLabel)
-	end
+	-- Left Wall
+	createWall(Vector3.new(-cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(wallThickness, cubeHeight, cubeSize))
+	-- Right Wall
+	createWall(Vector3.new(cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(wallThickness, cubeHeight, cubeSize))
+	-- Back Wall
+	createWall(Vector3.new(0, yPos + cubeHeight/2, cubeSize/2), Vector3.new(cubeSize, cubeHeight, wallThickness))
+	-- Front Wall
+	createWall(Vector3.new(0, yPos + cubeHeight/2, -cubeSize/2), Vector3.new(cubeSize, cubeHeight, wallThickness))
 end
 
 -- Remove SafeZone
