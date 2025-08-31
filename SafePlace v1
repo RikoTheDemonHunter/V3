@@ -1,4 +1,4 @@
--- Avery's SafeZone Full Code (Nil-Safe, Complete Features)
+-- Avery's SafeZone Full Code (Higher Floor + RGB Sign)
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -61,11 +61,11 @@ local function createSafeZone()
 	safeZoneFolder.Name = "SafeZone"
 	safeZoneFolder.Parent = workspace
 
-	-- Floor (Transparent, Elevated)
+	-- Floor (Higher and Transparent)
 	local floor = Instance.new("Part")
 	floor.Name = "MainFloor"
 	floor.Size = Vector3.new(600, 10, 600)
-	floor.Position = Vector3.new(0, 300, 0)
+	floor.Position = Vector3.new(0, 450, 0) -- higher than before
 	floor.Anchored = true
 	floor.Material = Enum.Material.SmoothPlastic
 	floor.Transparency = 0.7
@@ -88,15 +88,15 @@ local function createSafeZone()
 		return wall
 	end
 
-	local leftWall = makeWall(Vector3.new(-wallLength/2, 300 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
-	local rightWall = makeWall(Vector3.new(wallLength/2, 300 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
-	local backWall = makeWall(Vector3.new(0, 300 + wallHeight/2, wallLength/2), Vector3.new(wallLength, wallHeight, wallThickness))
-	local frontWall = makeWall(Vector3.new(0, 300 + wallHeight/2, -wallLength/2 + wallThickness), Vector3.new(wallLength-150, wallHeight, wallThickness))
+	local leftWall = makeWall(Vector3.new(-wallLength/2, 450 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
+	local rightWall = makeWall(Vector3.new(wallLength/2, 450 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
+	local backWall = makeWall(Vector3.new(0, 450 + wallHeight/2, wallLength/2), Vector3.new(wallLength, wallHeight, wallThickness))
+	local frontWall = makeWall(Vector3.new(0, 450 + wallHeight/2, -wallLength/2 + wallThickness), Vector3.new(wallLength-150, wallHeight, wallThickness))
 
 	-- Pathway
 	local path = Instance.new("Part")
 	path.Size = Vector3.new(150, 10, 300)
-	path.Position = Vector3.new(0, 250, -wallLength/2 - 150)
+	path.Position = Vector3.new(0, 400, -wallLength/2 - 150)
 	path.Anchored = true
 	path.Material = Enum.Material.Concrete
 	path.Parent = safeZoneFolder
@@ -105,7 +105,7 @@ local function createSafeZone()
 	-- Stairway at entrance
 	local stair = Instance.new("Part")
 	stair.Size = Vector3.new(150, 10, 80)
-	stair.Position = Vector3.new(0, 270, -wallLength/2 - 90)
+	stair.Position = Vector3.new(0, 425, -wallLength/2 - 90)
 	stair.Anchored = true
 	stair.Material = Enum.Material.Concrete
 	stair.Orientation = Vector3.new(-25, 0, 0)
@@ -115,14 +115,14 @@ local function createSafeZone()
 	-- Avery's RGB Wall Sign
 	local signPart = Instance.new("Part")
 	signPart.Anchored = true
-	signPart.Size = Vector3.new(200, 40, 5)
-	signPart.Position = Vector3.new(0, 300 + 200, -wallLength/2 + wallThickness + 2)
+	signPart.Size = Vector3.new(250, 50, 5) -- bigger
+	signPart.Position = Vector3.new(0, 450 + 250, -wallLength/2 + wallThickness + 2)
 	signPart.Material = Enum.Material.SmoothPlastic
 	signPart.Color = Color3.fromRGB(0,0,0)
 	signPart.Parent = safeZoneFolder
 
 	local billboard = Instance.new("BillboardGui")
-	billboard.Size = UDim2.new(0, 200, 0, 60)
+	billboard.Size = UDim2.new(0, 250, 0, 80)
 	billboard.StudsOffset = Vector3.new(0, 0, 0)
 	billboard.AlwaysOnTop = true
 	if signPart and signPart.Parent then
