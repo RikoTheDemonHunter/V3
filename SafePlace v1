@@ -1,4 +1,4 @@
--- Avery's SafeZone Cube Version (Y=2000, Blue Walls, RGB Signs)
+-- Avery's SafeZone Cube Version (Y=2000, Transparent Floor, Perfect Signs)
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -49,8 +49,19 @@ local function createSafeZone()
 
 	local cubeSize = 600
 	local cubeHeight = 600
-	local yPos = 2000 -- high position
+	local yPos = 2000 -- cube base position
 	local wallThickness = 20
+
+	-- Floor inside cube
+	local floor = Instance.new("Part")
+	floor.Size = Vector3.new(cubeSize, 10, cubeSize)
+	floor.Position = Vector3.new(0, yPos + 5, 0)
+	floor.Anchored = true
+	floor.Material = Enum.Material.SmoothPlastic
+	floor.Transparency = 0.5
+	floor.Reflectance = 0.2 -- glossy effect
+	floor.BrickColor = BrickColor.new("Bright blue")
+	floor.Parent = safeZoneFolder
 
 	-- Helper to create wall with sign
 	local function createWall(position, size, rotation)
@@ -64,11 +75,11 @@ local function createSafeZone()
 		if rotation then wall.Orientation = rotation end
 		wall.Parent = safeZoneFolder
 
-		-- Sign
+		-- Sign perfectly centered and higher
 		local signPart = Instance.new("Part")
 		signPart.Anchored = true
 		signPart.Size = Vector3.new(150, 30, 5)
-		signPart.Position = position + Vector3.new(0, 100, 0) -- inside wall
+		signPart.Position = position + Vector3.new(0, 150, 0) -- slightly higher
 		signPart.Material = Enum.Material.SmoothPlastic
 		signPart.Color = Color3.fromRGB(0,0,0)
 		signPart.Parent = safeZoneFolder
