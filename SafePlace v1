@@ -26,7 +26,7 @@ local safeZoneFolder = nil
 local signLabel = nil
 local running = false
 
--- Rainbow text effect
+-- RGB text effect
 local function RGBEffect(label)
 	task.spawn(function()
 		while label and label.Parent do
@@ -58,19 +58,19 @@ local function createSafeZone()
 	safeZoneFolder.Name = "SafeZone"
 	safeZoneFolder.Parent = workspace
 
-	-- Main Floor
+	-- Floor
 	local floor = Instance.new("Part")
 	floor.Name = "MainFloor"
-	floor.Size = Vector3.new(1024, 10, 1024)
-	floor.Position = Vector3.new(0, 150, 0)
+	floor.Size = Vector3.new(500, 10, 500)
+	floor.Position = Vector3.new(0, 250, 0)
 	floor.Anchored = true
 	floor.Material = Enum.Material.Concrete
 	floor.Parent = safeZoneFolder
 
 	-- Walls
-	local wallThickness = 40
+	local wallThickness = 20
 	local wallHeight = 300
-	local wallLength = 1024
+	local wallLength = 500
 
 	local function makeWall(pos, size)
 		local wall = Instance.new("Part")
@@ -83,94 +83,28 @@ local function createSafeZone()
 	end
 
 	-- Left wall
-	makeWall(Vector3.new(-wallLength/2, 150 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
+	makeWall(Vector3.new(-wallLength/2, 250 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
 	-- Right wall
-	makeWall(Vector3.new(wallLength/2, 150 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
+	makeWall(Vector3.new(wallLength/2, 250 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
 	-- Back wall
-	makeWall(Vector3.new(0, 150 + wallHeight/2, wallLength/2), Vector3.new(wallLength, wallHeight, wallThickness))
-	-- Front wall (partial - opening for entrance)
-	makeWall(Vector3.new(0, 150 + wallHeight/2, -wallLength/2 + wallThickness), Vector3.new(wallLength-300, wallHeight, wallThickness))
+	makeWall(Vector3.new(0, 250 + wallHeight/2, wallLength/2), Vector3.new(wallLength, wallHeight, wallThickness))
+	-- Front wall with opening (150 studs wide)
+	makeWall(Vector3.new(0, 250 + wallHeight/2, -wallLength/2 + wallThickness), Vector3.new(wallLength-150, wallHeight, wallThickness))
 
-	-- Front and back entrances
-	local frontPos = -600
-	local backPos = 600
+	-- Pathway
+	local path = Instance.new("Part")
+	path.Size = Vector3.new(120, 10, 250)
+	path.Position = Vector3.new(0, 200, -wallLength/2 - 125)
+	path.Anchored = true
+	path.Material = Enum.Material.Concrete
+	path.Parent = safeZoneFolder
+	addLights(path, 50)
 
-	local function makePath(zPos, rampAngle)
-		local path = Instance.new("Part")
-		path.Size = Vector3.new(200, 10, 400)
-		path.Position = Vector3.new(0, 100, zPos)
-		path.Anchored = true
-		path.Material = Enum.Material.Concrete
-		path.Parent = safeZoneFolder
-		addLights(path, 50)
-
-		local ramp = Instance.new("Part")
-		ramp.Size = Vector3.new(200, 10, 100)
-		ramp.Position = Vector3.new(0, 125, zPos + (zPos < 0 and 250 or -250))
-		ramp.Anchored = true
-		ramp.Material = Enum.Material.Concrete
-		ramp.Orientation = Vector3.new(rampAngle, 0, 0)
-		ramp.Parent = safeZoneFolder
-		addLights(ramp, 25)
-	end
-
-	makePath(frontPos, -30)
-	makePath(backPos, 30)
-
-	-- Sign Wall
-	local signPart = Instance.new("Part")
-	signPart.Anchored = true
-	signPart.Size = Vector3.new(400, 20, 5)
-	signPart.Position = Vector3.new(0, 300, -wallLength/2 - 2)
-	signPart.Color = Color3.fromRGB(10, 10, 10)
-	signPart.Parent = safeZoneFolder
-
-	local billboard = Instance.new("BillboardGui")
-	billboard.Size = UDim2.new(0, 400, 0, 100)
-	billboard.StudsOffset = Vector3.new(0, 0, -2)
-	billboard.Adornee = signPart
-	billboard.AlwaysOnTop = true
-	billboard.Parent = signPart
-
-	signLabel = Instance.new("TextLabel")
-	signLabel.Size = UDim2.new(1, 0, 1, 0)
-	signLabel.BackgroundTransparency = 1
-	signLabel.Text = "Avery's Safe Zone"
-	signLabel.TextScaled = true
-	signLabel.Font = Enum.Font.GothamBold
-	signLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-	signLabel.Parent = billboard
-	RGBEffect(signLabel)
-
-	-- Avatar Statue
-	local char = player.Character or player.CharacterAdded:Wait()
-	local clone = char:Clone()
-	for _, part in ipairs(clone:GetDescendants()) do
-		if part:IsA("BasePart") then
-			part.Anchored = true
-			part.CanCollide = false
-		elseif part:IsA("Humanoid") then
-			part:Destroy()
-		end
-	end
-	clone.Parent = safeZoneFolder
-	clone:SetPrimaryPartCFrame(CFrame.new(0, 160, 0))
-end
-
--- Remove SafeZone
-local function removeSafeZone()
-	if safeZoneFolder then
-		safeZoneFolder:Destroy()
-		safeZoneFolder = nil
-	end
-end
-
--- Toggle button
-toggleButton.MouseButton1Click:Connect(function()
-	if running then
-		removeSafeZone()
-	else
-		createSafeZone()
-	end
-	running = not running
-end)
+	-- Stairway
+	local stair = Instance.new("Part")
+	stair.Size = Vector3.new(120, 10, 60)
+	stair.Position = Vector3.new(0, 220, -wallLength/2 - 70)
+	stair.Anchored = true
+	stair.Material = Enum.Material.Concrete
+	stair.Orientation = Vector3.new(-25, 0, 0)
+	stair.Parent = safeZoneFo
