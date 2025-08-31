@@ -1,4 +1,4 @@
--- Avery's SafeZone with Transparent Floor & Wall Sign
+-- Avery's Complete SafeZone Script (Nil-Safe, Full Features)
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -27,10 +27,11 @@ local running = false
 
 -- RGB text effect
 local function RGBEffect(label)
+	if not label or not label.Parent then return end
 	task.spawn(function()
-		if label then
-			while label.Parent do
-				for hue = 0, 255, 4 do
+		while label and label.Parent do
+			for hue = 0, 255, 4 do
+				if label and label.Parent then
 					label.TextColor3 = Color3.fromHSV(hue/255, 1, 1)
 					task.wait(0.05)
 				end
@@ -39,7 +40,7 @@ local function RGBEffect(label)
 	end)
 end
 
--- Add lights along part
+-- Add lights along a part
 local function addLights(part, spacing)
 	if not part then return end
 	local count = math.floor(part.Size.Z / spacing)
@@ -48,73 +49,3 @@ local function addLights(part, spacing)
 		light.Range = 20
 		light.Brightness = 2
 		light.Color = Color3.fromRGB(0, 255, 0)
-		light.Parent = part
-		light.Position = Vector3.new(0, 5, -part.Size.Z/2 + i*spacing)
-	end
-end
-
--- Create SafeZone
-local function createSafeZone()
-	if safeZoneFolder then return end
-	safeZoneFolder = Instance.new("Folder")
-	safeZoneFolder.Name = "SafeZone"
-	safeZoneFolder.Parent = workspace
-
-	-- Transparent Floor
-	local floor = Instance.new("Part")
-	floor.Name = "MainFloor"
-	floor.Size = Vector3.new(600, 10, 600)
-	floor.Position = Vector3.new(0, 300, 0) -- higher
-	floor.Anchored = true
-	floor.Material = Enum.Material.SmoothPlastic
-	floor.Transparency = 0.7
-	floor.CanCollide = true
-	floor.Parent = safeZoneFolder
-
-	-- Walls
-	local wallThickness = 20
-	local wallHeight = 350
-	local wallLength = 600
-
-	local function makeWall(pos, size)
-		local wall = Instance.new("Part")
-		wall.Size = size
-		wall.Position = pos
-		wall.Anchored = true
-		wall.Material = Enum.Material.Metal
-		wall.BrickColor = BrickColor.new("Really black")
-		wall.Parent = safeZoneFolder
-		return wall
-	end
-
-	local leftWall = makeWall(Vector3.new(-wallLength/2, 300 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
-	local rightWall = makeWall(Vector3.new(wallLength/2, 300 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
-	local backWall = makeWall(Vector3.new(0, 300 + wallHeight/2, wallLength/2), Vector3.new(wallLength, wallHeight, wallThickness))
-	local frontWall = makeWall(Vector3.new(0, 300 + wallHeight/2, -wallLength/2 + wallThickness), Vector3.new(wallLength-150, wallHeight, wallThickness))
-
-	-- Pathway
-	local path = Instance.new("Part")
-	path.Size = Vector3.new(150, 10, 300)
-	path.Position = Vector3.new(0, 250, -wallLength/2 - 150)
-	path.Anchored = true
-	path.Material = Enum.Material.Concrete
-	path.Parent = safeZoneFolder
-	addLights(path, 50)
-
-	-- Stairway
-	local stair = Instance.new("Part")
-	stair.Size = Vector3.new(150, 10, 80)
-	stair.Position = Vector3.new(0, 270, -wallLength/2 - 90)
-	stair.Anchored = true
-	stair.Material = Enum.Material.Concrete
-	stair.Orientation = Vector3.new(-25, 0, 0)
-	stair.Parent = safeZoneFolder
-	addLights(stair, 25)
-
-	-- Avery's RGB Wall Sign
-	local signPart = Instance.new("Part")
-	signPart.Anchored = true
-	signPart.Size = Vector3.new(200, 40, 5) -- bigger
-	signPart.Position = Vector3.new(0, 300 + 200, -wallLength/2 + wallThickness + 2)
-	signPart.Material = Enum.Material.SmoothPlastic
-	signPart.Color = Color3.
