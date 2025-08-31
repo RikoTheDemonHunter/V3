@@ -1,4 +1,4 @@
--- Avery's SafeZone Full Script with Smooth Color Cycle and RGB Billboard Text
+-- Avery's SafeZone Full Script with Smooth Color Cycle and RGB Billboard Text (No Statue)
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -152,33 +152,6 @@ local function createSafeZone()
 
 	-- Start RGB text effect
 	RGBEffect(label)
-
-	-- Avatar Statue
-	local function spawnStatue()
-		local character = player.Character or player.CharacterAdded:Wait()
-		local rootPart = character:WaitForChild("HumanoidRootPart")
-
-		local statue = Instance.new("Model")
-		statue.Name = "AvatarStatue"
-
-		for _,part in pairs(character:GetChildren()) do
-			if part:IsA("BasePart") then
-				local clone = part:Clone()
-				clone.Anchored = true
-				clone.Material = Enum.Material.SmoothPlastic
-				clone.Reflectance = 0.3
-				clone.Parent = statue
-			end
-		end
-
-		if statue:FindFirstChild(rootPart.Name) then
-			statue.PrimaryPart = statue:FindFirstChild(rootPart.Name)
-			statue:SetPrimaryPartCFrame(CFrame.new(0,yPos+15,-cubeSize/2 - pathLength - baseplateDepth/2))
-		end
-
-		statue.Parent = safeZoneFolder
-	end
-	spawnStatue()
 end
 
 -- Remove SafeZone
