@@ -1,4 +1,4 @@
--- Avery's SafeZone Cube Version with Path and Signs
+-- Avery's SafeZone Cube Version with Aligned Entrance and Path
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -40,7 +40,7 @@ local function RGBEffect(label)
 	end)
 end
 
--- Create cube SafeZone with path
+-- Create cube SafeZone
 local function createSafeZone()
 	if safeZoneFolder then return end
 	safeZoneFolder = Instance.new("Folder")
@@ -51,6 +51,8 @@ local function createSafeZone()
 	local cubeHeight = 600
 	local yPos = 2000
 	local wallThickness = 20
+	local entranceWidth = 150
+	local entranceHeight = 250
 
 	-- Floor inside cube
 	local floor = Instance.new("Part")
@@ -63,7 +65,7 @@ local function createSafeZone()
 	floor.BrickColor = BrickColor.new("Bright blue")
 	floor.Parent = safeZoneFolder
 
-	-- Helper to create wall with embedded sign
+	-- Helper function for walls
 	local function createWall(position, size, orientation)
 		local wall = Instance.new("Part")
 		wall.Size = size
@@ -74,21 +76,74 @@ local function createSafeZone()
 		wall.BrickColor = BrickColor.new("Bright blue")
 		if orientation then wall.Orientation = orientation end
 		wall.Parent = safeZoneFolder
+		return wall
+	end
 
-		-- Sign embedded in wall
+	-- Left wall
+	createWall(Vector3.new(-cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(wallThickness, cubeHeight, cubeSize))
+	-- Right wall
+	createWall(Vector3.new(cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(wallThickness, cubeHeight, cubeSize))
+	-- Back wall
+	createWall(Vector3.new(0, yPos + cubeHeight/2, cubeSize/2), Vector3.new(cubeSize, cubeHeight, wallThickness))
+	
+	-- Front wall: split into left and right parts to create entrance
+	local frontLeft = Instance.new("Part")
+	frontLeft.Size = Vector3.new((cubeSize - entranceWidth)/2, cubeHeight, wallThickness)
+	frontLeft.Position = Vector3.new(-(cubeSize - entranceWidth)/4 - entranceWidth/2, yPos + cubeHeight/2, -cubeSize/2)
+	frontLeft.Anchored = true
+	frontLeft.Material = Enum.Material.SmoothPlastic
+	frontLeft.Transparency = 0.4
+	frontLeft.BrickColor = BrickColor.new("Bright blue")
+	frontLeft.Parent = safeZoneFolder
+
+	local frontRight = Instance.new("Part")
+	frontRight.Size = Vector3.new((cubeSize - entranceWidth)/2, cubeHeight, wallThickness)
+	frontRight.Position = Vector3.new((cubeSize - entranceWidth)/4 + entranceWidth/2, yPos + cubeHeight/2, -cubeSize/2)
+	frontRight.Anchored = true
+	frontRight.Material = Enum.Material.SmoothPlastic
+	frontRight.Transparency = 0.4
+	frontRight.BrickColor = BrickColor.new("Bright blue")
+	frontRight.Parent = safeZoneFolder
+
+	-- "Made by Avery" sign above entrance
+	local makerSign = Instance.new("Part")
+	makerSign.Size = Vector3.new(entranceWidth, 30, 5)
+	makerSign.Position = Vector3.new(0, yPos + cubeHeight/2 + entranceHeight + 15, -cubeSize/2)
+	makerSign.Anchored = true
+	makerSign.Material = Enum.Material.SmoothPlastic
+	makerSign.Transparency = 0.5
+	makerSign.Color = Color3.fromRGB(0,0,0)
+	makerSign.Parent = safeZoneFolder
+
+	local makerBillboard = Instance.new("BillboardGui")
+	makerBillboard.Size = UDim2.new(0, entranceWidth, 0, 50)
+	makerBillboard.AlwaysOnTop = true
+	makerBillboard.Adornee = makerSign
+	makerBillboard.Parent = makerSign
+
+	local makerLabel = Instance.new("TextLabel")
+	makerLabel.Size = UDim2.new(1,0,1,0)
+	makerLabel.BackgroundTransparency = 1
+	makerLabel.Text = "Made by Avery"
+	makerLabel.TextScaled = true
+	makerLabel.Font = Enum.Font.GothamBold
+	makerLabel.TextColor3 = Color3.fromRGB(0,255,0)
+	makerLabel.Parent = makerBillboard
+	RGBEffect(makerLabel)
+
+	-- Internal side signs
+	local function createInternalSign(wallPos)
 		local sign = Instance.new("Part")
-		sign.Size = Vector3.new(150, 30, 5)
+		sign.Size = Vector3.new(150,30,5)
 		sign.Anchored = true
 		sign.Material = Enum.Material.SmoothPlastic
+		sign.Transparency = 0.5
 		sign.Color = Color3.fromRGB(0,0,0)
+		sign.Position = wallPos
 		sign.Parent = safeZoneFolder
 
-		-- Embed sign inside wall
-		sign.CFrame = wall.CFrame * CFrame.new(0, 150, -(size.Z/2) + (sign.Size.Z/2))
-
 		local billboard = Instance.new("BillboardGui")
-		billboard.Size = UDim2.new(0, 150, 0, 50)
-		billboard.StudsOffset = Vector3.new(0,0,0)
+		billboard.Size = UDim2.new(0,150,0,50)
 		billboard.AlwaysOnTop = true
 		billboard.Adornee = sign
 		billboard.Parent = sign
@@ -104,46 +159,19 @@ local function createSafeZone()
 		RGBEffect(label)
 	end
 
-	-- Cube walls with embedded signs
-	createWall(Vector3.new(-cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(wallThickness, cubeHeight, cubeSize)) -- left
-	createWall(Vector3.new(cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(wallThickness, cubeHeight, cubeSize))  -- right
-	createWall(Vector3.new(0, yPos + cubeHeight/2, cubeSize/2), Vector3.new(cubeSize, cubeHeight, wallThickness)) -- back
-	createWall(Vector3.new(0, yPos + cubeHeight/2, -cubeSize/2), Vector3.new(cubeSize, cubeHeight, wallThickness)) -- front
+	-- Left internal sign
+	createInternalSign(Vector3.new(-cubeSize/2 + wallThickness, yPos + cubeHeight/2, 0))
+	-- Right internal sign
+	createInternalSign(Vector3.new(cubeSize/2 - wallThickness, yPos + cubeHeight/2, 0))
 
-	-- Pathway outside the front wall
+	-- Path aligned with entrance
 	local path = Instance.new("Part")
-	path.Size = Vector3.new(150, 10, 300)
+	path.Size = Vector3.new(entranceWidth,10,300)
 	path.Position = Vector3.new(0, yPos + 5, -cubeSize/2 - 150)
 	path.Anchored = true
 	path.Material = Enum.Material.Concrete
 	path.BrickColor = BrickColor.new("Medium stone grey")
 	path.Parent = safeZoneFolder
-
-	-- "Made by Avery" sign at the entrance of the path
-	local makerSign = Instance.new("Part")
-	makerSign.Size = Vector3.new(150, 30, 5)
-	makerSign.Position = Vector3.new(0, yPos + 50, -cubeSize/2 - 300)
-	makerSign.Anchored = true
-	makerSign.Material = Enum.Material.SmoothPlastic
-	makerSign.Color = Color3.fromRGB(0,0,0)
-	makerSign.Parent = safeZoneFolder
-
-	local makerBillboard = Instance.new("BillboardGui")
-	makerBillboard.Size = UDim2.new(0, 150, 0, 50)
-	makerBillboard.StudsOffset = Vector3.new(0,0,0)
-	makerBillboard.AlwaysOnTop = true
-	makerBillboard.Adornee = makerSign
-	makerBillboard.Parent = makerSign
-
-	local makerLabel = Instance.new("TextLabel")
-	makerLabel.Size = UDim2.new(1,0,1,0)
-	makerLabel.BackgroundTransparency = 1
-	makerLabel.Text = "Made by Avery"
-	makerLabel.TextScaled = true
-	makerLabel.Font = Enum.Font.GothamBold
-	makerLabel.TextColor3 = Color3.fromRGB(0,255,0)
-	makerLabel.Parent = makerBillboard
-	RGBEffect(makerLabel)
 end
 
 -- Remove SafeZone
