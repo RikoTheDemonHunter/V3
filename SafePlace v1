@@ -1,154 +1,150 @@
---[[ 
- 📌 Avery's Safe Zone System (Mobile Friendly, Full Build)
- Features:
- ✅ Raised Safe Zone (150 studs high)
- ✅ Full Floor/Base Platform
- ✅ Stairs + Cobblestone Path
- ✅ Walls around Safe Zone
- ✅ RGB Animated Text Sign ("Avery's Safe Zone")
- ✅ Draggable Mobile GUI Button to Toggle
---]]
+-- Avery's Safe Zone Script
+-- Works on PC + Mobile (draggable toggle button)
 
-repeat task.wait() until game:IsLoaded()
+repeat wait() until game:IsLoaded()
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- HEIGHT setting (how high above ground)
-local HEIGHT_OFFSET = 150 
+-- Remove old SafePlace if it exists
+if workspace:FindFirstChild("SafePlace") then
+	workspace.SafePlace:Destroy()
+end
 
--- GUI
+-- GUI Setup
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "SafeZoneGUI"
 screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.ResetOnSpawn = false
 
 local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 160, 0, 50)
-toggleButton.Position = UDim2.new(0.05, 0, 0.2, 0)
-toggleButton.Text = "Enable Safe Zone"
-toggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.Font = Enum.Font.GothamBold
-toggleButton.TextScaled = true
-toggleButton.Draggable = true
-toggleButton.Active = true
 toggleButton.Parent = screenGui
+toggleButton.Size = UDim2.new(0, 160, 0, 50)
+toggleButton.Position = UDim2.new(0.1, 0, 0.1, 0)
+toggleButton.Text = "Toggle SafeZone"
+toggleButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.TextScaled = true
+toggleButton.Active = true
+toggleButton.Draggable = true -- mobile/pc draggable
 
--- Function: Create Avery's RGB Sign
-local function makeSign(position, text)
-    local signPart = Instance.new("Part")
-    signPart.Name = "SafeZoneSign"
-    signPart.Size = Vector3.new(50, 20, 1)
-    signPart.Anchored = true
-    signPart.CanCollide = false
-    signPart.Position = position + Vector3.new(0, 30, 0)
-    signPart.Material = Enum.Material.Neon
-    signPart.Color = Color3.fromRGB(20, 20, 20)
-    signPart.Parent = workspace.SafePlace
+local SafeZoneActive = false
+local folder
 
-    local surfaceGui = Instance.new("SurfaceGui")
-    surfaceGui.Face = Enum.NormalId.Front
-    surfaceGui.AlwaysOnTop = true
-    surfaceGui.Parent = signPart
-
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 1, 0)
-    label.BackgroundTransparency = 1
-    label.Text = text
-    label.TextColor3 = Color3.fromRGB(255, 0, 0)
-    label.TextStrokeTransparency = 0
-    label.TextScaled = true
-    label.Font = Enum.Font.Fantasy
-    label.Parent = surfaceGui
-
-    -- Animate RGB
-    task.spawn(function()
-        local hue = 0
-        while signPart.Parent do
-            hue = (hue + 1) % 360
-            label.TextColor3 = Color3.fromHSV(hue / 360, 1, 1)
-            task.wait(0.05)
-        end
-    end)
-
-    return signPart
+-- RGB Effect for sign
+local function startRGB(textLabel)
+	spawn(function()
+		local hue = 0
+		while textLabel.Parent do
+			hue = (hue + 1) % 360
+			textLabel.TextColor3 = Color3.fromHSV(hue/360,1,1)
+			wait(0.05)
+		end
+	end)
 end
 
--- Function: Build Safe Zone
-local function makeSafeZone()
-    if workspace:FindFirstChild("SafePlace") then return end
+-- Function to spawn SafeZone
+local function createSafeZone()
+	folder = Instance.new("Folder")
+	folder.Name = "SafePlace"
+	folder.Parent = workspace
 
-    local folder = Instance.new("Folder")
-    folder.Name = "SafePlace"
-    folder.Parent = workspace
+	-- Main Floor (HUGE)
+	local floor = Instance.new("Part")
+	floor.Size = Vector3.new(2048, 10, 2048)
+	floor.Position = Vector3.new(0, 150, 0)
+	floor.Anchored = true
+	floor.Name = "Floor"
+	floor.Parent = folder
 
-    -- MAIN FLOOR
-    local mainFloor = Instance.new("Part")
-    mainFloor.Name = "MainFloor"
-    mainFloor.Parent = folder
-    mainFloor.Anchored = true
-    mainFloor.Position = Vector3.new(0, HEIGHT_OFFSET, -1000)
-    mainFloor.Size = Vector3.new(200, 5, 200)
-    mainFloor.Material = Enum.Material.Concrete
-    mainFloor.Color = Color3.fromRGB(180, 180, 180)
-    mainFloor.CanCollide = true
+	-- Walls
+	local wallThickness = 20
+	local wallHeight = 300
+	local size = 2048
 
-    -- WALLS
-    local function makeWall(name, pos, size)
-        local wall = Instance.new("Part")
-        wall.Name = name
-        wall.Parent = folder
-        wall.Anchored = true
-        wall.Position = pos
-        wall.Size = size
-        wall.Color = Color3.fromRGB(100, 100, 100)
-        wall.Material = Enum.Material.Metal
-        wall.CanCollide = true
-    end
+	local function makeWall(pos, sizeVec)
+		local wall = Instance.new("Part")
+		wall.Size = sizeVec
+		wall.Position = pos
+		wall.Anchored = true
+		wall.Parent = folder
+		return wall
+	end
 
-    local basePos = mainFloor.Position
-    local sx, sz, sy = mainFloor.Size.X / 2, mainFloor.Size.Z / 2, mainFloor.Size.Y / 2
-    makeWall("WallFront", basePos + Vector3.new(0, 25, -sz), Vector3.new(mainFloor.Size.X, 50, 5))
-    makeWall("WallBack",  basePos + Vector3.new(0, 25, sz),  Vector3.new(mainFloor.Size.X, 50, 5))
-    makeWall("WallLeft",  basePos + Vector3.new(-sx, 25, 0), Vector3.new(5, 50, mainFloor.Size.Z))
-    makeWall("WallRight", basePos + Vector3.new(sx, 25, 0),  Vector3.new(5, 50, mainFloor.Size.Z))
+	makeWall(Vector3.new(0, 150 + wallHeight/2, -size/2), Vector3.new(size, wallHeight, wallThickness)) -- Back
+	makeWall(Vector3.new(0, 150 + wallHeight/2, size/2), Vector3.new(size, wallHeight, wallThickness)) -- Front
+	makeWall(Vector3.new(-size/2, 150 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, size)) -- Left
+	makeWall(Vector3.new(size/2, 150 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, size)) -- Right
 
-    -- STAIRS
-    local stair = Instance.new("Part")
-    stair.Name = "Stairs"
-    stair.Size = Vector3.new(20, HEIGHT_OFFSET, 60)
-    stair.Anchored = true
-    stair.Position = basePos + Vector3.new(0, HEIGHT_OFFSET/2, sz + 30)
-    stair.Orientation = Vector3.new(-30, 0, 0)
-    stair.Material = Enum.Material.WoodPlanks
-    stair.Color = Color3.fromRGB(200, 150, 100)
-    stair.Parent = folder
+	-- Entrance Opening (front wall hole)
+	local entrance = Instance.new("Part")
+	entrance.Size = Vector3.new(40, wallHeight, wallThickness)
+	entrance.Position = Vector3.new(0, 150 + wallHeight/2, size/2)
+	entrance.Anchored = true
+	entrance.Transparency = 1
+	entrance.CanCollide = false
+	entrance.Parent = folder
 
-    -- PATHWAY
-    local path = Instance.new("Part")
-    path.Name = "Path"
-    path.Size = Vector3.new(20, 2, 120)
-    path.Anchored = true
-    path.Position = stair.Position + Vector3.new(0, -HEIGHT_OFFSET/2, 80)
-    path.Material = Enum.Material.Cobblestone
-    path.Color = Color3.fromRGB(120, 120, 120)
-    path.Parent = folder
+	-- Pathway
+	local path = Instance.new("Part")
+	path.Size = Vector3.new(50, 5, 300)
+	path.Position = Vector3.new(0, 150, size/2 + 150)
+	path.Anchored = true
+	path.Parent = folder
 
-    -- SIGN
-    makeSign(basePos + Vector3.new(0, 60, 0), "Avery's Safe Zone")
+	-- Ramp Stairway
+	local ramp = Instance.new("Part")
+	ramp.Size = Vector3.new(50, 5, 100)
+	ramp.Position = Vector3.new(0, 125, size/2 + 50)
+	ramp.Anchored = true
+	ramp.CFrame = ramp.CFrame * CFrame.Angles(math.rad(-30), 0, 0)
+	ramp.Parent = folder
+
+	-- Sign
+	local signPart = Instance.new("Part")
+	signPart.Size = Vector3.new(60, 20, 2)
+	signPart.Position = Vector3.new(0, 300, size/2 + 5)
+	signPart.Anchored = true
+	signPart.Parent = folder
+
+	local surfaceGui = Instance.new("SurfaceGui", signPart)
+	surfaceGui.Face = Enum.NormalId.Front
+	surfaceGui.AlwaysOnTop = true
+
+	local textLabel = Instance.new("TextLabel", surfaceGui)
+	textLabel.Size = UDim2.new(1, 0, 1, 0)
+	textLabel.BackgroundTransparency = 1
+	textLabel.Text = "Avery's Safe Zone"
+	textLabel.Font = Enum.Font.Fantasy
+	textLabel.TextScaled = true
+	textLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+
+	startRGB(textLabel)
+
+	-- Avatar Statue
+	local char = player.Character or player.CharacterAdded:Wait()
+	local clone = char:Clone()
+	clone.Parent = folder
+	clone.Name = "AveryStatue"
+	for _, v in pairs(clone:GetDescendants()) do
+		if v:IsA("BasePart") then
+			v.Anchored = true
+			v.CanCollide = true
+		elseif v:IsA("Humanoid") then
+			v:Destroy()
+		end
+	end
+	clone:SetPrimaryPartCFrame(CFrame.new(0, 160, 0))
 end
 
--- Toggle Safe Zone
-local enabled = false
+-- Toggle Button
 toggleButton.MouseButton1Click:Connect(function()
-    if enabled then
-        if workspace:FindFirstChild("SafePlace") then
-            workspace.SafePlace:Destroy()
-        end
-        toggleButton.Text = "Enable Safe Zone"
-        enabled = false
-    else
-        makeSafeZone()
-        toggleButton.Text = "Disable Safe Zone"
-        enabled = true
-    end
+	if SafeZoneActive then
+		if folder then folder:Destroy() end
+		SafeZoneActive = false
+		toggleButton.Text = "Enable SafeZone"
+	else
+		createSafeZone()
+		SafeZoneActive = true
+		toggleButton.Text = "Disable SafeZone"
+	end
 end)
