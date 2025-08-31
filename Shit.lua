@@ -859,6 +859,18 @@ Teleport:Button("SafePlace", function()
 	ts:Create(part, ti, tp):Play()
 end)
 
+Teleport:Button("SafePlace v2", function()
+	local New_CFrame = CFrame.new(0, 3605, 0)
+
+	local ts = game:GetService("TweenService")
+	local char = game.Players.LocalPlayer.Character
+
+	local part = char.HumanoidRootPart
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+	local tp = {CFrame = New_CFrame}
+	ts:Create(part, ti, tp):Play()
+end)
+
 Teleport:Button("FavSpot", function()
         local New_CFrame = CFrame.new(60.12, 18.25, -72)
 
