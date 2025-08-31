@@ -22,10 +22,7 @@ toggleButton.Draggable = true
 toggleButton.Active = true
 toggleButton.Parent = screenGui
 
-local safeZoneFolder = nil
-local running = false
-
--- RGB text effect
+-- RGB text effect function
 local function RGBEffect(label)
 	if not label then return end
 	task.spawn(function()
@@ -40,33 +37,46 @@ local function RGBEffect(label)
 	end)
 end
 
--- Leaderboard setup for all players
-Players.PlayerAdded:Connect(function(plr)
-	local leaderstats = Instance.new("Folder")
-	leaderstats.Name = "leaderstats"
-	leaderstats.Parent = plr
-
-	local insideSafeStat = Instance.new("IntValue")
-	insideSafeStat.Name = "InsideSafe"
-	insideSafeStat.Value = 0
-	insideSafeStat.Parent = leaderstats
-
-	local usingHubStat = Instance.new("IntValue")
-	usingHubStat.Name = "UsingAveryHub"
-	usingHubStat.Value = 0
-	usingHubStat.Parent = leaderstats
-end)
-
 -- Tables to track players
 local playersInsideSafe = {}
 local playersUsingHub = {}
 
-local function updateStats(plr)
-	if plr and plr:FindFirstChild("leaderstats") then
-		plr.leaderstats.InsideSafe.Value = playersInsideSafe[plr.Name] and 1 or 0
-		plr.leaderstats.UsingAveryHub.Value = playersUsingHub[plr.Name] and 1 or 0
+-- Ensure leaderstats exists safely
+local function ensureLeaderstats(plr)
+	if not plr:FindFirstChild("leaderstats") then
+		local leaderstats = Instance.new("Folder")
+		leaderstats.Name = "leaderstats"
+		leaderstats.Parent = plr
+
+		local insideSafeStat = Instance.new("IntValue")
+		insideSafeStat.Name = "InsideSafe"
+		insideSafeStat.Value = 0
+		insideSafeStat.Parent = leaderstats
+
+		local usingHubStat = Instance.new("IntValue")
+		usingHubStat.Name = "UsingAveryHub"
+		usingHubStat.Value = 0
+		usingHubStat.Parent = leaderstats
 	end
 end
+
+-- Ensure existing and new players have leaderstats
+for _,plr in pairs(Players:GetPlayers()) do
+	ensureLeaderstats(plr)
+end
+Players.PlayerAdded:Connect(ensureLeaderstats)
+
+-- Update stats safely
+local function updateStats(plr)
+	if not plr or not plr:FindFirstChild("leaderstats") then return end
+	local insideSafe = plr.leaderstats:FindFirstChild("InsideSafe")
+	local usingHub = plr.leaderstats:FindFirstChild("UsingAveryHub")
+	if insideSafe then insideSafe.Value = playersInsideSafe[plr.Name] and 1 or 0 end
+	if usingHub then usingHub.Value = playersUsingHub[plr.Name] and 1 or 0 end
+end
+
+local safeZoneFolder = nil
+local running = false
 
 -- Create SafeZone
 local function createSafeZone()
@@ -234,7 +244,7 @@ local function createSafeZone()
 	frontLabel.Parent = frontBillboard
 	RGBEffect(frontLabel)
 
-	-- Avatar Statue in middle of baseplate
+	-- Avatar Statue
 	local character = player.Character or player.CharacterAdded:Wait()
 	local statue = character:Clone()
 	for _,part in pairs(statue:GetDescendants()) do
