@@ -1,156 +1,82 @@
-local UrMomUi = Instance.new("ScreenGui")
-UrMomUi.Name = "Burp Points Counter"
-UrMomUi.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-UrMomUi.ResetOnSpawn = false
+-- Gain Tracker (De-Obfuscated + RGB Color Cycle + Draggable)
 
-local UMMain = Instance.new("Frame")
-UMMain.Name = "Main"
-UMMain.Size = UDim2.new(0.1569187, 0, 0.2215744, 0)
-UMMain.BorderColor3 = Color3.fromRGB(27, 42, 53)
-UMMain.Position = UDim2.new(0.1954351, 0, 0.6836735, 0)
-UMMain.BorderSizePixel = 0
-UMMain.BackgroundColor3 = Color3.fromRGB(28, 29, 34)
-UMMain.Parent = UrMomUi
-UMMain.Active = true
-UMMain.Draggable = true
+-- Remove existing GainUI if already running
+for _, v in pairs(game.CoreGui:GetChildren()) do
+    if v:IsA("ScreenGui") and v.Name == "GainUI" then
+        v:Destroy()
+    end
+end
 
-local UICorner = Instance.new("UICorner")
-UICorner.Parent = UMMain
+-- Create GUI container
+local GainUI = Instance.new("ScreenGui")
+GainUI.Name = "GainUI"
+GainUI.Parent = game.CoreGui
+GainUI.ResetOnSpawn = false
 
-local Line1 = Instance.new("TextLabel")
-Line1.Name = "Line1"
-Line1.TextTransparency = 1
-Line1.AutomaticSize = Enum.AutomaticSize.X
-Line1.Size = UDim2.new(0.9545455, 0, 0.1973684, 0)
-Line1.BackgroundTransparency = 1
-Line1.Position = UDim2.new(0.0227273, 0, 0.1644737, 0)
-Line1.BorderSizePixel = 0
-Line1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Line1.FontSize = Enum.FontSize.Size14
-Line1.TextSize = 14
-Line1.TextColor3 = Color3.fromRGB(255, 91, 208)
-Line1.Text = "You earn about:"
-Line1.TextWrap = true
-Line1.Font = Enum.Font.FredokaOne
-Line1.TextWrapped = true
-Line1.TextScaled = true
-Line1.Parent = UMMain
+-- Main Frame (Draggable container)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = GainUI
+MainFrame.Size = UDim2.new(0, 220, 0, 120)
+MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
 
-local Line2 = Instance.new("TextLabel")
-Line2.Name = "Line2"
-Line2.TextTransparency = 1
-Line2.AutomaticSize = Enum.AutomaticSize.X
-Line2.Size = UDim2.new(0.9545455, 0, 0.1973684, 0)
-Line2.BackgroundTransparency = 1
-Line2.Position = UDim2.new(0.0227273, 0, 0.7039474, 0)
-Line2.BorderSizePixel = 0
-Line2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Line2.FontSize = Enum.FontSize.Size14
-Line2.TextSize = 10
-Line2.TextColor3 = Color3.fromRGB(255, 215, 0)
-Line2.Text = "Burp Points per second"
-Line2.TextWrap = true
-Line2.Font = Enum.Font.FredokaOne
-Line2.TextWrapped = true
-Line2.TextScaled = true
-Line2.Parent = UMMain
+-- Prestige Label
+local PrestigeGain = Instance.new("TextLabel")
+PrestigeGain.Name = "PrestigeGain"
+PrestigeGain.Parent = MainFrame
+PrestigeGain.BackgroundTransparency = 1
+PrestigeGain.Position = UDim2.new(0.05, 0, 0.2, 0)
+PrestigeGain.Size = UDim2.new(0, 200, 0, 40)
+PrestigeGain.Font = Enum.Font.SourceSansBold
+PrestigeGain.TextColor3 = Color3.fromRGB(255, 0, 0)
+PrestigeGain.TextScaled = true
+PrestigeGain.TextWrapped = true
+PrestigeGain.Text = "Prestige: 0"
 
-local Title = Instance.new("TextLabel")
-Title.Name = "Title"
-Title.Size = UDim2.new(0.5772728, 0, 0.125, 0)
-Title.BackgroundTransparency = 1
-Title.Position = UDim2.new(0.0227273, 0, 0, 0)
-Title.BorderSizePixel = 0
-Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Title.FontSize = Enum.FontSize.Size14
-Title.TextSize = 14
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.Text = "UrMom GUI"
-Title.TextWrap = true
-Title.Font = Enum.Font.FredokaOne
-Title.TextWrapped = true
-Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.TextScaled = true
-Title.Parent = UMMain
+-- BP Gain Label
+local BpGain = Instance.new("TextLabel")
+BpGain.Name = "BpGain"
+BpGain.Parent = MainFrame
+BpGain.BackgroundTransparency = 1
+BpGain.Position = UDim2.new(0.05, 0, 0.55, 0)
+BpGain.Size = UDim2.new(0, 200, 0, 40)
+BpGain.Font = Enum.Font.SourceSansBold
+BpGain.TextColor3 = Color3.fromRGB(255, 0, 0)
+BpGain.TextScaled = true
+BpGain.TextWrapped = true
+BpGain.Text = "BP Gain: 0"
 
-local WhenCalibrated = Instance.new("TextLabel")
-WhenCalibrated.TextTransparency = 1
-WhenCalibrated.Name = "WhenCalibrated"
-WhenCalibrated.Size = UDim2.new(0.909091, 0, 0.368421, 0)
-WhenCalibrated.BackgroundTransparency = 1
-WhenCalibrated.Position = UDim2.new(0.0454545, 0, 0.3355263, 0)
-WhenCalibrated.BorderSizePixel = 0
-WhenCalibrated.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-WhenCalibrated.FontSize = Enum.FontSize.Size14
-WhenCalibrated.TextSize = 14
-WhenCalibrated.TextColor3 = Color3.fromRGB(8, 143, 143)
-WhenCalibrated.Text = "0"
-WhenCalibrated.TextWrap = true
-WhenCalibrated.Font = Enum.Font.FredokaOne
-WhenCalibrated.TextWrapped = true
-WhenCalibrated.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
-WhenCalibrated.TextScaled = true
-WhenCalibrated.Parent = UMMain
+-- Get player stats
+local plr = game.Players.LocalPlayer
+local bp = plr.leaderstats:WaitForChild("Burp points")
+local prestige = plr.leaderstats:WaitForChild("Prestige")
 
-local UIGradient = Instance.new("UIGradient")
-UIGradient.Rotation = 60
-UIGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(44,46,54)),ColorSequenceKeypoint.new(0.6455907,Color3.fromRGB(228,233,255)),ColorSequenceKeypoint.new(1,Color3.fromRGB(255,255,255))})
-UIGradient.Offset = Vector2.new(0.050000000745058, -0.050000000745058)
-UIGradient.Parent = UMMain
+-- Track gain
+local lastBP = bp.Value
 
-local BeforeCalibrated = Instance.new("TextLabel")
-BeforeCalibrated.Name = "BeforeCalibrated"
-BeforeCalibrated.Size = UDim2.new(0.909091, 0, 0.3552632, 0)
-BeforeCalibrated.BackgroundTransparency = 1
-BeforeCalibrated.Position = UDim2.new(0.0454545, 0, 0.3223684, 0)
-BeforeCalibrated.BorderSizePixel = 0
-BeforeCalibrated.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-BeforeCalibrated.FontSize = Enum.FontSize.Size14
-BeforeCalibrated.TextSize = 14
-BeforeCalibrated.TextColor3 = Color3.fromRGB(255, 255, 255)
-BeforeCalibrated.Text = "Wainting for system reboot."
-BeforeCalibrated.TextWrap = true
-BeforeCalibrated.Font = Enum.Font.FredokaOne
-BeforeCalibrated.TextWrapped = true
-BeforeCalibrated.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
-BeforeCalibrated.TextScaled = true
-BeforeCalibrated.Parent = UMMain
+-- Rainbow function
+local function RainbowColor(hue)
+    return Color3.fromHSV(hue, 1, 1)
+end
 
-UrMomUi.Parent = game:GetService("Players").LocalPlayer.PlayerGui
+-- Update loop
+task.spawn(function()
+    local hue = 0
+    while task.wait(0.05) do
+        hue = (hue + 0.01) % 1
+        local color = RainbowColor(hue)
 
-local ts = game:GetService("TweenService")
+        PrestigeGain.TextColor3 = color
+        BpGain.TextColor3 = color
 
-local need_tweens = {
-    WhenCalibrated,
-    Line1,
-    Line2
-}
-
-local function on_calibrated()
-	ts:Create(BeforeCalibrated, TweenInfo.new(1, Enum.EasingStyle.Quad), {TextTransparency = 1}):Play()
-	wait(0.4)
-	spawn(function()
-        for _, obj in pairs(need_tweens) do
-            ts:Create(obj, TweenInfo.new(1, Enum.EasingStyle.Quad), {TextTransparency = 0}):Play()
+        PrestigeGain.Text = "Prestige: " .. prestige.Value
+        if lastBP ~= bp.Value then
+            BpGain.Text = "BP Gain: " .. (bp.Value - lastBP)
+            lastBP = bp.Value
         end
-	end)
-end
-
-local leaderstats = game:GetService("Players").LocalPlayer.leaderstats
-index = -1
-calibrated = false
-while true do
-	index = index + 1
-	strbefore = leaderstats["Burp points"].Value
-	sps = 'Rebooting'
-	wait(0.8)
-	if index > 3 then
-		strafter = leaderstats["Burp points"].Value-strbefore
-		sps = tostring(strafter)
-		WhenCalibrated.Text = sps
-		if calibrated ~= true then
-		    on_calibrated()
-		    calibrated = true
-		end
-	end
-end
+    end
+end)
