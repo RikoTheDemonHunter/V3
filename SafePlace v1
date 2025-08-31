@@ -1,4 +1,4 @@
--- Avery's SafeZone Enhanced (Slightly Bigger)
+-- Avery's SafeZone with Transparent Floor & Wall Sign
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -60,18 +60,20 @@ local function createSafeZone()
 	safeZoneFolder.Name = "SafeZone"
 	safeZoneFolder.Parent = workspace
 
-	-- Floor
+	-- Transparent Floor
 	local floor = Instance.new("Part")
 	floor.Name = "MainFloor"
-	floor.Size = Vector3.new(600, 10, 600) -- slightly bigger
-	floor.Position = Vector3.new(0, 250, 0)
+	floor.Size = Vector3.new(600, 10, 600)
+	floor.Position = Vector3.new(0, 300, 0) -- higher
 	floor.Anchored = true
-	floor.Material = Enum.Material.Concrete
+	floor.Material = Enum.Material.SmoothPlastic
+	floor.Transparency = 0.7
+	floor.CanCollide = true
 	floor.Parent = safeZoneFolder
 
 	-- Walls
 	local wallThickness = 20
-	local wallHeight = 300
+	local wallHeight = 350
 	local wallLength = 600
 
 	local function makeWall(pos, size)
@@ -82,17 +84,18 @@ local function createSafeZone()
 		wall.Material = Enum.Material.Metal
 		wall.BrickColor = BrickColor.new("Really black")
 		wall.Parent = safeZoneFolder
+		return wall
 	end
 
-	makeWall(Vector3.new(-wallLength/2, 250 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
-	makeWall(Vector3.new(wallLength/2, 250 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
-	makeWall(Vector3.new(0, 250 + wallHeight/2, wallLength/2), Vector3.new(wallLength, wallHeight, wallThickness))
-	makeWall(Vector3.new(0, 250 + wallHeight/2, -wallLength/2 + wallThickness), Vector3.new(wallLength-150, wallHeight, wallThickness))
+	local leftWall = makeWall(Vector3.new(-wallLength/2, 300 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
+	local rightWall = makeWall(Vector3.new(wallLength/2, 300 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
+	local backWall = makeWall(Vector3.new(0, 300 + wallHeight/2, wallLength/2), Vector3.new(wallLength, wallHeight, wallThickness))
+	local frontWall = makeWall(Vector3.new(0, 300 + wallHeight/2, -wallLength/2 + wallThickness), Vector3.new(wallLength-150, wallHeight, wallThickness))
 
 	-- Pathway
 	local path = Instance.new("Part")
-	path.Size = Vector3.new(150, 10, 300) -- bigger path
-	path.Position = Vector3.new(0, 200, -wallLength/2 - 150)
+	path.Size = Vector3.new(150, 10, 300)
+	path.Position = Vector3.new(0, 250, -wallLength/2 - 150)
 	path.Anchored = true
 	path.Material = Enum.Material.Concrete
 	path.Parent = safeZoneFolder
@@ -100,54 +103,18 @@ local function createSafeZone()
 
 	-- Stairway
 	local stair = Instance.new("Part")
-	stair.Size = Vector3.new(150, 10, 80) -- longer stair
-	stair.Position = Vector3.new(0, 220, -wallLength/2 - 90)
+	stair.Size = Vector3.new(150, 10, 80)
+	stair.Position = Vector3.new(0, 270, -wallLength/2 - 90)
 	stair.Anchored = true
 	stair.Material = Enum.Material.Concrete
 	stair.Orientation = Vector3.new(-25, 0, 0)
 	stair.Parent = safeZoneFolder
 	addLights(stair, 25)
 
-	-- RGB Sign above entrance
+	-- Avery's RGB Wall Sign
 	local signPart = Instance.new("Part")
 	signPart.Anchored = true
-	signPart.Size = Vector3.new(180, 20, 5) -- slightly bigger sign
-	signPart.Position = Vector3.new(0, 350, -wallLength/2 - 10)
-	signPart.Color = Color3.fromRGB(10, 10, 10)
-	signPart.Parent = safeZoneFolder
-
-	local billboard = Instance.new("BillboardGui")
-	billboard.Size = UDim2.new(0, 180, 0, 50)
-	billboard.StudsOffset = Vector3.new(0, 0, -2)
-	billboard.Adornee = signPart
-	billboard.AlwaysOnTop = true
-	billboard.Parent = signPart
-
-	local signLabel = Instance.new("TextLabel")
-	signLabel.Size = UDim2.new(1, 0, 1, 0)
-	signLabel.BackgroundTransparency = 1
-	signLabel.Text = "Avery's Safe Zone"
-	signLabel.TextScaled = true
-	signLabel.Font = Enum.Font.GothamBold
-	signLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
-	signLabel.Parent = billboard
-	RGBEffect(signLabel)
-end
-
--- Remove SafeZone
-local function removeSafeZone()
-	if safeZoneFolder and safeZoneFolder.Parent then
-		safeZoneFolder:Destroy()
-		safeZoneFolder = nil
-	end
-end
-
--- Toggle button
-toggleButton.MouseButton1Click:Connect(function()
-	if running then
-		removeSafeZone()
-	else
-		createSafeZone()
-	end
-	running = not running
-end)
+	signPart.Size = Vector3.new(200, 40, 5) -- bigger
+	signPart.Position = Vector3.new(0, 300 + 200, -wallLength/2 + wallThickness + 2)
+	signPart.Material = Enum.Material.SmoothPlastic
+	signPart.Color = Color3.
