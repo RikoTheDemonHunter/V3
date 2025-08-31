@@ -700,6 +700,22 @@ AutoFarm:Toggle("Fast Drink", function(v)
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/v2.lua"))()
 end)
 
+AutoFarm:Toggle("Auto Equip PIckaxe", function(v)
+ getgenv().equippickaxe = v
+				while getgenv().equippickaxe do wait(0.5)
+					if game:GetService("Players").LocalPlayer.Backpack.Pickaxe ~= nil then
+						game:GetService("Players").LocalPlayer.Character.Humanoid:EquipTool(game:GetService("Players").LocalPlayer.Backpack.Pickaxe)
+					end
+				end
+			end)
+
+AutoFarm:Toggle("Auto Mine Gems", function(v)
+	getgenv().minegems = v
+				while getgenv().minegems do wait(0.1)
+					game:GetService("Players").LocalPlayer.Character.Pickaxe.Server.Mine:FireServer()
+				end
+			end)
+
 LocalPlayer:Button("Fps-Unlocker", function(v)
 	if setfpscap and type(setfpscap) == "function" then
 		local num = 100000 or 1e6
