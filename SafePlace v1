@@ -1,4 +1,3 @@
--- Avery's SafeZone with Safe Spot, Wide Baseplate, Avatar Statue, Signs, and Leaderboard
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -22,9 +21,8 @@ toggleButton.Draggable = true
 toggleButton.Active = true
 toggleButton.Parent = screenGui
 
--- RGB text effect function
+-- RGB text effect
 local function RGBEffect(label)
-	if not label then return end
 	task.spawn(function()
 		while label and label.Parent do
 			for hue=0,255,4 do
@@ -37,11 +35,11 @@ local function RGBEffect(label)
 	end)
 end
 
--- Tables to track players
+-- Tracking tables
 local playersInsideSafe = {}
 local playersUsingHub = {}
 
--- Ensure leaderstats exists safely
+-- Ensure leaderstats
 local function ensureLeaderstats(plr)
 	if not plr:FindFirstChild("leaderstats") then
 		local leaderstats = Instance.new("Folder")
@@ -60,13 +58,11 @@ local function ensureLeaderstats(plr)
 	end
 end
 
--- Ensure existing and new players have leaderstats
 for _,plr in pairs(Players:GetPlayers()) do
 	ensureLeaderstats(plr)
 end
 Players.PlayerAdded:Connect(ensureLeaderstats)
 
--- Update stats safely
 local function updateStats(plr)
 	if not plr or not plr:FindFirstChild("leaderstats") then return end
 	local insideSafe = plr.leaderstats:FindFirstChild("InsideSafe")
@@ -85,144 +81,64 @@ local function createSafeZone()
 	safeZoneFolder.Name = "SafeZone"
 	safeZoneFolder.Parent = workspace
 
-	local cubeSize = 600
-	local cubeHeight = 600
-	local yPos = 2000
-	local wallThickness = 20
-	local entranceWidth = 100
-	local entranceHeight = 200
+	local baseplateY = 5
+	local safeSpotRadius = 50
+	local safeSpotHeight = 20
 
-	-- Floor
-	local floor = Instance.new("Part")
-	floor.Size = Vector3.new(cubeSize,10,cubeSize)
-	floor.Position = Vector3.new(0,yPos+5,0)
-	floor.Anchored = true
-	floor.Material = Enum.Material.SmoothPlastic
-	floor.Transparency = 0.5
-	floor.Reflectance = 0.2
-	floor.BrickColor = BrickColor.new("Bright blue")
-	floor.Parent = safeZoneFolder
-
-	-- Walls
-	local function createWall(position,size,orientation)
-		local wall = Instance.new("Part")
-		wall.Size = size
-		wall.Position = position
-		wall.Anchored = true
-		wall.Material = Enum.Material.SmoothPlastic
-		wall.Transparency = 0.4
-		wall.BrickColor = BrickColor.new("Bright blue")
-		if orientation then wall.Orientation = orientation end
-		wall.Parent = safeZoneFolder
-		return wall
-	end
-
-	createWall(Vector3.new(-cubeSize/2,yPos+cubeHeight/2,0),Vector3.new(wallThickness,cubeHeight,cubeSize)) -- left
-	createWall(Vector3.new(cubeSize/2,yPos+cubeHeight/2,0),Vector3.new(wallThickness,cubeHeight,cubeSize))  -- right
-	createWall(Vector3.new(0,yPos+cubeHeight/2,cubeSize/2),Vector3.new(cubeSize,cubeHeight,wallThickness)) -- back
-
-	-- Front wall split for entrance
-	local frontLeft = Instance.new("Part")
-	frontLeft.Size = Vector3.new((cubeSize-entranceWidth)/2,cubeHeight,wallThickness)
-	frontLeft.Position = Vector3.new(-(cubeSize-entranceWidth)/4 - entranceWidth/2,yPos+cubeHeight/2,-cubeSize/2)
-	frontLeft.Anchored = true
-	frontLeft.Material = Enum.Material.SmoothPlastic
-	frontLeft.Transparency = 0.4
-	frontLeft.BrickColor = BrickColor.new("Bright blue")
-	frontLeft.Parent = safeZoneFolder
-
-	local frontRight = Instance.new("Part")
-	frontRight.Size = Vector3.new((cubeSize-entranceWidth)/2,cubeHeight,wallThickness)
-	frontRight.Position = Vector3.new((cubeSize-entranceWidth)/4 + entranceWidth/2,yPos+cubeHeight/2,-cubeSize/2)
-	frontRight.Anchored = true
-	frontRight.Material = Enum.Material.SmoothPlastic
-	frontRight.Transparency = 0.4
-	frontRight.BrickColor = BrickColor.new("Bright blue")
-	frontRight.Parent = safeZoneFolder
-
-	-- "Made by Avery" sign above entrance
-	local makerSign = Instance.new("Part")
-	makerSign.Size = Vector3.new(entranceWidth,30,5)
-	makerSign.Position = Vector3.new(0,yPos+cubeHeight/2 + entranceHeight + 15,-cubeSize/2 - wallThickness/2 + 2.5)
-	makerSign.Anchored = true
-	makerSign.Material = Enum.Material.SmoothPlastic
-	makerSign.Transparency = 0.5
-	makerSign.Color = Color3.fromRGB(0,0,0)
-	makerSign.Parent = safeZoneFolder
-
-	local makerBillboard = Instance.new("BillboardGui")
-	makerBillboard.Size = UDim2.new(0, entranceWidth,0,50)
-	makerBillboard.AlwaysOnTop = true
-	makerBillboard.Adornee = makerSign
-	makerBillboard.Parent = makerSign
-
-	local makerLabel = Instance.new("TextLabel")
-	makerLabel.Size = UDim2.new(1,0,1,0)
-	makerLabel.BackgroundTransparency = 1
-	makerLabel.Text = "Made by Avery"
-	makerLabel.TextScaled = true
-	makerLabel.Font = Enum.Font.GothamBold
-	makerLabel.TextColor3 = Color3.fromRGB(0,255,0)
-	makerLabel.Parent = makerBillboard
-	RGBEffect(makerLabel)
-
-	-- Internal side signs
-	local function createInternalSign(xPos)
-		local sign = Instance.new("Part")
-		sign.Size = Vector3.new(150,30,5)
-		sign.Anchored = true
-		sign.Material = Enum.Material.SmoothPlastic
-		sign.Transparency = 0.5
-		sign.Color = Color3.fromRGB(0,0,0)
-		sign.Position = Vector3.new(xPos,yPos+cubeHeight/2,0)
-		sign.Parent = safeZoneFolder
-
-		local billboard = Instance.new("BillboardGui")
-		billboard.Size = UDim2.new(0,150,0,50)
-		billboard.AlwaysOnTop = true
-		billboard.Adornee = sign
-		billboard.Parent = sign
-
-		local label = Instance.new("TextLabel")
-		label.Size = UDim2.new(1,0,1,0)
-		label.BackgroundTransparency = 1
-		label.Text = "Avery Safe Zone"
-		label.TextScaled = true
-		label.Font = Enum.Font.GothamBold
-		label.TextColor3 = Color3.fromRGB(255,0,0)
-		label.Parent = billboard
-		RGBEffect(label)
-	end
-
-	createInternalSign(-cubeSize/2 + wallThickness + 2.5)
-	createInternalSign(cubeSize/2 - wallThickness - 2.5)
-
-	-- Path aligned with entrance
-	local pathWidth = 100
-	local pathLength = 300
-	local path = Instance.new("Part")
-	path.Size = Vector3.new(pathWidth,10,pathLength)
-	path.Position = Vector3.new(0,yPos+5,-cubeSize/2 - pathLength/2)
-	path.Anchored = true
-	path.Material = Enum.Material.Concrete
-	path.BrickColor = BrickColor.new("Medium stone grey")
-	path.Parent = safeZoneFolder
-
-	-- Wider Baseplate in front of path
+	-- Baseplate
 	local baseplateWidth = 800
 	local baseplateDepth = 600
 	local baseplate = Instance.new("Part")
 	baseplate.Size = Vector3.new(baseplateWidth,10,baseplateDepth)
-	baseplate.Position = Vector3.new(0,yPos-5,-cubeSize/2 - pathLength - baseplateDepth/2)
+	baseplate.Position = Vector3.new(0,baseplateY,-300)
 	baseplate.Anchored = true
 	baseplate.Material = Enum.Material.Grass
 	baseplate.BrickColor = BrickColor.new("Bright green")
 	baseplate.Parent = safeZoneFolder
 
-	-- Front sign (Bright Pink)
+	-- Circular Safe Spot
+	local safeSpot = Instance.new("Part")
+	safeSpot.Shape = Enum.PartType.Cylinder
+	safeSpot.Size = Vector3.new(safeSpotRadius*2,safeSpotHeight,safeSpotRadius*2)
+	safeSpot.Position = Vector3.new(0,baseplateY + 10 + safeSpotHeight/2,0)
+	safeSpot.Anchored = true
+	safeSpot.CanCollide = false
+	safeSpot.Transparency = 0.4
+	safeSpot.BrickColor = BrickColor.new("Bright blue")
+	safeSpot.Material = Enum.Material.Neon
+	safeSpot.Name = "AverySafeSpot"
+	safeSpot.Parent = safeZoneFolder
+
+	-- Floating Safe Zone Text
+	local floatingSign = Instance.new("BillboardGui")
+	floatingSign.Adornee = safeSpot
+	floatingSign.Size = UDim2.new(0,200,0,50)
+	floatingSign.AlwaysOnTop = true
+	floatingSign.Parent = safeSpot
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1,0,1,0)
+	label.BackgroundTransparency = 1
+	label.Text = "Avery Safe Zone"
+	label.TextScaled = true
+	label.Font = Enum.Font.GothamBold
+	label.TextColor3 = Color3.fromRGB(0,255,0)
+	label.Parent = floatingSign
+	RGBEffect(label)
+
+	-- Path
+	local path = Instance.new("Part")
+	path.Size = Vector3.new(100,10,300)
+	path.Position = Vector3.new(0,baseplateY + 5,-150)
+	path.Anchored = true
+	path.Material = Enum.Material.Concrete
+	path.BrickColor = BrickColor.new("Medium stone grey")
+	path.Parent = safeZoneFolder
+
+	-- Front Sign
 	local frontSign = Instance.new("Part")
 	frontSign.Size = Vector3.new(200,50,5)
-	frontSign.Position = Vector3.new(0,yPos+15,-cubeSize/2 - pathLength - baseplateDepth + 50)
+	frontSign.Position = Vector3.new(0,baseplateY + 15,-baseplateDepth/2 - 50)
 	frontSign.Anchored = true
 	frontSign.Material = Enum.Material.SmoothPlastic
 	frontSign.Color = Color3.fromRGB(255,20,147)
@@ -255,26 +171,11 @@ local function createSafeZone()
 		end
 	end
 	if statue.PrimaryPart then
-		statue:SetPrimaryPartCFrame(CFrame.new(0,yPos+15,-cubeSize/2 - pathLength - baseplateDepth/2))
+		statue:SetPrimaryPartCFrame(CFrame.new(0,baseplateY + 15,-baseplateDepth/2))
 	end
 	statue.Parent = safeZoneFolder
 
-	-- Circular Avery Safe Spot
-	local safeSpotRadius = 50
-	local safeSpotHeight = 20
-	local safeSpot = Instance.new("Part")
-	safeSpot.Shape = Enum.PartType.Cylinder
-	safeSpot.Size = Vector3.new(safeSpotRadius*2, safeSpotHeight, safeSpotRadius*2)
-	safeSpot.Position = Vector3.new(0, yPos + safeSpotHeight/2, 0)
-	safeSpot.Anchored = true
-	safeSpot.CanCollide = false
-	safeSpot.Transparency = 0.5
-	safeSpot.BrickColor = BrickColor.new("Bright green")
-	safeSpot.Material = Enum.Material.Neon
-	safeSpot.Name = "AverySafeSpot"
-	safeSpot.Parent = safeZoneFolder
-
-	-- Safe spot touch events
+	-- Safe Spot touch events
 	safeSpot.Touched:Connect(function(hit)
 		local char = hit.Parent
 		if char and char:FindFirstChild("Humanoid") then
@@ -306,7 +207,7 @@ local function removeSafeZone()
 	end
 end
 
--- Toggle button events
+-- Toggle SafeZone
 toggleButton.MouseButton1Click:Connect(function()
 	local plr = Players.LocalPlayer
 	if playersUsingHub[plr.Name] then
