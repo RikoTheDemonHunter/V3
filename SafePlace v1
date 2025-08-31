@@ -1,4 +1,4 @@
--- Avery's Full SafeZone Script with Lights and Avatar Statue
+-- Avery's Complete SafeZone Script
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -26,7 +26,7 @@ local safeZoneFolder = nil
 local signLabel = nil
 local running = false
 
--- RGB text effect
+-- Rainbow text effect
 local function RGBEffect(label)
 	task.spawn(function()
 		while label and label.Parent do
@@ -38,7 +38,7 @@ local function RGBEffect(label)
 	end)
 end
 
--- Add lights to part
+-- Add lights along part
 local function addLights(part, spacing)
 	local count = math.floor(part.Size.Z / spacing)
 	for i = 0, count do
@@ -58,7 +58,7 @@ local function createSafeZone()
 	safeZoneFolder.Name = "SafeZone"
 	safeZoneFolder.Parent = workspace
 
-	-- Floor
+	-- Main Floor
 	local floor = Instance.new("Part")
 	floor.Name = "MainFloor"
 	floor.Size = Vector3.new(1024, 10, 1024)
@@ -82,15 +82,19 @@ local function createSafeZone()
 		wall.Parent = safeZoneFolder
 	end
 
-	makeWall(Vector3.new(0, 150 + wallHeight/2, -wallLength/2), Vector3.new(wallLength, wallHeight, wallThickness)) -- back
-	makeWall(Vector3.new(-wallLength/2, 150 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength)) -- left
-	makeWall(Vector3.new(wallLength/2, 150 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength)) -- right
+	-- Left wall
+	makeWall(Vector3.new(-wallLength/2, 150 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
+	-- Right wall
+	makeWall(Vector3.new(wallLength/2, 150 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
+	-- Back wall
+	makeWall(Vector3.new(0, 150 + wallHeight/2, wallLength/2), Vector3.new(wallLength, wallHeight, wallThickness))
+	-- Front wall (partial - opening for entrance)
+	makeWall(Vector3.new(0, 150 + wallHeight/2, -wallLength/2 + wallThickness), Vector3.new(wallLength-300, wallHeight, wallThickness))
 
-	-- Openings
+	-- Front and back entrances
 	local frontPos = -600
 	local backPos = 600
 
-	-- Path + ramp with lights
 	local function makePath(zPos, rampAngle)
 		local path = Instance.new("Part")
 		path.Size = Vector3.new(200, 10, 400)
@@ -110,10 +114,10 @@ local function createSafeZone()
 		addLights(ramp, 25)
 	end
 
-	makePath(frontPos, -30) -- front entrance
-	makePath(backPos, 30)   -- back entrance
+	makePath(frontPos, -30)
+	makePath(backPos, 30)
 
-	-- RGB sign
+	-- Sign Wall
 	local signPart = Instance.new("Part")
 	signPart.Anchored = true
 	signPart.Size = Vector3.new(400, 20, 5)
@@ -138,7 +142,7 @@ local function createSafeZone()
 	signLabel.Parent = billboard
 	RGBEffect(signLabel)
 
-	-- Avatar statue
+	-- Avatar Statue
 	local char = player.Character or player.CharacterAdded:Wait()
 	local clone = char:Clone()
 	for _, part in ipairs(clone:GetDescendants()) do
