@@ -1,4 +1,4 @@
--- Avery's SafeZone with Large Baseplate, Front Sign, and Avatar Statue
+-- Avery's SafeZone with Safe Spot, Wide Baseplate, Avatar Statue, Signs, and Leaderboard
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -38,6 +38,34 @@ local function RGBEffect(label)
 			end
 		end
 	end)
+end
+
+-- Leaderboard setup for all players
+Players.PlayerAdded:Connect(function(plr)
+	local leaderstats = Instance.new("Folder")
+	leaderstats.Name = "leaderstats"
+	leaderstats.Parent = plr
+
+	local insideSafeStat = Instance.new("IntValue")
+	insideSafeStat.Name = "InsideSafe"
+	insideSafeStat.Value = 0
+	insideSafeStat.Parent = leaderstats
+
+	local usingHubStat = Instance.new("IntValue")
+	usingHubStat.Name = "UsingAveryHub"
+	usingHubStat.Value = 0
+	usingHubStat.Parent = leaderstats
+end)
+
+-- Tables to track players
+local playersInsideSafe = {}
+local playersUsingHub = {}
+
+local function updateStats(plr)
+	if plr and plr:FindFirstChild("leaderstats") then
+		plr.leaderstats.InsideSafe.Value = playersInsideSafe[plr.Name] and 1 or 0
+		plr.leaderstats.UsingAveryHub.Value = playersUsingHub[plr.Name] and 1 or 0
+	end
 end
 
 -- Create SafeZone
@@ -148,7 +176,7 @@ local function createSafeZone()
 		local label = Instance.new("TextLabel")
 		label.Size = UDim2.new(1,0,1,0)
 		label.BackgroundTransparency = 1
-		label.Text = "Avery's Safe Zone"
+		label.Text = "Avery Safe Zone"
 		label.TextScaled = true
 		label.Font = Enum.Font.GothamBold
 		label.TextColor3 = Color3.fromRGB(255,0,0)
@@ -170,8 +198,8 @@ local function createSafeZone()
 	path.BrickColor = BrickColor.new("Medium stone grey")
 	path.Parent = safeZoneFolder
 
-	-- Larger Baseplate in front of path
-	local baseplateWidth = 400
+	-- Wider Baseplate in front of path
+	local baseplateWidth = 800
 	local baseplateDepth = 600
 	local baseplate = Instance.new("Part")
 	baseplate.Size = Vector3.new(baseplateWidth,10,baseplateDepth)
@@ -181,13 +209,13 @@ local function createSafeZone()
 	baseplate.BrickColor = BrickColor.new("Bright green")
 	baseplate.Parent = safeZoneFolder
 
-	-- Standing front sign (Bright Pink)
+	-- Front sign (Bright Pink)
 	local frontSign = Instance.new("Part")
 	frontSign.Size = Vector3.new(200,50,5)
 	frontSign.Position = Vector3.new(0,yPos+15,-cubeSize/2 - pathLength - baseplateDepth + 50)
 	frontSign.Anchored = true
 	frontSign.Material = Enum.Material.SmoothPlastic
-	frontSign.Color = Color3.fromRGB(255,20,147) -- Bright Pink
+	frontSign.Color = Color3.fromRGB(255,20,147)
 	frontSign.Parent = safeZoneFolder
 
 	local frontBillboard = Instance.new("BillboardGui")
@@ -220,6 +248,44 @@ local function createSafeZone()
 		statue:SetPrimaryPartCFrame(CFrame.new(0,yPos+15,-cubeSize/2 - pathLength - baseplateDepth/2))
 	end
 	statue.Parent = safeZoneFolder
+
+	-- Circular Avery Safe Spot
+	local safeSpotRadius = 50
+	local safeSpotHeight = 20
+	local safeSpot = Instance.new("Part")
+	safeSpot.Shape = Enum.PartType.Cylinder
+	safeSpot.Size = Vector3.new(safeSpotRadius*2, safeSpotHeight, safeSpotRadius*2)
+	safeSpot.Position = Vector3.new(0, yPos + safeSpotHeight/2, 0)
+	safeSpot.Anchored = true
+	safeSpot.CanCollide = false
+	safeSpot.Transparency = 0.5
+	safeSpot.BrickColor = BrickColor.new("Bright green")
+	safeSpot.Material = Enum.Material.Neon
+	safeSpot.Name = "AverySafeSpot"
+	safeSpot.Parent = safeZoneFolder
+
+	-- Safe spot touch events
+	safeSpot.Touched:Connect(function(hit)
+		local char = hit.Parent
+		if char and char:FindFirstChild("Humanoid") then
+			local plr = Players:GetPlayerFromCharacter(char)
+			if plr then
+				playersInsideSafe[plr.Name] = true
+				updateStats(plr)
+				char.Humanoid.Health = char.Humanoid.MaxHealth
+			end
+		end
+	end)
+	safeSpot.TouchEnded:Connect(function(hit)
+		local char = hit.Parent
+		if char and char:FindFirstChild("Humanoid") then
+			local plr = Players:GetPlayerFromCharacter(char)
+			if plr then
+				playersInsideSafe[plr.Name] = nil
+				updateStats(plr)
+			end
+		end
+	end)
 end
 
 -- Remove SafeZone
@@ -230,7 +296,16 @@ local function removeSafeZone()
 	end
 end
 
+-- Toggle button events
 toggleButton.MouseButton1Click:Connect(function()
+	local plr = Players.LocalPlayer
+	if playersUsingHub[plr.Name] then
+		playersUsingHub[plr.Name] = nil
+	else
+		playersUsingHub[plr.Name] = true
+	end
+	updateStats(plr)
+
 	if running then
 		removeSafeZone()
 	else
