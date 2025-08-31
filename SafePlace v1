@@ -1,4 +1,4 @@
--- Avery's Complete SafeZone Script
+-- Avery's Complete SafeZone Script (Nil-Safe)
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -23,31 +23,33 @@ toggleButton.Active = true
 toggleButton.Parent = screenGui
 
 local safeZoneFolder = nil
-local signLabel = nil
 local running = false
 
 -- RGB text effect
 local function RGBEffect(label)
 	task.spawn(function()
-		while label and label.Parent do
-			for hue = 0, 255, 4 do
-				label.TextColor3 = Color3.fromHSV(hue/255, 1, 1)
-				task.wait(0.05)
+		if label then
+			while label.Parent do
+				for hue = 0, 255, 4 do
+					label.TextColor3 = Color3.fromHSV(hue/255, 1, 1)
+					task.wait(0.05)
+				end
 			end
 		end
 	end)
 end
 
--- Add lights along part
+-- Add lights along a part
 local function addLights(part, spacing)
+	if not part then return end
 	local count = math.floor(part.Size.Z / spacing)
 	for i = 0, count do
 		local light = Instance.new("PointLight")
 		light.Range = 20
 		light.Brightness = 2
-		light.Color = Color3.fromRGB(0,255,0)
+		light.Color = Color3.fromRGB(0, 255, 0)
 		light.Parent = part
-		light.Position = Vector3.new(0,5,-part.Size.Z/2 + i*spacing)
+		light.Position = Vector3.new(0, 5, -part.Size.Z/2 + i*spacing)
 	end
 end
 
@@ -87,24 +89,4 @@ local function createSafeZone()
 	-- Right wall
 	makeWall(Vector3.new(wallLength/2, 250 + wallHeight/2, 0), Vector3.new(wallThickness, wallHeight, wallLength))
 	-- Back wall
-	makeWall(Vector3.new(0, 250 + wallHeight/2, wallLength/2), Vector3.new(wallLength, wallHeight, wallThickness))
-	-- Front wall with opening (150 studs wide)
-	makeWall(Vector3.new(0, 250 + wallHeight/2, -wallLength/2 + wallThickness), Vector3.new(wallLength-150, wallHeight, wallThickness))
-
-	-- Pathway
-	local path = Instance.new("Part")
-	path.Size = Vector3.new(120, 10, 250)
-	path.Position = Vector3.new(0, 200, -wallLength/2 - 125)
-	path.Anchored = true
-	path.Material = Enum.Material.Concrete
-	path.Parent = safeZoneFolder
-	addLights(path, 50)
-
-	-- Stairway
-	local stair = Instance.new("Part")
-	stair.Size = Vector3.new(120, 10, 60)
-	stair.Position = Vector3.new(0, 220, -wallLength/2 - 70)
-	stair.Anchored = true
-	stair.Material = Enum.Material.Concrete
-	stair.Orientation = Vector3.new(-25, 0, 0)
-	stair.Parent = safeZoneFo
+	makeWall(Vector3.new(0, 250 + wallHeight/2, wallLength/2), Vector3.new(wa
