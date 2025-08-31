@@ -1,4 +1,4 @@
--- Avery's SafeZone Cube Version with Aligned Entrance and Path
+-- Avery's SafeZone Cube Version with Proper Entrance and Sign Alignment
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
@@ -51,8 +51,8 @@ local function createSafeZone()
 	local cubeHeight = 600
 	local yPos = 2000
 	local wallThickness = 20
-	local entranceWidth = 150
-	local entranceHeight = 250
+	local entranceWidth = 100  -- smaller entrance
+	local entranceHeight = 200
 
 	-- Floor inside cube
 	local floor = Instance.new("Part")
@@ -86,7 +86,7 @@ local function createSafeZone()
 	-- Back wall
 	createWall(Vector3.new(0, yPos + cubeHeight/2, cubeSize/2), Vector3.new(cubeSize, cubeHeight, wallThickness))
 	
-	-- Front wall: split into left and right parts to create entrance
+	-- Front wall: split for entrance
 	local frontLeft = Instance.new("Part")
 	frontLeft.Size = Vector3.new((cubeSize - entranceWidth)/2, cubeHeight, wallThickness)
 	frontLeft.Position = Vector3.new(-(cubeSize - entranceWidth)/4 - entranceWidth/2, yPos + cubeHeight/2, -cubeSize/2)
@@ -131,15 +131,15 @@ local function createSafeZone()
 	makerLabel.Parent = makerBillboard
 	RGBEffect(makerLabel)
 
-	-- Internal side signs
-	local function createInternalSign(wallPos)
+	-- Two internal side signs inside walls
+	local function createInternalSign(wallX)
 		local sign = Instance.new("Part")
 		sign.Size = Vector3.new(150,30,5)
 		sign.Anchored = true
 		sign.Material = Enum.Material.SmoothPlastic
 		sign.Transparency = 0.5
 		sign.Color = Color3.fromRGB(0,0,0)
-		sign.Position = wallPos
+		sign.Position = Vector3.new(wallX, yPos + cubeHeight/2, 0)
 		sign.Parent = safeZoneFolder
 
 		local billboard = Instance.new("BillboardGui")
@@ -159,10 +159,8 @@ local function createSafeZone()
 		RGBEffect(label)
 	end
 
-	-- Left internal sign
-	createInternalSign(Vector3.new(-cubeSize/2 + wallThickness, yPos + cubeHeight/2, 0))
-	-- Right internal sign
-	createInternalSign(Vector3.new(cubeSize/2 - wallThickness, yPos + cubeHeight/2, 0))
+	createInternalSign(-cubeSize/2 + wallThickness) -- left wall
+	createInternalSign(cubeSize/2 - wallThickness)  -- right wall
 
 	-- Path aligned with entrance
 	local path = Instance.new("Part")
