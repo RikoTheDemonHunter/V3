@@ -21,11 +21,6 @@ frame.Active = true
 frame.Draggable = true
 frame.Parent = screenGui
 
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 12) -- roundness size
-corner.Parent = frame
-
-
 -- Title
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, -30, 0, 30)
@@ -89,13 +84,6 @@ local function createButton(text, posY)
 	btn.Font = Enum.Font.SourceSans
 	btn.TextSize = 16
 	btn.Parent = buttonContainer
-	return btn
-end
-
-local btnCorner = Instance.new("UICorner")
-	btnCorner.CornerRadius = UDim.new(0, 8) -- roundness for buttons
-	btnCorner.Parent = btn
-
 	return btn
 end
 
