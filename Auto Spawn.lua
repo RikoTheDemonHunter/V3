@@ -21,6 +21,11 @@ frame.Active = true
 frame.Draggable = true
 frame.Parent = screenGui
 
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12) -- roundness size
+corner.Parent = frame
+
+
 -- Title
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, -30, 0, 30)
