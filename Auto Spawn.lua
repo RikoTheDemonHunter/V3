@@ -92,6 +92,13 @@ local function createButton(text, posY)
 	return btn
 end
 
+local btnCorner = Instance.new("UICorner")
+	btnCorner.CornerRadius = UDim.new(0, 8) -- roundness for buttons
+	btnCorner.Parent = btn
+
+	return btn
+end
+
 -- Buttons
 local set1 = createButton("Set Spawn 1", 0)
 local set2 = createButton("Set Spawn 2", 35)
