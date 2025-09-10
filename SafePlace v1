@@ -1,14 +1,15 @@
--- Avery's SafeZone Full Script with Smooth Color Cycle and RGB Billboard Text (No Statue)
+-- Avery's SafeZone Full Script (Optimized Color Cycling)
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
 local safeZoneFolder = nil
 local running = false
 local safeZoneParts = {}
 
--- RGB effect function
+-- RGB effect function for billboard text
 local function RGBEffect(label)
 	if not label then return end
 	task.spawn(function()
@@ -23,17 +24,15 @@ local function RGBEffect(label)
 	end)
 end
 
--- Smooth slower color cycle for SafeZone walls and floor
-local function cycleColor()
-	while running do
-		for hue=0,1,0.001 do  -- slower increment
-			local color = Color3.fromHSV(hue,0.7,1)
-			for _,part in pairs(safeZoneParts) do
-				if part:IsA("Part") then
-					part.Color = color
-				end
-			end
-			task.wait(0.05)
+-- Smooth color cycle for SafeZone walls and floor (Optimized)
+local hueValue = 0
+local function cycleColorOptimized(delta)
+	if not running then return end
+	hueValue = (hueValue + delta * 0.1) % 1
+	local color = Color3.fromHSV(hueValue,0.7,1)
+	for _,part in pairs(safeZoneParts) do
+		if part and part.Parent then
+			part.Color = color
 		end
 	end
 end
@@ -64,6 +63,7 @@ local function createSafeZone()
 	floor.Transparency = 0.5
 	floor.Reflectance = 0.2
 	floor.Name = "Floor"
+	floor.Color = Color3.fromRGB(0,0,255)
 	floor.Parent = safeZoneFolder
 	table.insert(safeZoneParts,floor)
 
@@ -75,7 +75,7 @@ local function createSafeZone()
 		wall.Anchored = true
 		wall.Material = Enum.Material.SmoothPlastic
 		wall.Transparency = 0.4
-		wall.BrickColor = BrickColor.new("Bright blue")
+		wall.Color = Color3.fromRGB(0,0,255)
 		if orientation then wall.Orientation = orientation end
 		wall.Parent = safeZoneFolder
 		table.insert(safeZoneParts,wall)
@@ -93,7 +93,7 @@ local function createSafeZone()
 	frontLeft.Anchored = true
 	frontLeft.Material = Enum.Material.SmoothPlastic
 	frontLeft.Transparency = 0.4
-	frontLeft.BrickColor = BrickColor.new("Bright blue")
+	frontLeft.Color = Color3.fromRGB(0,0,255)
 	frontLeft.Parent = safeZoneFolder
 	table.insert(safeZoneParts,frontLeft)
 
@@ -103,7 +103,7 @@ local function createSafeZone()
 	frontRight.Anchored = true
 	frontRight.Material = Enum.Material.SmoothPlastic
 	frontRight.Transparency = 0.4
-	frontRight.BrickColor = BrickColor.new("Bright blue")
+	frontRight.Color = Color3.fromRGB(0,0,255)
 	frontRight.Parent = safeZoneFolder
 	table.insert(safeZoneParts,frontRight)
 
@@ -113,7 +113,7 @@ local function createSafeZone()
 	path.Position = Vector3.new(0,yPos+5,-cubeSize/2 - pathLength/2)
 	path.Anchored = true
 	path.Material = Enum.Material.Concrete
-	path.BrickColor = BrickColor.new("Medium stone grey")
+	path.Color = Color3.fromRGB(128,128,128)
 	path.Parent = safeZoneFolder
 
 	-- Wide Baseplate
@@ -122,7 +122,7 @@ local function createSafeZone()
 	baseplate.Position = Vector3.new(0,yPos-5,-cubeSize/2 - pathLength - baseplateDepth/2)
 	baseplate.Anchored = true
 	baseplate.Material = Enum.Material.Grass
-	baseplate.BrickColor = BrickColor.new("Bright green")
+	baseplate.Color = Color3.fromRGB(0,255,0)
 	baseplate.Parent = safeZoneFolder
 
 	-- Floating "Made by Avery" billboard with RGB text
@@ -131,7 +131,7 @@ local function createSafeZone()
 	signPart.Position = Vector3.new(0,yPos+60,-cubeSize/2 - pathLength - baseplateDepth/2)
 	signPart.Anchored = true
 	signPart.Material = Enum.Material.SmoothPlastic
-	signPart.BrickColor = BrickColor.new("Bright pink")
+	signPart.Color = Color3.fromRGB(255,0,255)
 	signPart.Transparency = 0.7
 	signPart.Parent = safeZoneFolder
 
@@ -186,9 +186,13 @@ toggleButton.MouseButton1Click:Connect(function()
 		removeSafeZone()
 	else
 		createSafeZone()
-		if #safeZoneParts > 0 then
-			task.spawn(cycleColor)
-		end
 	end
 	running = not running
+end)
+
+-- Connect optimized color cycle to RenderStepped (runs once per frame)
+RunService.RenderStepped:Connect(function(deltaTime)
+	if running then
+		cycleColorOptimized(deltaTime)
+	end
 end)
