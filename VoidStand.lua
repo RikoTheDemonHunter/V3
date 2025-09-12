@@ -6,7 +6,7 @@ local player = Players.LocalPlayer
 
 -- Config
 local PLATFORM_SIZE = Vector3.new(500, 1, 500) -- giant void floor
-local PLATFORM_COLOR = Color3.fromRGB(20, 20, 30)
+local PLATFORM_COLOR = Color3.fromRGB(0, 191, 255)
 local PLATFORM_OFFSET = -13 -- studs below HumanoidRootPart
 
 -- Function to create the void platform
