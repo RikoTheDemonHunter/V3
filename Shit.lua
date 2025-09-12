@@ -774,7 +774,11 @@ LocalPlayer:Button("TP Gui", function(v)
 LocalPlayer:Toggle("Cloud Stand", function(v)
            loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Cloud.lua"))()
 	end)
-		
+
+LocalPlayer:Button("VoidStand", function(v)
+		    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/VoidStand.lua"))()
+	end)
+
 Teleport:Button("Safe Zone", function()
 	local New_CFrame = CFrame.new(-46, 48, -15)
 
