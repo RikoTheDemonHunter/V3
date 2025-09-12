@@ -8,7 +8,7 @@ local character = player.Character or player.CharacterAdded:Wait()
 local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
 -- Config
-local PLATFORM_SIZE = Vector3.new(20, 1, 20) -- wide platform
+local PLATFORM_SIZE = Vector3.new(150, 1, 150) -- wide platform
 local PLATFORM_COLOR = Color3.fromRGB(20, 20, 30)
 
 -- Function to create the void platform
