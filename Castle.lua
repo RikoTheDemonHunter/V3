@@ -1,8 +1,8 @@
 local Workspace = game:GetService("Workspace")
 
 -- Castle settings
-local castleWidth = 100 -- adjust as needed
-local castleDepth = 100 -- adjust as needed
+local castleWidth = 400-- adjust as needed
+local castleDepth = 400 -- adjust as needed
 local castleHeight = 50 -- wall height
 local towerSize = 20
 local floatHeight = 8000
