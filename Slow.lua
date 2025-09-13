@@ -1,3 +1,128 @@
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local PlayerGui = player:WaitForChild("PlayerGui")
+
+local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
+local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
+
+local function isBanned(userId, banlist)
+    for _, id in ipairs(banlist) do
+        if id == userId then
+            return true
+        end
+    end
+    return false
+end
+
+local function isWhitelisted(userId, whitelist)
+    for _, id in ipairs(whitelist) do
+        if id == userId then
+            return true
+        end
+    end
+    return false
+end
+
+-- Create GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "StatusDashboard"
+screenGui.Parent = PlayerGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 350, 0, 150)
+frame.Position = UDim2.new(0.5, -175, 0.5, -75)
+frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+frame.BorderSizePixel = 0
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+frame.Parent = screenGui
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, -20, 0, 80)
+statusLabel.Position = UDim2.new(0, 10, 0, 10)
+statusLabel.BackgroundTransparency = 1
+statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusLabel.TextScaled = true
+statusLabel.Font = Enum.Font.SourceSansBold
+statusLabel.Text = "Checking status..."
+statusLabel.Parent = frame
+
+local retryButton = Instance.new("TextButton")
+retryButton.Size = UDim2.new(0, 120, 0, 40)
+retryButton.Position = UDim2.new(0.5, -60, 1, -50)
+retryButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+retryButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+retryButton.Font = Enum.Font.SourceSans
+retryButton.TextScaled = true
+retryButton.Text = "Retry"
+retryButton.Parent = frame
+retryButton.AnchorPoint = Vector2.new(0.5, 0.5)
+
+-- Main status check function
+local function checkStatus()
+    statusLabel.Text = "Checking status..."
+    statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+    -- Fetch banlist
+    local banSuccess, banData = pcall(function()
+        local response = game:HttpGet(banlistUrl, true)
+        return HttpService:JSONDecode(response)
+    end)
+
+    if banSuccess and banData then
+        local banlist = banData.banned or {}
+        if isBanned(player.UserId, banlist) then
+            statusLabel.Text = "🚫 You are banned!"
+            statusLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+            task.wait(2) -- show message
+            player:Kick("🚫 You are permanently banned from using this script.")
+            return
+        end
+    else
+        statusLabel.Text = "⚠️ Could not fetch banlist."
+        statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+        return
+    end
+
+    -- Fetch whitelist / kill switch
+    local success, result = pcall(function()
+        local response = game:HttpGet(url, true)
+        return HttpService:JSONDecode(response)
+    end)
+
+    if success and result then
+        local enabled = result.enabled
+        local whitelist = result.whitelist or {}
+
+        if isWhitelisted(player.UserId, whitelist) then
+            statusLabel.Text = "✅ You are whitelisted!"
+            statusLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+            task.wait(2)
+            screenGui:Destroy() -- hide GUI
+        elseif not enabled then
+            statusLabel.Text = "✅ Kill switch OFF. You can proceed."
+            statusLabel.TextColor3 = Color3.fromRGB(0, 200, 0)
+            task.wait(2)
+            screenGui:Destroy() -- hide GUI
+        else
+            statusLabel.Text = "⚠️ Not whitelisted!"
+            statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+            task.wait(2) -- show message before kicking
+            player:Kick("Your UserID is not whitelisted.")
+            return
+        end
+    else
+        statusLabel.Text = "⚠️ Failed to fetch kill switch status."
+        statusLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+    end
+end
+
+-- Retry button functionality
+retryButton.MouseButton1Click:Connect(checkStatus)
+
+-- Initial check
+checkStatus()
+
 local lib = {}
 
 function lib:Gui(title)
