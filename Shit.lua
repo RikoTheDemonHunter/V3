@@ -428,6 +428,7 @@ local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs
 
 -- Tab + Section
 local StatusTab = Library:Tab("Status")
+
 local Status = StatusTab:Section("Script Status")
 
 -- Status label
@@ -490,8 +491,44 @@ local function checkStatus()
     -- Fetch kill switch
     local result = fetchJSON(url)
     if result then
-        local enabled = result.enab
+        local enabled = result.enabled
+        local whitelist = result.whitelist or {}
 
+        if not enabled and not isWhitelisted(player.UserId, whitelist) then
+            updateStatus("❌ Not whitelisted", Color3.fromRGB(255, 0, 0))
+        elseif not enabled and isWhitelisted(player.UserId, whitelist) then
+            updateStatus("✅ Whitelisted user", Color3.fromRGB(0, 255, 0))
+        elseif enabled then
+            updateStatus("✅ Kill switch OFF", Color3.fromRGB(0, 255, 0))
+        else
+            updateStatus("⚠️ Unknown state", Color3.fromRGB(255, 255, 0))
+        end
+    else
+        updateStatus("⚠️ Failed to fetch kill switch", Color3.fromRGB(255, 128, 0))
+    end
+end
+
+-- First check
+checkStatus()
+
+-- Manual Refresh Button
+Status:Button("🔄 Refresh Now", function()
+    checkStatus()
+end)
+
+-- Auto Refresh Toggle
+Status:Toggle("Auto Refresh (30s)", true, function(value)
+    autoRefresh = value
+end)
+
+-- Background loop
+task.spawn(function()
+    while task.wait(30) do
+        if autoRefresh then
+            checkStatus()
+        end
+    end
+end)
 
 function AutoEquip()spawn(function(v)
 		while getgenv().equip == true do
