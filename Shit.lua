@@ -418,6 +418,88 @@ Library:Tab("Credits")
 local Credits =
 CreditsTab:Section("Credits")
 
+local StatusTab = Window:Tab("Status")
+local Status = StatusTab:Section("Script Status")
+
+-- Status label
+local statusLabel = Status:Label("Loading status...")
+
+-- Toggle state
+local autoRefresh = true
+
+-- Function to update text + color
+local function updateStatus(text, color)
+    local label = statusLabel
+    if label and label:IsA("TextLabel") then
+        label.Text = text
+        label.TextColor3 = color or Color3.fromRGB(255,255,255)
+    end
+end
+
+-- Function to check status
+local function checkStatus()
+    updateStatus("🔄 Checking...", Color3.fromRGB(255, 255, 0))
+
+    -- Check banlist
+    local banSuccess, banData = pcall(function()
+        return HttpService:JSONDecode(game:HttpGet(banlistUrl, true))
+    end)
+
+    if banSuccess and banData then
+        if isBanned(player.UserId, banData.banned or {}) then
+            updateStatus("🚫 You are banned", Color3.fromRGB(255, 0, 0))
+            return
+        end
+    else
+        updateStatus("⚠️ Failed to fetch banlist", Color3.fromRGB(255, 128, 0))
+        return
+    end
+
+    -- Check kill switch
+    local success, result = pcall(function()
+        return HttpService:JSONDecode(game:HttpGet(url, true))
+    end)
+
+    if success and result then
+        local enabled = result.enabled
+        local whitelist = result.whitelist or {}
+
+        if not enabled and not isWhitelisted(player.UserId, whitelist) then
+            updateStatus("❌ Not whitelisted", Color3.fromRGB(255, 0, 0))
+        elseif not enabled and isWhitelisted(player.UserId, whitelist) then
+            updateStatus("✅ Whitelisted user", Color3.fromRGB(0, 255, 0))
+        elseif enabled then
+            updateStatus("✅ Kill switch OFF", Color3.fromRGB(0, 255, 0))
+        else
+            updateStatus("⚠️ Unknown state", Color3.fromRGB(255, 255, 0))
+        end
+    else
+        updateStatus("⚠️ Failed to fetch kill switch", Color3.fromRGB(255, 128, 0))
+    end
+end
+
+-- First check
+checkStatus()
+
+-- Manual Refresh Button
+Status:Button("🔄 Refresh Now", function()
+    checkStatus()
+end)
+
+-- Auto Refresh Toggle
+Status:Toggle("Auto Refresh (30s)", true, function(value)
+    autoRefresh = value
+end)
+
+-- Background loop
+task.spawn(function()
+    while task.wait(30) do
+        if autoRefresh then
+            checkStatus()
+        end
+    end
+end)
+
 function AutoEquip()spawn(function(v)
 		while getgenv().equip == true do
 			wait(0.8)
