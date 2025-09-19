@@ -428,13 +428,12 @@ local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs
 
 -- Tab + Section
 local StatusTab = Library:Tab("Status")
-
 local Status = StatusTab:Section("Script Status")
 
 -- Status label
 local statusLabel = Status:Label("Loading status...")
 
--- Toggle state
+-- Auto-refresh toggle
 local autoRefresh = true
 
 -- Helper functions
@@ -452,23 +451,11 @@ local function isBanned(userId, banned)
     return false
 end
 
--- Reliable fetch function
-local function fetchJSON(url)
-    local success, result = pcall(function()
-        local response = HttpService:RequestAsync({
-            Url = url,
-            Method = "GET"
-        })
-        return HttpService:JSONDecode(response.Body)
-    end)
-    return success and result or nil
-end
-
--- Update label text
+-- Update status label safely
 local function updateStatus(text, color)
-    if statusLabel and statusLabel.Text ~= nil then
+    if statusLabel and statusLabel.Text then
         statusLabel.Text = text
-        statusLabel.TextColor3 = color or Color3.fromRGB(255,255,255)
+        statusLabel.TextColor3 = color or Color3.fromRGB(255, 255, 255)
     end
 end
 
@@ -476,9 +463,12 @@ end
 local function checkStatus()
     updateStatus("🔄 Checking...", Color3.fromRGB(255, 255, 0))
 
-    -- Fetch banlist
-    local banData = fetchJSON(banlistUrl)
-    if banData then
+    -- Check banlist
+    local banSuccess, banData = pcall(function()
+        return HttpService:JSONDecode(game:HttpGet(banlistUrl, true))
+    end)
+
+    if banSuccess and banData then
         if isBanned(player.UserId, banData.banned or {}) then
             updateStatus("🚫 You are banned", Color3.fromRGB(255, 0, 0))
             return
@@ -488,9 +478,12 @@ local function checkStatus()
         return
     end
 
-    -- Fetch kill switch
-    local result = fetchJSON(url)
-    if result then
+    -- Check kill switch
+    local success, result = pcall(function()
+        return HttpService:JSONDecode(game:HttpGet(url, true))
+    end)
+
+    if success and result then
         local enabled = result.enabled
         local whitelist = result.whitelist or {}
 
@@ -511,17 +504,17 @@ end
 -- First check
 checkStatus()
 
--- Manual Refresh Button
+-- Manual refresh button
 Status:Button("🔄 Refresh Now", function()
     checkStatus()
 end)
 
--- Auto Refresh Toggle
+-- Auto-refresh toggle
 Status:Toggle("Auto Refresh (15s)", true, function(value)
     autoRefresh = value
 end)
 
--- Background loop
+-- Background loop (15 seconds)
 task.spawn(function()
     while task.wait(15) do
         if autoRefresh then
@@ -529,6 +522,7 @@ task.spawn(function()
         end
     end
 end)
+
 
 function AutoEquip()spawn(function(v)
 		while getgenv().equip == true do
