@@ -418,26 +418,48 @@ Library:Tab("Credits")
 local Credits =
 CreditsTab:Section("Credits")
 
+--// Services
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+--// URLs (replace with your own)
+local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
+local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
+
+--// Tab + Section
 local StatusTab = Library:Tab("Status")
 
 local Status = StatusTab:Section("Script Status")
 
--- Status label
+--// Status label
 local statusLabel = Status:Label("Loading status...")
 
 -- Toggle state
 local autoRefresh = true
 
--- Function to update text + color
-local function updateStatus(text, color)
-    local label = statusLabel
-    if label and label:IsA("TextLabel") then
-        label.Text = text
-        label.TextColor3 = color or Color3.fromRGB(255,255,255)
+-- Helper functions
+local function isWhitelisted(userId, whitelist)
+    for _, id in ipairs(whitelist) do
+        if id == userId then return true end
     end
+    return false
 end
 
--- Function to check status
+local function isBanned(userId, banned)
+    for _, id in ipairs(banned) do
+        if id == userId then return true end
+    end
+    return false
+end
+
+-- Update label text
+local function updateStatus(text, color)
+    statusLabel.Text = text
+    statusLabel.TextColor3 = color or Color3.fromRGB(255,255,255)
+end
+
+-- Main status check
 local function checkStatus()
     updateStatus("🔄 Checking...", Color3.fromRGB(255, 255, 0))
 
@@ -500,6 +522,7 @@ task.spawn(function()
         end
     end
 end)
+
 
 function AutoEquip()spawn(function(v)
 		while getgenv().equip == true do
