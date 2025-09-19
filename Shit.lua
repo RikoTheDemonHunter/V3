@@ -419,6 +419,7 @@ local Credits =
 CreditsTab:Section("Credits")
 
 local StatusTab = Library:Tab("Status")
+
 local Status = StatusTab:Section("Script Status")
 
 -- Status label
