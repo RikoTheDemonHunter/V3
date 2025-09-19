@@ -517,13 +517,13 @@ Status:Button("🔄 Refresh Now", function()
 end)
 
 -- Auto Refresh Toggle
-Status:Toggle("Auto Refresh (30s)", true, function(value)
+Status:Toggle("Auto Refresh (15s)", true, function(value)
     autoRefresh = value
 end)
 
 -- Background loop
 task.spawn(function()
-    while task.wait(30) do
+    while task.wait(15) do
         if autoRefresh then
             checkStatus()
         end
