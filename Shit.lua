@@ -422,15 +422,22 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
+-- URLs
 local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
 local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
 
+-- Tab + Section
 local StatusTab = Library:Tab("Status")
 local Status = StatusTab:Section("Script Status")
-local statusLabel = Status:Label("Loading status...")
 
+-- Status labels
+local statusLabel = Status:Label("Loading status...")
+local lastUpdatedLabel = Status:Label("Last updated: N/A") -- NEW
+
+-- Auto refresh toggle
 local autoRefresh = true
 
+-- Helper functions
 local function isWhitelisted(userId, whitelist)
     for _, id in ipairs(whitelist) do
         if id == userId then return true end
@@ -445,61 +452,77 @@ local function isBanned(userId, banned)
     return false
 end
 
+-- Update GUI instantly
 local function updateStatus(text, color)
-    if statusLabel then
+    if statusLabel and statusLabel.Text then
         statusLabel.Text = text
         statusLabel.TextColor3 = color or Color3.fromRGB(255,255,255)
     end
-    print("[Status] " .. text) -- diagnostic print
+    -- Force GUI update
+    task.wait() 
 end
 
+-- Update last updated time
+local function updateLastUpdated()
+    if lastUpdatedLabel and lastUpdatedLabel.Text then
+        local time = os.date("%H:%M:%S")
+        lastUpdatedLabel.Text = "Last updated: "..time
+    end
+end
+
+-- Main status check
 local function checkStatus()
+    -- Show checking immediately
     updateStatus("🔄 Checking...", Color3.fromRGB(255, 255, 0))
 
-    -- Banlist fetch
-    local success, banData = pcall(function()
-        return HttpService:JSONDecode(game:HttpGet(banlistUrl, true))
+    task.spawn(function() -- Run HTTP fetch in a separate thread
+        -- Banlist
+        local banSuccess, banData = pcall(function()
+            return HttpService:JSONDecode(game:HttpGet(banlistUrl, true))
+        end)
+        if banSuccess and banData then
+            if isBanned(player.UserId, banData.banned or {}) then
+                updateStatus("🚫 You are banned", Color3.fromRGB(255, 0, 0))
+                updateLastUpdated()
+                return
+            end
+        else
+            updateStatus("⚠️ Failed to fetch banlist", Color3.fromRGB(255, 128, 0))
+            updateLastUpdated()
+            return
+        end
+
+        -- Kill switch
+        local success, result = pcall(function()
+            return HttpService:JSONDecode(game:HttpGet(url, true))
+        end)
+        if success and result then
+            local enabled = result.enabled
+            local whitelist = result.whitelist or {}
+
+            if not enabled and not isWhitelisted(player.UserId, whitelist) then
+                updateStatus("❌ Not whitelisted", Color3.fromRGB(255, 0, 0))
+            elseif not enabled and isWhitelisted(player.UserId, whitelist) then
+                updateStatus("✅ Whitelisted user", Color3.fromRGB(0, 255, 0))
+            elseif enabled then
+                updateStatus("✅ Kill switch OFF", Color3.fromRGB(0, 255, 0))
+            else
+                updateStatus("⚠️ Unknown state", Color3.fromRGB(255, 255, 0))
+            end
+        else
+            updateStatus("⚠️ Failed to fetch kill switch", Color3.fromRGB(255, 128, 0))
+        end
+        updateLastUpdated() -- Update timestamp after every check
     end)
-
-    if not success then
-        updateStatus("⚠️ Failed to fetch banlist", Color3.fromRGB(255,128,0))
-        warn("Banlist fetch failed:", banData)
-        return
-    end
-
-    if isBanned(player.UserId, banData.banned or {}) then
-        updateStatus("🚫 You are banned", Color3.fromRGB(255,0,0))
-        return
-    end
-
-    -- Kill switch fetch
-    local success2, result = pcall(function()
-        return HttpService:JSONDecode(game:HttpGet(url, true))
-    end)
-
-    if not success2 then
-        updateStatus("⚠️ Failed to fetch kill switch", Color3.fromRGB(255,128,0))
-        warn("Kill switch fetch failed:", result)
-        return
-    end
-
-    local enabled = result.enabled
-    local whitelist = result.whitelist or {}
-
-    if enabled then
-        updateStatus("✅ Kill switch OFF", Color3.fromRGB(0,255,0))
-    elseif not enabled and isWhitelisted(player.UserId, whitelist) then
-        updateStatus("✅ Whitelisted user", Color3.fromRGB(0,255,0))
-    else
-        updateStatus("❌ Not whitelisted", Color3.fromRGB(255,0,0))
-    end
 end
 
 -- First check
 checkStatus()
 
--- Manual refresh
-Status:Button("🔄 Refresh Now", checkStatus)
+-- Manual refresh button
+Status:Button("🔄 Refresh Now", function()
+    checkStatus()
+end)
 
 -- Auto refresh toggle
 Status:Toggle("Auto Refresh (15s)", true, function(value)
@@ -514,6 +537,7 @@ task.spawn(function()
         end
     end
 end)
+
 
 
 function AutoEquip()spawn(function(v)
