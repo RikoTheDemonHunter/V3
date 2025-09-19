@@ -422,21 +422,15 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- URLs
 local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
 local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
 
--- Tab + Section
 local StatusTab = Library:Tab("Status")
 local Status = StatusTab:Section("Script Status")
-
--- Status label
 local statusLabel = Status:Label("Loading status...")
 
--- Auto-refresh toggle
 local autoRefresh = true
 
--- Helper functions
 local function isWhitelisted(userId, whitelist)
     for _, id in ipairs(whitelist) do
         if id == userId then return true end
@@ -451,70 +445,68 @@ local function isBanned(userId, banned)
     return false
 end
 
--- Update status label safely
 local function updateStatus(text, color)
-    if statusLabel and statusLabel.Text then
+    if statusLabel then
         statusLabel.Text = text
-        statusLabel.TextColor3 = color or Color3.fromRGB(255, 255, 255)
+        statusLabel.TextColor3 = color or Color3.fromRGB(255,255,255)
     end
+    print("[Status] " .. text) -- diagnostic print
 end
 
--- Main status check
 local function checkStatus()
     updateStatus("🔄 Checking...", Color3.fromRGB(255, 255, 0))
 
-    -- Check banlist
-    local banSuccess, banData = pcall(function()
+    -- Banlist fetch
+    local success, banData = pcall(function()
         return HttpService:JSONDecode(game:HttpGet(banlistUrl, true))
     end)
 
-    if banSuccess and banData then
-        if isBanned(player.UserId, banData.banned or {}) then
-            updateStatus("🚫 You are banned", Color3.fromRGB(255, 0, 0))
-            return
-        end
-    else
-        updateStatus("⚠️ Failed to fetch banlist", Color3.fromRGB(255, 128, 0))
+    if not success then
+        updateStatus("⚠️ Failed to fetch banlist", Color3.fromRGB(255,128,0))
+        warn("Banlist fetch failed:", banData)
         return
     end
 
-    -- Check kill switch
-    local success, result = pcall(function()
+    if isBanned(player.UserId, banData.banned or {}) then
+        updateStatus("🚫 You are banned", Color3.fromRGB(255,0,0))
+        return
+    end
+
+    -- Kill switch fetch
+    local success2, result = pcall(function()
         return HttpService:JSONDecode(game:HttpGet(url, true))
     end)
 
-    if success and result then
-        local enabled = result.enabled
-        local whitelist = result.whitelist or {}
+    if not success2 then
+        updateStatus("⚠️ Failed to fetch kill switch", Color3.fromRGB(255,128,0))
+        warn("Kill switch fetch failed:", result)
+        return
+    end
 
-        if not enabled and not isWhitelisted(player.UserId, whitelist) then
-            updateStatus("❌ Not whitelisted", Color3.fromRGB(255, 0, 0))
-        elseif not enabled and isWhitelisted(player.UserId, whitelist) then
-            updateStatus("✅ Whitelisted user", Color3.fromRGB(0, 255, 0))
-        elseif enabled then
-            updateStatus("✅ Kill switch OFF", Color3.fromRGB(0, 255, 0))
-        else
-            updateStatus("⚠️ Unknown state", Color3.fromRGB(255, 255, 0))
-        end
+    local enabled = result.enabled
+    local whitelist = result.whitelist or {}
+
+    if enabled then
+        updateStatus("✅ Kill switch OFF", Color3.fromRGB(0,255,0))
+    elseif not enabled and isWhitelisted(player.UserId, whitelist) then
+        updateStatus("✅ Whitelisted user", Color3.fromRGB(0,255,0))
     else
-        updateStatus("⚠️ Failed to fetch kill switch", Color3.fromRGB(255, 128, 0))
+        updateStatus("❌ Not whitelisted", Color3.fromRGB(255,0,0))
     end
 end
 
 -- First check
 checkStatus()
 
--- Manual refresh button
-Status:Button("🔄 Refresh Now", function()
-    checkStatus()
-end)
+-- Manual refresh
+Status:Button("🔄 Refresh Now", checkStatus)
 
--- Auto-refresh toggle
+-- Auto refresh toggle
 Status:Toggle("Auto Refresh (15s)", true, function(value)
     autoRefresh = value
 end)
 
--- Background loop (15 seconds)
+-- Background loop
 task.spawn(function()
     while task.wait(15) do
         if autoRefresh then
