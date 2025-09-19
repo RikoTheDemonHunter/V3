@@ -17,9 +17,7 @@ BurpAction.OnClientEvent:Connect(function(payload)
         if tick() - lastHandled < LOCAL_COOLDOWN then return end
         lastHandled = tick()
 
-        -- No animation, no sound — nothing to play.
-        -- If you want a subtle visual effect later, add it here.
-        -- Example: you could change a UI, run a small camera effect, or print to output:
-        -- print("You were burped by", payload.sourceUserId)
+print("You were burped by", payload.sourceUserId)
+            
     end
 end)
