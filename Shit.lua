@@ -431,14 +431,7 @@ local StatusTab = Library:Tab("Status")
 local Status = StatusTab:Section("Script Status")
 
 -- Status label
-local statusLabelWrapper = Status:Label("Loading status...")
--- Safely get the actual TextLabel inside the wrapper
-local statusLabel
-if statusLabelWrapper and statusLabelWrapper:FindFirstChildOfClass("TextLabel") then
-    statusLabel = statusLabelWrapper:FindFirstChildOfClass("TextLabel")
-else
-    statusLabel = statusLabelWrapper
-end
+local statusLabel = Status:Label("Loading status...")
 
 -- Toggle state
 local autoRefresh = true
@@ -460,9 +453,12 @@ end
 
 -- Update label text safely
 local function updateStatus(text, color)
-    if statusLabel and statusLabel:IsA("TextLabel") then
+    if statusLabel and statusLabel.Text then
         statusLabel.Text = text
         statusLabel.TextColor3 = color or Color3.fromRGB(255,255,255)
+        if statusLabel.Update then
+            statusLabel:Update() -- for some libraries that need it
+        end
     end
 end
 
@@ -470,7 +466,7 @@ end
 local function checkStatus()
     updateStatus("🔄 Checking...", Color3.fromRGB(255, 255, 0))
 
-    -- Check banlist
+    -- Banlist check
     local banSuccess, banData = pcall(function()
         return HttpService:JSONDecode(game:HttpGet(banlistUrl, true))
     end)
@@ -485,7 +481,7 @@ local function checkStatus()
         return
     end
 
-    -- Check kill switch
+    -- Kill switch check
     local success, result = pcall(function()
         return HttpService:JSONDecode(game:HttpGet(url, true))
     end)
@@ -511,26 +507,25 @@ end
 -- First check
 checkStatus()
 
--- Manual Refresh Button
+-- Manual refresh button
 Status:Button("🔄 Refresh Now", function()
     checkStatus()
 end)
 
--- Auto Refresh Toggle
+-- Auto-refresh toggle
 Status:Toggle("Auto Refresh (30s)", true, function(value)
     autoRefresh = value
 end)
 
--- Background loop
+-- Background auto-refresh loop
 task.spawn(function()
-    while task.wait(30) do
+    while true do
+        task.wait(30)
         if autoRefresh then
-            checkStatus()
+            pcall(checkStatus) -- prevents errors from stopping the loop
         end
     end
 end)
-
-
 
 
 function AutoEquip()spawn(function(v)
