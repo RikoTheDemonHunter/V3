@@ -941,6 +941,10 @@ Misc:Button("Anti Afk", function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
 end)	
 
+Misc:Button("Battery", function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Battery.lua"))()
+end)
+
 Misc:Button("SafePlace", function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace%20v1"))()
 end)
