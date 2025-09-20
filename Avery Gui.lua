@@ -1,2 +1,205 @@
-local _S={"HttpService","Players","LocalPlayer","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json","banned","🚫 You are permanently banned from using this script.","⚠️ Could not fetch banlist.","enabled","whitelist","Your UserID IS Not Whitelisted.","✅ Kill switch OFF or user whitelisted. Continuing...","⚠️ Failed to fetch kill switch status. Script may proceed anyway.","⚠️ Unauthorized user detected.","ReplicatedStorage","ExploitTrap","FireServer","ScreenGui","DarkLib","CoreGui","ResetOnSpawn","UserInputService","InputBegan","LeftAlt","Enabled","Main","Frame","BackgroundColor3","Position","Size","TweenService","Sine","InOut","InputChanged","MouseMovement","Touch","Changed","End","TabSide","ScrollingFrame","BorderSizePixel","ScrollingDirection","Y","ScrollBarThickness","ScrollBarImageColor3","ClipsDescendants","UICorner","CornerRadius","UIListLayout","SortOrder","LayoutOrder","Padding","VerticalAlignment","Center","CanvasSize","AbsoluteContentSize","SectionSide","close","ImageButton","BackgroundTransparency","ZIndex","Image","rbxassetid://3926305904","ImageRectOffset","ImageRectSize","MouseButton1Click","Title","TextLabel","FredokaOne","TextColor3","TextScaled","TextSize","TextWrapped","Text","TextButton","Highway","ScrollingFrame","Active","Toggle","ToggleState","X","Click","Burp points","Starter Drink","BreakJoints","Humanoid","EquipTool","Second Drink","Third Drink","Fourth Drink","Fifth Drink","Sixth Drink","Seventh Drink","Eighth Drink","Ninth Drink","Atomic Drink","Omega Burp Juice","Thunder Fizz","Garlic Juice","Backpack","RemoteEvents","PrestigeEvent","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua","Diamonds","Diamond","HumanoidRootPart","CFrame","DrinkEvent","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/v2.lua","Pickaxe","Server","Mine","WalkSpeed","Inf Jump","JumpRequest","Jumping","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Spawn.lua","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/User's.lua","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Teleport.lua","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Cloud.lua","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/VoidStand.lua","ClockTime","Sit","TeleportService","PlaceId","Linear","Part","CanCollide","BurpEvent","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Bp%20Counter.lua","https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source","Kick","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace%20v1","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Plate.lua","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Castle.lua","https://raw.githubusercontent.com/Gazer-Ha/Animated/main/G","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FPS.lua","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Spectate.lua","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SimonHub","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/main/SimonHax","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Orion%20Lib.lua","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/V7","https://pastebin.com/raw/eCpipCTH","https://scriptblox.com/raw/Universal-Script-Permanent-Shiftlock-7513","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Slow.lua","https://gist.githubusercontent.com/RikoTheDemonHunter/a1bf0423e73a5293c014042960cf4767/raw/faaa622081cbf015f0f54efb256e2ba182b57bca/shit.lua","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Zero.lua","https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FriendList.lua"}
-local _V1=game:GetService(_S[1]);local _V2=game:GetService(_S[2]);local _V3=_V2[_S[3]];local _V4=_S[4];local _V5=_S[5];local function _F1(_V6,_V7)for _,_V8 in ipairs(_V7)do if _V8==_V6 then return true end end;return false end;local function _F2(_V6,_V9)for _,_V8 in ipairs(_V9)do if _V8==_V6 then return true end end;return false end;local _V10,_V11=pcall(function()local _V12=game:HttpGet(_V5,true);return _V1:JSONDecode(_V12)end);if _V10 and _V11 then local _V13=_V11[_S[6]]or{};if _F1(_V3.UserId,_V13)then _V3:Kick(_S[7]);return end else warn(_S[8])end;local _V14,_V15=pcall(function()local _V12=game:HttpGet(_V4,true);return _V1:JSONDecode(_V12)end);if _V14 and _V15 then local _V16=_V15[_S[9]];local _V17=_V15[_S[10]]or{};if not _V16 and not _F2(_V3.UserId,_V17)then _V3:Kick(_S[11]);return else print(_S[12])end else warn(_S[13])end;task.wait(1);if not _V15[_S[9]]then local _V18=false;local _V19,_V20=pcall(function()local _V12=game:HttpGet(_V4,true);return _V1:JSONDecode(_V12)end);if _V19 and _V20 then local _V17=_V20[_S[10]]or{};if _F2(_V3.UserId,_V17)then _V18=true end end;if not _V18 then _V3:Kick(_S[14]);return end end;local _V21=game:GetService(_S[15]);local _V22=_V21:WaitForChild(_S[16],1);if _V22 then _V22[_S[17]](_V22)end;local _L={};function _L:Gui(_V23)local _V24=Instance.new(_S[18]);local _V25=Instance.new(_S[26]);local _V26=Instance.new(_S[37]);local _V27=Instance.new(_S[43]);local _V28=Instance.new(_S[45]);local _V29=Instance.new(_S[43]);local _V30=Instance.new(_S[43]);local _V31=Instance.new(_S[52]);local _V32=Instance.new(_S[54]);local _V33=Instance.new(_S[43]);local _V34=Instance.new(_S[64]);_V24.Name=_S[19];_V24.Parent=game[_S[20]];_V24.ResetOnSpawn=false;game:GetService(_S[21])[_S[22]]:Connect(function(_V35,_V36)if _V35.KeyCode==Enum.KeyCode[_S[23]]then if _V24[_S[24]]then _V24[_S[24]]=false else _V24[_S[24]]=true end end end);_V25.Name=_S[25];_V25.Parent=_V24;_V25[_S[27]]=Color3.fromRGB(35,35,35);_V25[_S[28]]=UDim2.new(0.367263854,0,0.263959408,0);_V25[_S[29]]=UDim2.new(0,382,0,219);local _V37=_V25;local _V38=game:GetService(_S[20]);local _V39=game:GetService(_S[30]);local _V40=game:GetService(_S[21]);local _V41;local _V42;local _V43;local _V44;local function _F3(_V45)local _V46=_V45.Position-_V43;local _V47=0.06;local _V48={};_V48.Position=UDim2.new(_V44.X.Scale,_V44.X.Offset+_V46.X,_V44.Y.Scale,_V44.Y.Offset+_V46.Y);local _V49=_V39:Create(_V37,TweenInfo.new(_V47,Enum.EasingStyle[_S[31]],Enum.EasingDirection[_S[32]]),_V48);_V49:Play()end;_V37.InputBegan:Connect(function(_V45)if _V45.UserInputType==Enum.UserInputType.MouseButton1 or _V45.UserInputType==Enum.UserInputType.Touch then _V41=true;_V43=_V45.Position;_V44=_V37.Position;_V45.Changed:Connect(function()if _V45.UserInputState==Enum.UserInputState[_S[36]]then _V41=false end end)end end);_V37[_S[33]]:Connect(function(_V45)if _V45.UserInputType==Enum.UserInputType[_S[34]]or _V45.UserInputType==Enum.UserInputType[_S[35]]then _V42=_V45 end end);_V40[_S[33]]:Connect(function(_V45)if _V45==_V42 and _V41 and _V37.Size then _F3(_V45)end end);_V26.Name=_S[37];_V26.Parent=_V25;_V26.BackgroundColor3=Color3.fromRGB(30,30,30);_V26[_S[38]]=0;_V26.Position=UDim2.new(0.021,0,0.038,0);_V26.Size=UDim2.new(0,92,0,203);_V26[_S[39]]=Enum.ScrollingDirection[_S[40]];_V26[_S[41]]=5;_V26[_S[42]]=Color3.fromRGB(255,255,255);_V26[_S[43]]=true;_V27.Parent=_V26;_V27[_S[44]]=UDim.new(0,8);_V28.Parent=_V26;_V28[_S[46]]=Enum.SortOrder[_S[47]];_V28[_S[48]]=UDim.new(0,10);_V28[_S[49]]=Enum.VerticalAlignment[_S[50]];_V28.Changed:Connect(function()_V26[_S[51]]=UDim2.new(0,0,0,_V28[_S[52]].Y)end);_V31.Name=_S[53];_V31.Parent=_V25;_V31.BackgroundColor3=Color3.fromRGB(30,30,30);_V31.Position=UDim2.new(0.29842931,0,0.146118715,0);_V31.Size=UDim2.new(0,255,0,173);_V31.ClipsDescendants=true;_V31.Visible=true;_V33.Parent=_V31;_V33.CornerRadius=UDim.new(0,8);_V30.Parent=_V25;_V32.Name=_S[54];_V32.Parent=_V25;_V32[_S[55]]=1;_V32.Position=UDim2.new(0.934554935,0,-0.00228309631,0);_V32.Size=UDim2.new(0,25,0,25);_V32[_S[56]]=2;_V32[_S[57]]=_S[58];_V32[_S[59]]=Vector2.new(284,4);_V32[_S[60]]=Vector2.new(24,24);_V32[_S[61]]:Connect(function()_V24:Destroy()end);_V34.Name=_S[62];_V34.Parent=_V25;_V34.BackgroundColor3=Color3.fromRGB(123,180,0);_V34.BackgroundTransparency=1;_V34.BorderSizePixel=0;_V34.Position=UDim2.new(0,90,0,0);_V34.Size=UDim2.new(0,200,0,46);_V34.Font=Enum.Font[_S[65]];_V34[_S[66]]=Color3.fromRGB(255,0,0);_V34[_S[67]]=false;_V34[_S[68]]=30;_V34[_S[69]]=true;_V34[_S[70]]=_V23;local _V50={};function _V50:Tab(_V51)local _V52=Instance.new(_S[71]);local _V53=Instance.new(_S[43]);_V52.Parent=_V26;_V52.BackgroundColor3=Color3.fromRGB(35,35,35);_V52.Position=UDim2.new(0,0,0.0821917802,0);_V52.Size=UDim2.new(0,70,0,30);_V52.Font=Enum.Font[_S[72]];_V52.TextColor3=Color3.fromRGB(0,0,255);_V52.TextScaled=true;_V52.TextSize=14;_V52.TextWrapped=true;_V52.Text=_V51;_V52.Name=_V51;_V53.Parent=_V52;_V53.CornerRadius=UDim.new(0,8);local _V54={};function _V54:Section(_V51)local _V55=Instance.new(_S[73]);local _V56=Instance.new(_S[45]);_V55.Name=_V51;_V55.Parent=_V31;_V55[_S[74]]=true;_V55.BackgroundColor3=Color3.fromRGB(30,30,30);_V55.BorderSizePixel=0;_V55.Position=UDim2.new(0.0470588244,0,0.10404624,0);_V55.Size=UDim2.new(0,237,0,145);_V55.ScrollingDirection=Enum.ScrollingDirection.Y;_V55.ScrollBarThickness=5;_V55.ScrollBarImageColor3=Color3.fromRGB(255,255,255);_V56.Parent=_V55;_V56.SortOrder=Enum.SortOrder.LayoutOrder;_V56.Padding=UDim.new(0,10);_V56.Changed:Connect(function()_V55.CanvasSize=UDim2.new(0,0,0,_V56.AbsoluteContentSize.Y)end);_V52.MouseButton1Click:Connect(function()for _V57,_V58 in next,_V31:GetChildren()do if _V58:IsA(_S[73])then _V58.Visible=false end end;_V55.Visible=true end);local _V59={};function _V59:Toggle(_V51,_V60)local _V61=Instance.new(_S[26]);local _V62=Instance.new(_S[43]);local _V63=Instance.new(_S[64]);local _V64=Instance.new(_S[71]);_V61.Name=_V51;_V61.Parent=_V55;_V61.BackgroundColor3=Color3.fromRGB(35,35,35);_V61.Size=UDim2.new(0,220,0,30);_V62.Parent=_V61;_V63.Name=_S[76];_V63.Parent=_V61;_V63.BackgroundColor3=Color3.fromRGB(255,255,255);_V63.BackgroundTransparency=1;_V63.BorderSizePixel=0;_V63.Size=UDim2.new(0,46,0,30);_V63.Font=Enum.Font.FredokaOne;_V63.Text="";_V63.TextColor3=Color3.fromRGB(255,255,255);_V63.TextScaled=true;_V63.TextSize=14;_V63.TextWrapped=true;_V64.Name=_S[78];_V64.Parent=_V61;_V64.BackgroundColor3=Color3.fromRGB(255,255,255);_V64.BackgroundTransparency=1;_V64.BorderSizePixel=0;_V64.Size=UDim2.new(0,220,0,30);_V64.Font=Enum.Font.Highway;_V64.Text=_V51;_V64.TextColor3=Color3.fromRGB(0,255,0);_V64.TextScaled=true;_V64.TextSize=14;_V64.TextWrapped=true;local _V65=false;local _V66=false;_V64.MouseButton1Click:Connect(function()if _V66==false then if _V65==false then _V66=true;_V63.Text=_S[77];wait(0.25);_V66=false;_V65=true;pcall(_V60,_V65)elseif _V65==true then _V66=true;_V63.Text="";wait(0.25);_V66=false;_V65=false;pcall(_V60,_V65)end end end)end;function _V59:Label(_V51)local _V67=Instance.new(_S[64]);_V67.Parent=_V55;_V67.BackgroundColor3=Color3.fromRGB(35,35,35);_V67.BackgroundTransparency=1;_V67.Position=UDim2.new(0,0,0.0821917802,0);_V67.Size=UDim2.new(0,220,0,30);_V67.Font=Enum.Font.Highway;_V67.TextColor3=Color3.fromRGB(255,255,255);_V67.TextScaled=true;_V67.TextSize=14;_V67.TextWrapped=true;_V67.Text=_V51;_V67.Name=_V51 end;function _V59:Button(_V51,_V60)local _V68=Instance.new(_S[71]);local _V69=Instance.new(_S[43]);_V60=_V60 or function()end;_V68.Parent=_V55;_V68.BackgroundColor3=Color3.fromRGB(35,35,35);_V68.Position=UDim2.new(0,0,0.0821917802,0);_V68.Size=UDim2.new(0,220,0,30);_V68.Font=Enum.Font.Highway;_V68.TextColor3=Color3.fromRGB(0,255,0);_V68.TextScaled=true;_V68.TextSize=14;_V68.TextWrapped=true;_V68.Text=_V51;_V68.Name=_V51;_V68.MouseButton1Click:Connect(function()_V60()end);_V69.Parent=_V68 end;return _V59 end;return _V54 end;return _V50 end;local _V70=_L:Gui("⚡Avery-Hub⚡");local _V71=_V70:Tab("AutoDrink");local _V72=_V71:Section("AutoDrink");local _V73=_V70:Tab("LocalPlayer");local _V74=_V73:Section("LocalPlayer");local _V75=_V70:Tab("Teleports");local _V76=_V75:Section("Teleport");local _V77=_V70:Tab("Misc");local _V78=_V77:Section("Misc");local _V79=_V70:Tab("Scripts");local _V80=_V79:Section("Scripts");local _V81=_V70:Tab("Credits");local _V82=_V81:Section("Credits");function AutoEquip()spawn(function(_V83)while getgenv().equip==true do wait(0.8);if not game.Players.LocalPlayer.Backpack:FindFirstChild(_S[80])then if not game.Players.LocalPlayer.Character:FindFirstChild(_S[80])then game.Players.LocalPlayer.Character:_S[81]()end end;if game.Players.LocalPlayer.leaderstats[_S[79]].Value==0 then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[80]);if _V87 then _V86:_S[83](_V87)end end end end;if game.Players.LocalPlayer.leaderstats[_S[79]].Value>=0 then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[80]);if _V87 then _V86:_S[83](_V87)end end end end;if game.Players.LocalPlayer.leaderstats[_S[79]].Value>=150 then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[84]);if _V87 then _V86:_S[83](_V87)end end end end;if game.Players.LocalPlayer.leaderstats[_S[79]].Value>=600 then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[85]);if _V87 then _V86:_S[83](_V87)end end end end;if game.Players.LocalPlayer.leaderstats[_S[79]].Value>=1600 then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[86]);if _V87 then _V86:_S[83](_V87)end end end end;if game.Players.LocalPlayer.leaderstats[_S[79]].Value>=3500 then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[87]);if _V87 then _V86:_S[83](_V87)end end end end;if game.Players.LocalPlayer.leaderstats[_S[79]].Value>=10000 then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[88]);if _V87 then _V86:_S[83](_V87)end end end end;if game.Players.LocalPlayer.leaderstats[_S[79]].Value>=25000 then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[89]);if _V87 then _V86:_S[83](_V87)end end end end;if game.Players.LocalPlayer.leaderstats[_S[79]].Value>=60000 then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[90]);if _V87 then _V86:_S[83](_V87)end end end end;if game.Players.LocalPlayer.leaderstats[_S[79]].Value>=150000 then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[91]);if _V87 then _V86:_S[83](_V87)end end end end;if game.Players.LocalPlayer.leaderstats[_S[79]].Value>=230000 then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[92]);if _V87 then _V86:_S[83](_V87)end end end end;if game.Players.LocalPlayer.leaderstats[_S[79]].Value>=500000 then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[93]);if _V87 then _V86:_S[83](_V87)end end end end;if game.Players.LocalPlayer.leaderstats[_S[79]].Value>=1000000 then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[94]);if _V87 then _V86:_S[83](_V87)end end end end;if game.Players.LocalPlayer.leaderstats[_S[79]].Value>=2000000 then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[95]);if _V87 then _V86:_S[83](_V87)end end end end;if game.Players.LocalPlayer[_S[96]]:FindFirstChild(_S[95])then local _V84=game:GetService(_S[2]);local _V85=_V84:FindFirstChildOfClass(_S[2]);if _V85 and _V85.Character then local _V86=_V85.Character:FindFirstChildOfClass(_S[82]);if _V86 then local _V87=Players.LocalPlayer.Backpack:FindFirstChild(_S[95]);if _V87 then _V86:_S[83](_V87)end end end end end end)end;_V72:Toggle("Auto Prestige",function(_V83)while wait(0.8)do game[_S[15]][_S[97]][_S[98]]:FireServer()end end);_V72:Toggle("Auto Equip",function(_V83)getgenv().equipdrink=_V83;while getgenv().equipdrink do wait(0.8);AutoEquipDrink()end end);loadstring(game:HttpGet(_S[99]))();_V72:Toggle("Auto Collect Gem",function(_V83)while wait(0.6)do local _V88=game.Workspace[_S[100]]:WaitForChild(_S[101]);local _V89=game.Players.LocalPlayer.Character:WaitForChild(_S[102]);_V88[_S[103]]=_V89[_S[103]]end end);_V72:Toggle("Auto Drink",function(_V83)while wait(2.4)do game.ReplicatedStorage.RemoteEvents[_S[104]]:FireServer(_S[80]);game.ReplicatedStorage.RemoteEvents[_S[104]]:FireServer(_S[84]);game.ReplicatedStorage.RemoteEvents[_S[104]]:FireServer(_S[85]);game.ReplicatedStorage.RemoteEvents[_S[104]]:FireServer(_S[86]);game.ReplicatedStorage.RemoteEvents[_S[104]]:FireServer(_S[87]);game.ReplicatedStorage.RemoteEvents[_S[104]]:FireServer(_S[88]);game.ReplicatedStorage.RemoteEvents[_S[104]]:FireServer(_S[89]);game.ReplicatedStorage.RemoteEvents[_S[104]]:FireServer(_S[90]);game.ReplicatedStorage.RemoteEvents[_S[104]]:FireServer(_S[91]);game.ReplicatedStorage.RemoteEvents[_S[104]]:FireServer(_S[92]);game.ReplicatedStorage.RemoteEvents[_S[104]]:FireServer(_S[93]);game.ReplicatedStorage.RemoteEvents[_S[104]]:FireServer(_S[94]);game.ReplicatedStorage.RemoteEvents[_S[104]]:FireServer(_S[95])end end);_V72:Toggle("Fast Drink",function(_V83)loadstring(game:HttpGet(_S[105]))()end);_V72:Toggle("Auto Equip PIckaxe",function(_V83)getgenv().equippickaxe=_V83;while getgenv().equippickaxe do wait(0.5);if game:GetService(_S[2]).LocalPlayer.Backpack[_S[106]]~=nil then game:GetService(_S[2]).LocalPlayer.Character.Humanoid:EquipTool(game:GetService(_S[2]).LocalPlayer.Backpack[_S[106]])end end end);_V72:Toggle("Auto Mine Gems",function(_V83)getgenv().minegems=_V83;while getgenv().minegems do wait(0.1);game:GetService(_S[2]).LocalPlayer.Character.Pickaxe[_S[107]][_S[108]]:FireServer()end end);_V74:Button("Fps-Unlocker",function(_V83)if setfpscap and type(setfpscap)=="function"then local _V90=100000 or 1e6;if _V90=='none'then return setfpscap(1e6)elseif _V90>0 then return setfpscap(_V90)end end end);_V74:Toggle("WalkSpeed",function(_V83)while wait()do game.Players.LocalPlayer.Character:WaitForChild(_S[82])[_S[109]]=459 end end);_V74:Toggle(_S[110],function(_V83)game:GetService(_S[21])[_S[111]]:connect(function()game:GetService(_S[2]).LocalPlayer.Character:FindFirstChildOfClass('Humanoid'):ChangeState(_S[112])end)end);_V74:Button("Reset",function(_V83)game.Players.LocalPlayer.Character:BreakJoints()end);_V74:Button("Rejoin",function(_V83)game:GetService(_S[123]):Teleport(game[_S[124]])end);_V74:Toggle("Night",function(_V83)if _V83 then game.Lighting[_S[121]]=0 elseif not _V83 then game.Lighting[_S[121]]=14 end end);_V74:Toggle("Sit",function(_V83)getgenv()[_S[122]]=_V83;game.Players.LocalPlayer.Character.Humanoid[_S[122]]=getgenv()[_S[122]]end);_V74:Button("Auto Spawn",function(_V83)loadstring(game:HttpGet(_S[113]))()end);_V74:Button("List",function(_V83)loadstring(game:HttpGet(_S[114]))()end);_V74:Button("TP Gui",function(_V83)loadstring(game:HttpGet(_S[115]))()end);_V74:Toggle("Cloud Stand",function(_V83)loadstring(game:HttpGet(_S[116]))()end);_V74:Button("VoidStand",function(_V83)loadstring(game:HttpGet(_S[117]))()end);_V76:Button("Safe Zone",function()local _V91=CFrame.new(-46,48,-15);local _V92=game:GetService(_S[30]);local _V93=game.Players.LocalPlayer.Character;local _V94=_V93.HumanoidRootPart;local _V95=TweenInfo.new(0.2,Enum.EasingStyle[_S[125]]);local _V96={CFrame=_V91};_V92:Create(_V94,_V95,_V96):Play()end);_V76:Button("Pet Shop",function()local _V91=CFrame.new(311,52,103);local _V92=game:GetService(_S[30]);local _V93=game.Players.LocalPlayer.Character;local _V94=_V93.HumanoidRootPart;local _V95=TweenInfo.new(0.2,Enum.EasingStyle[_S[125]]);local _V96={CFrame=_V91};_V92:Create(_V94,_V95,_V96):Play()end);_V76:Button("Disco Island",function()local _V91=CFrame.new(63,48,636);local _V92=game:GetService(_S[30]);local _V93=game.Players.LocalPlayer.Character;local _V94=_V93.HumanoidRootPart;local _V95=TweenInfo.new(0.2,Enum.EasingStyle[_S[125]]);local _V96={CFrame=_V91};_V92:Create(_V94,_V95,_V96):Play()end);_V76:Button("Cloud One",function()local _V91=CFrame.new(296,566,689);local _V92=game:GetService(_S[30]);local _V93=game.Players.LocalPlayer.Character;local _V94=_V93.HumanoidRootPart;local _V95=TweenInfo.new(0.2,Enum.EasingStyle[_S[125]]);local _V96={CFrame=_V91};_V92:Create(_V94,_V95,_V96):Play()end);_V76:Button("Cloud Second",function()local _V91=CFrame.new(-1224,557,-318);local _V92=game:GetService(_S[30]);local _V93=game.Players.LocalPlayer.Character;local _V94=_V93.HumanoidRootPart;local _V95=TweenInfo.new(0.2,Enum.EasingStyle[_S[125]]);local _V96={CFrame=_V91};_V92:Create(_V94,_V95,_V96):Play()end);_V76:Button("Sky Island",function()local _V91=CFrame.new(2132,1456,-1034);local _V92=game:GetService(_S[30]);local _V93=game.Players.LocalPlayer.Character;local _V94=_V93.HumanoidRootPart;local _V95=TweenInfo.new(0.2,Enum.EasingStyle[_S[125]]);local _V96={CFrame=_V91};_V92:Create(_V94,_V95,_V96):Play()end);_V76:Button("SafePlace",function()local _V91=CFrame.new(167,48.28,-5357);local _V92=game:GetService(_S[30]);local _V93=game.Players.LocalPlayer.Character;local _V94=_V93.HumanoidRootPart;local _V95=TweenInfo.new(0.2,Enum.EasingStyle[_S[125]]);local _V96={CFrame=_V91};_V92:Create(_V94,_V95,_V96):Play()end);_V76:Button("SafePlace v2",function()local _V91=CFrame.new(0,3605,0);local _V92=game:GetService(_S[30]);local _V93=game.Players.LocalPlayer.Character;local _V94=_V93.HumanoidRootPart;local _V95=TweenInfo.new(0.2,Enum.EasingStyle[_S[125]]);local _V96={CFrame=_V91};_V92:Create(_V94,_V95,_V96):Play()end);_V76:Button("FavSpot",function()local _V91=CFrame.new(60.12,18.25,-72);local _V92=game:GetService(_S[30]);local _V93=game.Players.LocalPlayer.Character;local _V94=_V93.HumanoidRootPart;local _V95=TweenInfo.new(0.2,Enum.EasingStyle[_S[125]]);local _V96={CFrame=_V91};_V92:Create(_V94,_V95,_V96):Play()end);_V76:Button("Water Spot",function()local _V91=CFrame.new(-564,40,605);local _V92=game:GetService(_S[30]);local _V93=game.Players.LocalPlayer.Character;local _V94=_V93.HumanoidRootPart;local _V95=TweenInfo.new(0.2,Enum.EasingStyle[_S[125]]);local _V96={CFrame=_V91};_V92:Create(_V94,_V95,_V96):Play()end);_V76:Button("Hotel",function()local _V91=CFrame.new(-1198.279052734375,44.315752029418945,-5.583522319793701);local _V92=game:GetService(_S[30]);local _V93=game.Players.LocalPlayer.Character;local _V94=_V93.HumanoidRootPart;local _V95=TweenInfo.new(0.2,Enum.EasingStyle[_S[125]]);local _V96={CFrame=_V91};_V92:Create(_V94,_V95,_V96):Play()end);_V78:Button("Bp Counter",function()loadstring(game:HttpGet(_S[129]))()end);_V78:Button("Infinity Yield",function()loadstring(game:HttpGet(_S[130]))()end);_V78:Button("Anti Kick",function()local _V97=getrawmetatable(game);local _V98=_V97.__namecall;local _V99=newcclosure or protect_function;setreadonly(_V97,false);_V97.__namecall=_V99(function(_V100,...)local _V101=getnamecallmethod();if _V101==_S[131]then wait(9e9);return end;return _V98(_V100,...)end);hookfunction(game.Players.LocalPlayer.Kick,_V99(function()wait(9e9)end))end);_V78:Button("Anti Afk",function()loadstring(game:HttpGet(_S[132]))()end);_V78:Button("SafePlace",function()loadstring(game:HttpGet(_S[133]))()end);_V78:Button("Plate",function()loadstring(game:HttpGet(_S[134]))()end);_V78:Button("Castle",function()loadstring(game:HttpGet(_S[135]))()end);_V78:Button("Animation-Hub",function()loadstring(game:HttpGet(_S[136]))()end);_V78:Toggle("Walk On Water",function(_V102)getgenv().walkonwater=_V102;for _V57,_V58 in pairs(workspace:GetChildren())do if _V58:IsA(_S[126])then if _V58.Color==Color3.fromRGB(9,137,207)then _V58[_S[127]]=getgenv().walkonwater end end end end);_V78:Button("Spam Burp",function()while true do task.wait();game:GetService(_S[15]).RemoteEvents[_S[128]]:FireServer()end end);_V78:Button("FPS Gui",function()loadstring(game:HttpGet(_S[137]))()end);_V78:Button("Spectate Gui",function()loadstring(game:HttpGet(_S[138]))()end);_V82:Button("Made By Avery");_V82:Button("Discord: 90averyxx");_V82:Button("Note: Auto Drink is 2.4");_V82:Button("Note: Copy Stealers Fuck Off");_V82:Button("Update: Added WhiteList System & Auto Spawn & Cloud PLatform");_V82:Button("Games: Games Tab Soon");_V80:Button("SimonHub",function()loadstring(game:HttpGet(_S[139]))()end);_V80:Button("SimonHax",function()loadstring(game:HttpGet(_S[140]))()end);_V80:Button("Orion V1",function()loadstring(game:HttpGet(_S[141]))()end);_V80:Button("V7",function()loadstring(game:HttpGet(_S[142]))()end);_V80:Button("Emotes-Hub",function()loadstring(game:HttpGet(_S[143]))()end);_V80:Button("Shift-Lock",function()loadstring(game:HttpGet(_S[144]))()end);_V80:Button("Slow-Drink",function()loadstring(game:HttpGet(_S[145]))()end);_V80:Button("ZeroHub",function()loadstring(game:HttpGet(_S[146]))()end);_V80:Button("Avery",function()loadstring(game:HttpGet(_S[147]))()end);_V80:Button("FriendList",function()loadstring(game:HttpGet(_S[148]))()end);
+-- LOAD ORIONLIB
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+
+-- CREATE WINDOW
+local Window = OrionLib:MakeWindow({
+    Name = "⚡Avery-Hub⚡",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "AveryHub"
+})
+
+-- TABS
+local AutoDrinkTab = Window:MakeTab({Name = "AutoDrink", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local LocalPlayerTab = Window:MakeTab({Name = "LocalPlayer", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local TeleportTab = Window:MakeTab({Name = "Teleports", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local MiscTab = Window:MakeTab({Name = "Misc", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local ScriptsTab = Window:MakeTab({Name = "Scripts", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local CreditsTab = Window:MakeTab({Name = "Credits", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+
+-- AUTODRINK TOGGLES
+AutoDrinkTab:AddToggle({
+    Name = "Auto Drink",
+    Default = false,
+    Callback = function(Value)
+        getgenv().AutoDrinkEnabled = Value
+        if Value then
+            spawn(function()
+                while getgenv().AutoDrinkEnabled do
+                    wait(2.4)
+                    local drinks = {"Starter Drink","Second Drink","Third Drink","Fourth Drink","Fifth Drink","Sixth Drink","Seventh Drink","Eighth Drink","Ninth Drink","Atomic Drink","Omega Burp Juice","Thunder Fizz","Garlic Juice"}
+                    for _, drink in pairs(drinks) do
+                        pcall(function()
+                            game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(drink)
+                        end)
+                    end
+                end
+            end)
+        end
+    end
+})
+
+AutoDrinkTab:AddToggle({
+    Name = "Auto Prestige",
+    Default = false,
+    Callback = function(Value)
+        getgenv().AutoPrestige = Value
+        if Value then
+            spawn(function()
+                while getgenv().AutoPrestige do
+                    wait(0.8)
+                    pcall(function()
+                        game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
+                    end)
+                end
+            end)
+        end
+    end
+})
+
+AutoDrinkTab:AddToggle({
+    Name = "Auto Collect Gems",
+    Default = false,
+    Callback = function(Value)
+        getgenv().AutoGem = Value
+        if Value then
+            spawn(function()
+                while getgenv().AutoGem do
+                    wait(0.6)
+                    local gem = workspace:FindFirstChild("Diamonds") and workspace.Diamonds:FindFirstChild("Diamond")
+                    local Char = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                    if gem and Char then
+                        gem.CFrame = Char.CFrame
+                    end
+                end
+            end)
+        end
+    end
+})
+
+-- LOCALPLAYER TOGGLES & BUTTONS
+LocalPlayerTab:AddSlider({
+    Name = "WalkSpeed",
+    Min = 16,
+    Max = 500,
+    Default = 16,
+    Color = Color3.fromRGB(0,255,0),
+    Increment = 1,
+    ValueName = "Speed",
+    Callback = function(Value)
+        local plr = game.Players.LocalPlayer
+        if plr.Character then
+            plr.Character:WaitForChild("Humanoid").WalkSpeed = Value
+        end
+    end
+})
+
+LocalPlayerTab:AddToggle({
+    Name = "Inf Jump",
+    Default = false,
+    Callback = function(Value)
+        getgenv().InfJump = Value
+        if Value then
+            game:GetService("UserInputService").JumpRequest:connect(function()
+                local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                if humanoid then
+                    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+                end
+            end)
+        end
+    end
+})
+
+LocalPlayerTab:AddButton({
+    Name = "Reset Character",
+    Callback = function()
+        game.Players.LocalPlayer.Character:BreakJoints()
+    end
+})
+
+LocalPlayerTab:AddButton({
+    Name = "Rejoin",
+    Callback = function()
+        game:GetService("TeleportService"):Teleport(game.PlaceId)
+    end
+})
+
+LocalPlayerTab:AddToggle({
+    Name = "Sit",
+    Default = false,
+    Callback = function(Value)
+        getgenv().sit = Value
+        local humanoid = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid.Sit = Value
+        end
+    end
+})
+
+-- TELEPORT BUTTONS
+local Teleports = {
+    ["Safe Zone"] = CFrame.new(-46,48,-15),
+    ["Pet Shop"] = CFrame.new(311,52,103),
+    ["Disco Island"] = CFrame.new(63,48,636),
+    ["Cloud One"] = CFrame.new(296,566,689),
+    ["Cloud Second"] = CFrame.new(-1224,557,-318),
+    ["Sky Island"] = CFrame.new(2132,1456,-1034),
+    ["SafePlace"] = CFrame.new(167,48.28,-5357),
+    ["SafePlace v2"] = CFrame.new(0,3605,0),
+    ["FavSpot"] = CFrame.new(60.12,18.25,-72),
+    ["Water Spot"] = CFrame.new(-564,40,605),
+    ["Hotel"] = CFrame.new(-1198.28,44.31,-5.58)
+}
+
+for Name, CFramePos in pairs(Teleports) do
+    TeleportTab:AddButton({
+        Name = Name,
+        Callback = function()
+            local char = game.Players.LocalPlayer.Character
+            local ts = game:GetService("TweenService")
+            local part = char:FindFirstChild("HumanoidRootPart")
+            local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+            ts:Create(part, ti, {CFrame = CFramePos}):Play()
+        end
+    })
+end
+
+-- MISC SCRIPTS
+MiscTab:AddButton({Name = "Bp Counter", Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Bp%20Counter.lua"))()
+end})
+
+MiscTab:AddButton({Name = "Infinity Yield", Callback = function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+end})
+
+MiscTab:AddButton({Name = "Anti Kick", Callback = function()
+    local mt = getrawmetatable(game)
+    local old = mt.__namecall
+    local protect = newcclosure or protect_function
+    setreadonly(mt, false)
+    mt.__namecall = protect(function(self, ...)
+        if getnamecallmethod() == "Kick" then wait(9e9) return end
+        return old(self, ...)
+    end)
+    hookfunction(game.Players.LocalPlayer.Kick, protect(function() wait(9e9) end))
+end})
+
+-- CREDITS
+CreditsTab:AddLabel("Made By Avery")
+CreditsTab:AddLabel("Discord: 90averyxx")
+CreditsTab:AddLabel("Note: Auto Drink is 2.4")
+CreditsTab:AddLabel("Note: Copy Stealers Fuck Off")
+CreditsTab:AddLabel("Update: Added WhiteList System & Auto Spawn & Cloud Platform")
+
+-- SCRIPTS TAB
+ScriptsTab:AddButton({Name = "SimonHub", Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SimonHub"))()
+end})
+
+ScriptsTab:AddButton({Name = "ZeroHub", Callback = function()
+    loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/a1bf0423e73a5293c014042960cf4767/raw/faaa622081cbf015f0f54efb256e2ba182b57bca/shit.lua"))()
+end})
+
+-- SHOW THE WINDOW
+OrionLib:Init()
