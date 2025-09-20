@@ -3,8 +3,20 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 local GuiService = game:GetService("GuiService")
+
+--// RemoteEvent for Ping
+local PingRemote = ReplicatedStorage:FindFirstChild("PingRemote")
+if not PingRemote then
+    PingRemote = Instance.new("RemoteEvent")
+    PingRemote.Name = "PingRemote"
+    PingRemote.Parent = ReplicatedStorage
+end
+
+-- Server-side setup (for testing, run on server):
+-- PingRemote.OnServerEvent:Connect(function(player) PingRemote:FireClient(player) end)
 
 --// ScreenGui
 local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
@@ -14,7 +26,7 @@ ScreenGui.ResetOnSpawn = false
 --// Main Frame
 local Main = Instance.new("Frame", ScreenGui)
 local screenSize = GuiService:GetScreenResolution()
-Main.Size = UDim2.new(0, math.clamp(screenSize.X*0.45, 250, 400), 0, 140)
+Main.Size = UDim2.new(0, math.clamp(screenSize.X*0.45, 250, 400), 0, 150)
 Main.Position = UDim2.new(0.5, -Main.Size.X.Offset/2, 0.05, 0)
 Main.BackgroundColor3 = Color3.fromRGB(35,35,35)
 Main.ClipsDescendants = true
@@ -61,7 +73,7 @@ Content.Size = UDim2.new(1,-10,1,-45)
 Content.Position = UDim2.new(0,5,0,40)
 Content.BackgroundTransparency = 1
 
--- Battery (Simulated)
+-- Battery
 local BatteryBG = Instance.new("Frame", Content)
 BatteryBG.Size = UDim2.new(1,0,0,25)
 BatteryBG.Position = UDim2.new(0,0,0,0)
@@ -79,7 +91,7 @@ BatteryLabel.BackgroundTransparency = 1
 BatteryLabel.TextColor3 = Color3.fromRGB(255,255,255)
 BatteryLabel.Font = Enum.Font.FredokaOne
 BatteryLabel.TextScaled = true
-BatteryLabel.Text = "Battery: 100%"
+BatteryLabel.Text = "Battery: 100% ⚡"
 
 -- Ping
 local PingBG = Instance.new("Frame", Content)
@@ -144,32 +156,32 @@ MinButton.MouseButton1Click:Connect(function()
 	TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = size}):Play()
 end)
 
--- Update Stats
-local batteryPercent = 100
-local batteryDirection = -1
-local pingAccumulator = 0
-local pingCount = 0
-local lastPing = 0
+-- Update Stats (optimized)
+local lastPingUpdate = tick()
+local pingConnection
 
-RunService.RenderStepped:Connect(function(dt)
-	-- Battery Simulation
-	batteryPercent = batteryPercent + batteryDirection
-	if batteryPercent <= 20 then batteryDirection = 1 end
-	if batteryPercent >= 100 then batteryDirection = -1 end
-	BatteryLabel.Text = "Battery: "..batteryPercent.."%"
-	TweenService:Create(BatteryBar, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.new(batteryPercent/100,0,1,0)}):Play()
-	BatteryBar.BackgroundColor3 = Color3.fromHSV(batteryPercent/100*0.3,1,1)
+RunService.RenderStepped:Connect(function()
+    -- Battery
+    local battery = UserInputService:GetBatteryPercentage() or 0
+    local status = UserInputService:GetBatteryStatus() or Enum.BatteryStatus.Discharging
+    local batteryPercent = math.floor(battery*100)
+    local chargingSymbol = status == Enum.BatteryStatus.Charging and " ⚡" or ""
+    BatteryLabel.Text = "Battery: "..batteryPercent.."% "..chargingSymbol
+    TweenService:Create(BatteryBar, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.new(batteryPercent/100,0,1,0)}):Play()
+    BatteryBar.BackgroundColor3 = Color3.fromHSV(batteryPercent/100*0.3,1,1)
 
-	-- Ping Simulation
-	pingAccumulator = pingAccumulator + dt
-	pingCount = pingCount + 1
-	if pingCount >= 30 then
-		lastPing = math.random(30,120) -- random ping between 30-120ms
-		PingLabel.Text = "Ping: "..lastPing.."ms"
-		local pingPercent = math.clamp(1 - (lastPing/300),0,1)
-		TweenService:Create(PingBar, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.new(pingPercent,0,1,0)}):Play()
-		PingBar.BackgroundColor3 = Color3.fromHSV(pingPercent*0.4,1,1)
-		pingAccumulator = 0
-		pingCount = 0
-	end
+    -- Ping (once every 0.5s)
+    if tick() - lastPingUpdate >= 0.5 and PingRemote then
+        lastPingUpdate = tick()
+        if pingConnection then pingConnection:Disconnect() end
+        local startPing = tick()
+        PingRemote:FireServer()
+        pingConnection = PingRemote.OnClientEvent:Connect(function()
+            local pingValue = math.floor((tick()-startPing)*1000)
+            PingLabel.Text = "Ping: "..pingValue.."ms"
+            local pingPercent = math.clamp(1 - (pingValue/300),0,1)
+            TweenService:Create(PingBar, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.new(pingPercent,0,1,0)}):Play()
+            PingBar.BackgroundColor3 = Color3.fromHSV(pingPercent*0.4,1,1)
+        end)
+    end
 end)
