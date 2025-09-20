@@ -4,23 +4,24 @@ local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
+local GuiService = game:GetService("GuiService")
 
 --// ScreenGui
 local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 ScreenGui.Name = "DarkLibHub"
 ScreenGui.ResetOnSpawn = false
 
---// Main Frame
+--// Main Frame (adaptive)
 local Main = Instance.new("Frame", ScreenGui)
-Main.Size = UDim2.new(0, 300, 0, 120)
-Main.Position = UDim2.new(0.1, 0, 0.1, 0)
+local screenSize = GuiService:GetScreenResolution()
+Main.Size = UDim2.new(0, math.clamp(screenSize.X*0.4, 250, 400), 0, math.clamp(screenSize.Y*0.15, 120, 180))
+Main.Position = UDim2.new(0.5, -Main.Size.X.Offset/2, 0.1, 0)
 Main.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 Main.ClipsDescendants = true
-
 local UICorner = Instance.new("UICorner", Main)
 UICorner.CornerRadius = UDim.new(0, 12)
 
--- Title Bar
+--// Title Bar
 local TitleBar = Instance.new("Frame", Main)
 TitleBar.Size = UDim2.new(1, 0, 0, 35)
 TitleBar.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
@@ -67,6 +68,7 @@ BatteryBarBG.Position = UDim2.new(0, 0, 0, 0)
 BatteryBarBG.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
 BatteryBarBG.BorderSizePixel = 0
 BatteryBarBG.ClipsDescendants = true
+
 local BatteryBar = Instance.new("Frame", BatteryBarBG)
 BatteryBar.Size = UDim2.new(0, 0, 1, 0)
 BatteryBar.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
@@ -86,6 +88,7 @@ PingBarBG.Position = UDim2.new(0, 0, 0, 30)
 PingBarBG.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
 PingBarBG.BorderSizePixel = 0
 PingBarBG.ClipsDescendants = true
+
 local PingBar = Instance.new("Frame", PingBarBG)
 PingBar.Size = UDim2.new(0, 0, 1, 0)
 PingBar.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
@@ -137,32 +140,32 @@ end)
 
 MinButton.MouseButton1Click:Connect(function()
 	Content.Visible = not Content.Visible
-	local size = Content.Visible and UDim2.new(0, 300, 0, 120) or UDim2.new(0, 300, 0, 35)
+	local size = Content.Visible and UDim2.new(0, Main.Size.X.Offset, 0, Main.Size.Y.Offset) or UDim2.new(0, Main.Size.X.Offset, 0, 35)
 	TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = size}):Play()
 end)
 
 --// Update Stats
-local function getPing()
-	local startTime = tick()
-	pcall(function()
-		game:GetService("HttpService"):GetAsync("https://www.roblox.com")
-	end)
-	local endTime = tick()
-	return math.floor((endTime - startTime) * 1000)
-end
+local pingAccumulator = 0
+local pingCount = 0
+local lastPing = 0
 
-RunService.RenderStepped:Connect(function()
+RunService.RenderStepped:Connect(function(dt)
+	-- Battery
 	local batteryPercent = math.floor(UserInputService:GetBatteryPercentage() * 100)
-	local ping = getPing()
-
-	-- Update battery bar
 	BatteryLabel.Text = "Battery: "..batteryPercent.."%"
 	TweenService:Create(BatteryBar, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.new(batteryPercent/100,0,1,0)}):Play()
 	BatteryBar.BackgroundColor3 = Color3.fromHSV(batteryPercent/100 * 0.3,1,1) -- green to red
 
-	-- Update ping bar
-	PingLabel.Text = "Ping: "..ping.."ms"
-	local pingPercent = math.clamp(1 - (ping/300),0,1)
-	TweenService:Create(PingBar, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.new(pingPercent,0,1,0)}):Play()
-	PingBar.BackgroundColor3 = Color3.fromHSV(pingPercent*0.4,1,1) -- cyan to red
+	-- Ping simulation
+	pingAccumulator = pingAccumulator + dt
+	pingCount = pingCount + 1
+	if pingCount >= 30 then -- update approx every 0.5s
+		lastPing = math.floor(pingAccumulator * 1000 / pingCount)
+		PingLabel.Text = "Ping: "..lastPing.."ms"
+		local pingPercent = math.clamp(1 - (lastPing/300),0,1)
+		TweenService:Create(PingBar, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.new(pingPercent,0,1,0)}):Play()
+		PingBar.BackgroundColor3 = Color3.fromHSV(pingPercent*0.4,1,1) -- cyan to red
+		pingAccumulator = 0
+		pingCount = 0
+	end
 end)
