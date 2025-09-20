@@ -29,7 +29,7 @@ TitleBar.BackgroundColor3 = Color3.fromRGB(45,45,45)
 local Title = Instance.new("TextLabel", TitleBar)
 Title.Size = UDim2.new(1, -60, 1, 0)
 Title.Position = UDim2.new(0, 10, 0, 0)
-Title.Text = "⚡Stats Hub⚡"
+Title.Text = "⚡Mobile Stats Hub⚡"
 Title.TextColor3 = Color3.fromRGB(255,255,255)
 Title.BackgroundTransparency = 1
 Title.Font = Enum.Font.FredokaOne
@@ -61,7 +61,7 @@ Content.Size = UDim2.new(1,-10,1,-45)
 Content.Position = UDim2.new(0,5,0,40)
 Content.BackgroundTransparency = 1
 
--- Battery
+-- Battery (Simulated)
 local BatteryBG = Instance.new("Frame", Content)
 BatteryBG.Size = UDim2.new(1,0,0,25)
 BatteryBG.Position = UDim2.new(0,0,0,0)
@@ -79,7 +79,7 @@ BatteryLabel.BackgroundTransparency = 1
 BatteryLabel.TextColor3 = Color3.fromRGB(255,255,255)
 BatteryLabel.Font = Enum.Font.FredokaOne
 BatteryLabel.TextScaled = true
-BatteryLabel.Text = "Battery: 0%"
+BatteryLabel.Text = "Battery: 100%"
 
 -- Ping
 local PingBG = Instance.new("Frame", Content)
@@ -145,23 +145,26 @@ MinButton.MouseButton1Click:Connect(function()
 end)
 
 -- Update Stats
+local batteryPercent = 100
+local batteryDirection = -1
 local pingAccumulator = 0
 local pingCount = 0
 local lastPing = 0
 
 RunService.RenderStepped:Connect(function(dt)
-	-- Battery
-	local battery = UserInputService:GetBatteryPercentage() or 0
-	local batteryPercent = math.floor(battery*100)
+	-- Battery Simulation
+	batteryPercent = batteryPercent + batteryDirection
+	if batteryPercent <= 20 then batteryDirection = 1 end
+	if batteryPercent >= 100 then batteryDirection = -1 end
 	BatteryLabel.Text = "Battery: "..batteryPercent.."%"
 	TweenService:Create(BatteryBar, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.new(batteryPercent/100,0,1,0)}):Play()
 	BatteryBar.BackgroundColor3 = Color3.fromHSV(batteryPercent/100*0.3,1,1)
 
-	-- Ping simulation
+	-- Ping Simulation
 	pingAccumulator = pingAccumulator + dt
 	pingCount = pingCount + 1
 	if pingCount >= 30 then
-		lastPing = math.floor(pingAccumulator*1000/pingCount)
+		lastPing = math.random(30,120) -- random ping between 30-120ms
 		PingLabel.Text = "Ping: "..lastPing.."ms"
 		local pingPercent = math.clamp(1 - (lastPing/300),0,1)
 		TweenService:Create(PingBar, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.new(pingPercent,0,1,0)}):Play()
