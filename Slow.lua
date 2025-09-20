@@ -707,43 +707,25 @@ end)
 
 
 AutoFarm:Toggle("Auto Drink", function(v)
-    getgenv().AutoDrink = v  -- toggle state
-    
+    getgenv().autodrink = v
     task.spawn(function()
-        while getgenv().AutoDrink do
-            task.wait(0.3)
+        local drinks = {
+            "Starter Drink", "Second Drink", "Third Drink", "Fourth Drink",
+            "Fifth Drink", "Sixth Drink", "Seventh Drink", "Eighth Drink",
+            "Ninth Drink", "Atomic Drink", "Omega Burp Juice", "Thunder Fizz",
+            "Garlic Juice"
+        }
 
-            local ReplicatedStorage = game:GetService("ReplicatedStorage")
-            local remotePath = ReplicatedStorage:FindFirstChild("RemoteEvents")
-            if not remotePath then continue end
-
-            local drinkEvent = remotePath:FindFirstChild("DrinkEvent")
-            if not drinkEvent then continue end
-
-            local drinks = {
-                "Starter Drink",
-                "Second Drink",
-                "Third Drink",
-                "Fourth Drink",
-                "Fifth Drink",
-                "Sixth Drink",
-                "Seventh Drink",
-                "Eighth Drink",
-                "Ninth Drink",
-                "Atomic Drink",
-                "Omega Burp Juice",
-                "Thunder Fizz",
-                "Garlic Juice"
-            }
-
+        while getgenv().autodrink do
             for _, drink in ipairs(drinks) do
                 pcall(function()
-                    drinkEvent:FireServer(drink)
+                    game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(drink)
                 end)
             end
+            task.wait() -- minimal wait to yield and prevent freezing
         end
     end)
-end)
+end
 
 LocalPlayer:Button("Remove Fps Cap", function()
 	if setfpscap and type(setfpscap) == "function" then
