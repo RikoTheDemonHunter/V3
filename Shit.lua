@@ -172,8 +172,9 @@ local whitelisted, banned, username, userId = verifyUser(player, whitelist, banD
 
 -- 📝 Final results
 if not enabled then
-	fadeText("⚠️ Kill switch is OFF\nYou cannot use Avery Hub.", 3)
-	player:Kick("⚠️ Kill switch is OFF.")
+	-- Kill switch ENABLED (block)
+	fadeText("⚠️ Kill switch is ENABLED\nYou cannot use Avery Hub.", 3)
+	player:Kick("⚠️ Kill switch is ENABLED.")
 	return
 elseif banned then
 	fadeText(("🚫 You are BANNED!\nName: %s\nUserId: %d\nYou will be kicked."):format(username, userId), 3)
@@ -184,7 +185,8 @@ elseif not whitelisted then
 	player:Kick("❌ You are not whitelisted.")
 	return
 else
-	fadeText(("✅ Great! You are whitelisted.\nName: %s\nUserId: %d\nYou may continue."):format(username, userId), 2.5)
+	-- Kill switch DISABLED (allowed to continue)
+	fadeText(("✅ Great! You are whitelisted.\nName: %s\nUserId: %d\nKill switch is DISABLED.\nYou may continue."):format(username, userId), 2.5)
 	showOutro(3) -- 💖 outro message
 end
 
