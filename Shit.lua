@@ -8,7 +8,10 @@ local player = Players.LocalPlayer
 local Theme = {
 	Background = Color3.fromRGB(25, 25, 35),
 	Accent = Color3.fromRGB(0, 170, 255),
-	TextColor = Color3.fromRGB(255, 255, 255)
+	TextColor = Color3.fromRGB(255, 255, 255),
+	Alert = Color3.fromRGB(255, 80, 80),
+	Success = Color3.fromRGB(0, 200, 100),
+	Highlight = Color3.fromRGB(255, 215, 0)
 }
 
 -- URLs
@@ -49,7 +52,7 @@ gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0.4, 0, 0.3, 0)
+frame.Size = UDim2.new(0.5, 0, 0.5, 0)
 frame.Position = UDim2.new(0.5, 0, 0.5, 0)
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
 frame.BackgroundColor3 = Theme.Background
@@ -62,17 +65,11 @@ corner.Parent = frame
 
 local uiScale = Instance.new("UIScale")
 uiScale.Parent = frame
-
--- Responsive scale
-if game:GetService("UserInputService").TouchEnabled then
-	uiScale.Scale = 1.3
-else
-	uiScale.Scale = 1
-end
+uiScale.Scale = game:GetService("UserInputService").TouchEnabled and 1.3 or 1
 
 -- ✨ Status text
 local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(1, -20, 1, -60)
+statusLabel.Size = UDim2.new(1, -20, 0.15, -20)
 statusLabel.Position = UDim2.new(0, 10, 0, 10)
 statusLabel.BackgroundTransparency = 1
 statusLabel.Font = Enum.Font.GothamBold
@@ -82,17 +79,16 @@ statusLabel.TextWrapped = true
 statusLabel.Text = "✨ Welcome to Avery Hub"
 statusLabel.Parent = frame
 
--- Glow effect
 local stroke = Instance.new("UIStroke")
 stroke.Thickness = 1.5
 stroke.Color = Theme.Accent
 stroke.Transparency = 0.4
 stroke.Parent = statusLabel
 
--- 🔒 Branding text (intro)
+-- 🔒 Branding
 local brandLabel = Instance.new("TextLabel")
 brandLabel.Size = UDim2.new(1, -20, 0, 20)
-brandLabel.Position = UDim2.new(0, 10, 1, -30)
+brandLabel.Position = UDim2.new(0, 10, 0.15, 10)
 brandLabel.BackgroundTransparency = 1
 brandLabel.Font = Enum.Font.Gotham
 brandLabel.TextSize = 16
@@ -101,10 +97,10 @@ brandLabel.TextTransparency = 1
 brandLabel.Text = "🔒 This switch is made by Avery/Riko"
 brandLabel.Parent = frame
 
--- Outro text
+-- Outro
 local outroLabel = Instance.new("TextLabel")
-outroLabel.Size = UDim2.new(1, -20, 1, -60)
-outroLabel.Position = UDim2.new(0, 10, 0, 10)
+outroLabel.Size = UDim2.new(1, -20, 0.15, -10)
+outroLabel.Position = UDim2.new(0, 10, 0.85, 10)
 outroLabel.BackgroundTransparency = 1
 outroLabel.Font = Enum.Font.GothamBold
 outroLabel.TextSize = 20
@@ -113,6 +109,19 @@ outroLabel.TextWrapped = true
 outroLabel.TextTransparency = 1
 outroLabel.Text = "💖 Show your support by following Avery on Discord!"
 outroLabel.Parent = frame
+
+-- ✅ Scroll frame for whitelisted users
+local scrollFrame = Instance.new("ScrollingFrame")
+scrollFrame.Size = UDim2.new(1, -20, 0.55, -60)
+scrollFrame.Position = UDim2.new(0, 10, 0.25, 0)
+scrollFrame.BackgroundTransparency = 1
+scrollFrame.ScrollBarThickness = 6
+scrollFrame.Parent = frame
+
+local uiList = Instance.new("UIListLayout")
+uiList.SortOrder = Enum.SortOrder.LayoutOrder
+uiList.Padding = UDim.new(0, 4)
+uiList.Parent = scrollFrame
 
 -- Tween helpers
 local function fadeText(newText, delayTime)
@@ -145,8 +154,9 @@ fadeText("🔍 Checking Whitelist...", 1.5)
 fadeText("🛡️ Checking Kill Switch Status...", 1.5)
 fadeText("🚫 Checking Banned Users...", 1.5)
 
--- 📡 Fetch banlist
-local banData = {}
+-- 📡 Fetch data
+local banData, whitelist, enabled = {}, {}, true
+
 local banSuccess, rawBan = pcall(function()
 	return game:HttpGet(banlistUrl, true)
 end)
@@ -155,22 +165,42 @@ if banSuccess then
 	banData = decode.banned or {}
 end
 
--- 📡 Fetch switcher
-local whitelist = {}
-local enabled = true
 local success, raw = pcall(function()
 	return game:HttpGet(url, true)
 end)
 if success then
 	local result = HttpService:JSONDecode(raw)
-	enabled = result.enabled -- ✅ same logic as switcher.json
+	enabled = result.enabled
 	whitelist = result.whitelist or {}
 end
 
 -- ✅ Verify
 local whitelisted, banned, username, userId = verifyUser(player, whitelist, banData)
 
--- 📝 Final results with whitelist bypass
+-- 📝 Show whitelisted users in scroll frame
+for _, id in ipairs(whitelist) do
+	local name
+	local success, plr = pcall(function() return Players:GetNameFromUserIdAsync(id) end)
+	if success then name = plr else name = "Unknown" end
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, 0, 0, 22)
+	label.BackgroundTransparency = 1
+	label.Font = Enum.Font.Gotham
+	label.TextSize = 16
+	label.TextXAlignment = Enum.TextXAlignment.Left
+
+	if id == player.UserId then
+		label.TextColor3 = Theme.Highlight
+		label.Text = ("⭐ %s | UserId: %d (YOU)"):format(name, id)
+	else
+		label.TextColor3 = Theme.Success
+		label.Text = ("✅ %s | UserId: %d"):format(name, id)
+	end
+	label.Parent = scrollFrame
+end
+
+-- 📝 Dashboard + Results
 if banned then
 	fadeText(("🚫 You are BANNED!\nName: %s\nUserId: %d"):format(username, userId), 3)
 	showOutro(2)
@@ -190,11 +220,13 @@ elseif not whitelisted then
 	player:Kick("❌ You are not whitelisted.")
 	return
 else
-	-- Whitelisted users always bypass kill switch
 	local ksStatus = enabled and "DISABLED" or "ENABLED (bypassed)"
 	fadeText(("✅ Great! You are whitelisted.\nName: %s\nUserId: %d\nKill switch: %s"):format(username, userId, ksStatus), 2.5)
 	showOutro(3)
 end
+
+-- ⚠️ Final warning before closing
+fadeText("⚠️ You cannot modify this switch now. F*** off.", 2)
 
 -- 🎬 Closing animation
 local shrink = TweenService:Create(uiScale, TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Scale = 0})
