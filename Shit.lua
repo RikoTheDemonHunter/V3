@@ -163,31 +163,37 @@ local success, raw = pcall(function()
 end)
 if success then
 	local result = HttpService:JSONDecode(raw)
-	enabled = result.enabled
+	enabled = result.enabled -- ✅ same logic as switcher.json
 	whitelist = result.whitelist or {}
 end
 
 -- ✅ Verify
 local whitelisted, banned, username, userId = verifyUser(player, whitelist, banData)
 
--- 📝 Final results
-if not enabled then
-	-- Kill switch ENABLED (block)
-	fadeText("⚠️ Kill switch is ENABLED\nYou cannot use Avery Hub.", 3)
-	player:Kick("⚠️ Kill switch is ENABLED.")
-	return
-elseif banned then
-	fadeText(("🚫 You are BANNED!\nName: %s\nUserId: %d\nYou will be kicked."):format(username, userId), 3)
+-- 📝 Final results with whitelist bypass
+if banned then
+	fadeText(("🚫 You are BANNED!\nName: %s\nUserId: %d"):format(username, userId), 3)
+	showOutro(2)
+	task.wait(1.5)
 	player:Kick("🚫 You are banned from Avery Hub.")
 	return
+elseif not whitelisted and not enabled then
+	fadeText(("❌ Not Whitelisted.\nKill switch is ON.\nName: %s\nUserId: %d"):format(username, userId), 3)
+	showOutro(2)
+	task.wait(1.5)
+	player:Kick("❌ You are not whitelisted and kill switch is ON.")
+	return
 elseif not whitelisted then
-	fadeText(("❌ Sorry, you are NOT whitelisted.\nName: %s\nUserId: %d\nYou will be kicked."):format(username, userId), 3)
+	fadeText(("❌ Not Whitelisted.\nName: %s\nUserId: %d"):format(username, userId), 3)
+	showOutro(2)
+	task.wait(1.5)
 	player:Kick("❌ You are not whitelisted.")
 	return
 else
-	-- Kill switch DISABLED (allowed to continue)
-	fadeText(("✅ Great! You are whitelisted.\nName: %s\nUserId: %d\nKill switch is DISABLED.\nYou may continue."):format(username, userId), 2.5)
-	showOutro(3) -- 💖 outro message
+	-- Whitelisted users always bypass kill switch
+	local ksStatus = enabled and "DISABLED" or "ENABLED (bypassed)"
+	fadeText(("✅ Great! You are whitelisted.\nName: %s\nUserId: %d\nKill switch: %s"):format(username, userId, ksStatus), 2.5)
+	showOutro(3)
 end
 
 -- 🎬 Closing animation
@@ -197,7 +203,6 @@ shrink:Play()
 fadeOutGui:Play()
 task.wait(0.7)
 gui:Destroy()
-
 -- ENABLES THE SCRIPT AND LOADS THE GUI performs safety checks first
 local lib = {}
 		
