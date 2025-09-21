@@ -66,6 +66,7 @@ if success and result then
 		return
 	else
 		print("✅ Kill switch OFF or user whitelisted. Continuing...")
+		verifyUser(player, whitelist)
 	end
 else
 	warn("⚠️ Failed to fetch kill switch status. Script may proceed anyway.")
