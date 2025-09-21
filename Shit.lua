@@ -26,6 +26,17 @@ local function isWhitelisted(userId, whitelist)
 	return false
 end
 
+ --VERIFY USER (only addition)
+local function verifyUser(p, wl)
+	local userId = p.UserId
+	local username = p.Name or "Unknown"
+	if isWhitelisted(userId, wl) then
+		print(("✅ User verified as WHITELISTED — Name: %s | UserId: %d"):format(username, userId))
+	else
+		print(("❌ User is NOT whitelisted — Name: %s | UserId: %d"):format(username, userId))
+	end
+end
+
 local banSuccess, banData = pcall(function()
 	local response = game:HttpGet(banlistUrl, true)
 	return HttpService:JSONDecode(response)
