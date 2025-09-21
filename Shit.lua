@@ -3,6 +3,7 @@ local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
 
 -- 🎨 THEME COLORS
 local Theme = {
@@ -52,7 +53,7 @@ gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0.5, 0, 0.5, 0)
+frame.Size = UDim2.new(0.5, 0, 0.55, 0)
 frame.Position = UDim2.new(0.5, 0, 0.5, 0)
 frame.AnchorPoint = Vector2.new(0.5, 0.5)
 frame.BackgroundColor3 = Theme.Background
@@ -65,17 +66,19 @@ corner.Parent = frame
 
 local uiScale = Instance.new("UIScale")
 uiScale.Parent = frame
-uiScale.Scale = game:GetService("UserInputService").TouchEnabled and 1.3 or 1
+uiScale.Scale = UserInputService.TouchEnabled and 1.3 or 1
 
 -- ✨ Status text
 local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(1, -20, 0.15, -20)
+statusLabel.Size = UDim2.new(1, -20, 0, 40)
 statusLabel.Position = UDim2.new(0, 10, 0, 10)
 statusLabel.BackgroundTransparency = 1
 statusLabel.Font = Enum.Font.GothamBold
 statusLabel.TextSize = 22
 statusLabel.TextColor3 = Theme.TextColor
 statusLabel.TextWrapped = true
+statusLabel.TextXAlignment = Enum.TextXAlignment.Left
+statusLabel.TextYAlignment = Enum.TextYAlignment.Top
 statusLabel.Text = "✨ Welcome to Avery Hub"
 statusLabel.Parent = frame
 
@@ -88,32 +91,36 @@ stroke.Parent = statusLabel
 -- 🔒 Branding
 local brandLabel = Instance.new("TextLabel")
 brandLabel.Size = UDim2.new(1, -20, 0, 20)
-brandLabel.Position = UDim2.new(0, 10, 0.15, 10)
+brandLabel.Position = UDim2.new(0, 10, 0, 60)
 brandLabel.BackgroundTransparency = 1
 brandLabel.Font = Enum.Font.Gotham
 brandLabel.TextSize = 16
 brandLabel.TextColor3 = Theme.Accent
 brandLabel.TextTransparency = 1
+brandLabel.TextXAlignment = Enum.TextXAlignment.Left
+brandLabel.TextYAlignment = Enum.TextYAlignment.Top
 brandLabel.Text = "🔒 This switch is made by Avery/Riko"
 brandLabel.Parent = frame
 
 -- Outro
 local outroLabel = Instance.new("TextLabel")
-outroLabel.Size = UDim2.new(1, -20, 0.15, -10)
-outroLabel.Position = UDim2.new(0, 10, 0.85, 10)
+outroLabel.Size = UDim2.new(1, -20, 0, 40)
+outroLabel.Position = UDim2.new(0, 10, 0.85, 0)
 outroLabel.BackgroundTransparency = 1
 outroLabel.Font = Enum.Font.GothamBold
 outroLabel.TextSize = 20
 outroLabel.TextColor3 = Color3.fromRGB(255, 100, 150)
 outroLabel.TextWrapped = true
 outroLabel.TextTransparency = 1
+outroLabel.TextXAlignment = Enum.TextXAlignment.Left
+outroLabel.TextYAlignment = Enum.TextYAlignment.Top
 outroLabel.Text = "💖 Show your support by following Avery on Discord!"
 outroLabel.Parent = frame
 
--- ✅ Scroll frame for whitelisted users
+-- ✅ Scroll frame for whitelisted and banned users
 local scrollFrame = Instance.new("ScrollingFrame")
-scrollFrame.Size = UDim2.new(1, -20, 0.55, -60)
-scrollFrame.Position = UDim2.new(0, 10, 0.25, 0)
+scrollFrame.Size = UDim2.new(1, -20, 0.6, -80)
+scrollFrame.Position = UDim2.new(0, 10, 0.15, 0)
 scrollFrame.BackgroundTransparency = 1
 scrollFrame.ScrollBarThickness = 6
 scrollFrame.Parent = frame
@@ -177,28 +184,56 @@ end
 -- ✅ Verify
 local whitelisted, banned, username, userId = verifyUser(player, whitelist, banData)
 
--- 📝 Show whitelisted users in scroll frame
+-- 📝 Show whitelisted users
 for _, id in ipairs(whitelist) do
 	local name
 	local success, plr = pcall(function() return Players:GetNameFromUserIdAsync(id) end)
 	if success then name = plr else name = "Unknown" end
 
 	local label = Instance.new("TextLabel")
-	label.Size = UDim2.new(1, 0, 0, 22)
+	label.Size = UDim2.new(1, -10, 0, 22)
 	label.BackgroundTransparency = 1
 	label.Font = Enum.Font.Gotham
 	label.TextSize = 16
 	label.TextXAlignment = Enum.TextXAlignment.Left
-
-	if id == player.UserId then
-		label.TextColor3 = Theme.Highlight
-		label.Text = ("⭐ %s | UserId: %d (YOU)"):format(name, id)
-	else
-		label.TextColor3 = Theme.Success
-		label.Text = ("✅ %s | UserId: %d"):format(name, id)
-	end
+	label.TextYAlignment = Enum.TextYAlignment.Center
+	label.TextColor3 = (id == player.UserId) and Theme.Highlight or Theme.Success
+	label.Text = (id == player.UserId) and ("⭐ %s | UserId: %d (YOU)"):format(name, id)
+	                                  or ("✅ %s | UserId: %d"):format(name, id)
 	label.Parent = scrollFrame
 end
+
+-- 📝 Show banned users
+for _, id in ipairs(banData) do
+	if not isWhitelisted(id, whitelist) then
+		local name
+		local success, plr = pcall(function() return Players:GetNameFromUserIdAsync(id) end)
+		if success then name = plr else name = "Unknown" end
+
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.new(1, -10, 0, 22)
+		label.BackgroundTransparency = 1
+		label.Font = Enum.Font.Gotham
+		label.TextSize = 16
+		label.TextXAlignment = Enum.TextXAlignment.Left
+		label.TextYAlignment = Enum.TextYAlignment.Center
+		label.TextColor3 = Theme.Alert
+		label.Text = ("🚫 %s | UserId: %d"):format(name, id)
+		label.Parent = scrollFrame
+	end
+end
+
+-- Update canvas size dynamically
+local function updateCanvasSize()
+	local total = 0
+	for _, child in ipairs(scrollFrame:GetChildren()) do
+		if child:IsA("TextLabel") then
+			total = total + child.Size.Y.Offset + uiList.Padding.Offset
+		end
+	end
+	scrollFrame.CanvasSize = UDim2.new(0, 0, 0, total)
+end
+updateCanvasSize()
 
 -- 📝 Dashboard + Results
 if banned then
@@ -235,6 +270,7 @@ shrink:Play()
 fadeOutGui:Play()
 task.wait(0.7)
 gui:Destroy()
+
 -- ENABLES THE SCRIPT AND LOADS THE GUI performs safety checks first
 local lib = {}
 		
