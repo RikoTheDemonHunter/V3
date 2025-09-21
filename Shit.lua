@@ -1,104 +1,276 @@
 
+-- Avery Hub: Local verification dashboard with animated intro
+-- Place this LocalScript in StarterPlayerScripts
+
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 
+-- Remote JSON locations (keep as your originals)
+local SWITCH_URL = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
+local BANLIST_URL = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
 
-local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
+-- Safe helpers
+local function safeDecode(json)
+	if not json or json == "" then return nil end
+	local ok, result = pcall(function() return HttpService:JSONDecode(json) end)
+	return ok and result or nil
+end
 
-local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
+local function safeHttpGet(url)
+	local ok, res = pcall(function() return game:HttpGet(url, true) end)
+	return ok and res or nil
+end
 
-local function isBanned(userId, banlist)
-	for _, id in ipairs(banlist) do
-		if id == userId then
-			return true
-		end
+local function isInList(id, list)
+	if type(list) ~= "table" then return false end
+	for _, v in ipairs(list) do
+		if v == id then return true end
 	end
 	return false
 end
 
-local function isWhitelisted(userId, whitelist)
-	for _, id in ipairs(whitelist) do
-		if id == userId then
-			return true
-		end
-	end
-	return false
-end
+-- verifyUser function (returns whitelisted, banned, username, userId)
+local function verifyUser(p, whitelist, banlist, killSwitchEnabled)
+	local userId = (p and p.UserId) or 0
+	local username = (p and p.Name) or "Unknown"
+	local whitelisted = isInList(userId, whitelist)
+	local banned = isInList(userId, banlist)
 
- --VERIFY USER (only addition)
-local function verifyUser(p, wl)
-	local userId = p.UserId
-	local username = p.Name or "Unknown"
-	if isWhitelisted(userId, wl) then
+	-- server-like prints to local output for debugging
+	if whitelisted then
 		print(("✅ User verified as WHITELISTED — Name: %s | UserId: %d"):format(username, userId))
 	else
 		print(("❌ User is NOT whitelisted — Name: %s | UserId: %d"):format(username, userId))
 	end
-end
 
-local banSuccess, banData = pcall(function()
-	local response = game:HttpGet(banlistUrl, true)
-	return HttpService:JSONDecode(response)
-end)
-
-if banSuccess and banData then
-	local banlist = banData.banned or {}
-	if isBanned(player.UserId, banlist) then
-		player:Kick("🚫 You are permanently banned from using this script.")
-		return
+	if banned then
+		print(("🚫 User is BANNED — Name: %s | UserId: %d"):format(username, userId))
 	end
-else
-	warn("⚠️ Could not fetch banlist.")
+
+	-- killSwitchEnabled can be nil; treat nil as true (no whitelist requirement)
+	-- In your previous code, enabled==false meant whitelist is required.
+	local requiresWhitelist = (killSwitchEnabled == false)
+
+	return whitelisted, banned, username, userId, requiresWhitelist
 end
 
-local success, result = pcall(function()
-	local response = game:HttpGet(url, true)
-	return HttpService:JSONDecode(response)
-end)
+-- GUI creation (responsive + smooth)
+local function createGui()
+	local gui = Instance.new("ScreenGui")
+	gui.Name = "AveryHubIntro"
+	gui.ResetOnSpawn = false
+	gui.IgnoreGuiInset = true
+	gui.Parent = player:WaitForChild("PlayerGui")
 
-if success and result then
-	local enabled = result.enabled
-	local whitelist = result.whitelist or {}
+	-- container frame (uses scale so it adapts)
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(0.46, 0, 0.28, 0)
+	frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+	frame.AnchorPoint = Vector2.new(0.5, 0.5)
+	frame.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
+	frame.BackgroundTransparency = 1 -- start hidden; tween in
+	frame.BorderSizePixel = 0
+	frame.Name = "AveryHubFrame"
+	frame.Parent = gui
 
-	if not enabled and not isWhitelisted(player.UserId, whitelist) then
-		player:Kick("Your UserID IS Not Whitelisted.")
-		return
-	else
-		print("✅ Kill switch OFF or user whitelisted. Continuing...")
-		verifyUser(player, whitelist)
-	end
-else
-	warn("⚠️ Failed to fetch kill switch status. Script may proceed anyway.")
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 14)
+	corner.Parent = frame
+
+	local aspect = Instance.new("UIAspectRatioConstraint")
+	aspect.AspectRatio = 1.8 -- width / height ratio
+	aspect.Parent = frame
+
+	local uiScale = Instance.new("UIScale")
+	uiScale.Scale = 1
+	uiScale.Parent = frame
+
+	-- Title / status area
+	local statusLabel = Instance.new("TextLabel")
+	statusLabel.Name = "StatusLabel"
+	statusLabel.Size = UDim2.new(1, -28, 1, -28)
+	statusLabel.Position = UDim2.new(0, 14, 0, 14)
+	statusLabel.BackgroundTransparency = 1
+	statusLabel.Font = Enum.Font.GothamSemibold
+	statusLabel.TextSize = 20
+	statusLabel.TextColor3 = Color3.fromRGB(245,245,245)
+	statusLabel.TextWrapped = true
+	statusLabel.TextYAlignment = Enum.TextYAlignment.Top
+	statusLabel.TextXAlignment = Enum.TextXAlignment.Center
+	statusLabel.Text = "✨ Welcome to Avery Hub\n\nLet's run a few checks first..."
+	statusLabel.TextTransparency = 1
+	statusLabel.Parent = frame
+
+	-- small footer label for extra status / errors
+	local footer = Instance.new("TextLabel")
+	footer.Name = "Footer"
+	footer.Size = UDim2.new(1, -28, 0, 22)
+	footer.Position = UDim2.new(0, 14, 1, -36)
+	footer.BackgroundTransparency = 1
+	footer.Font = Enum.Font.SourceSans
+	footer.TextSize = 14
+	footer.TextColor3 = Color3.fromRGB(200,200,200)
+	footer.Text = ""
+	footer.TextTransparency = 1
+	footer.Parent = frame
+
+	return gui, frame, statusLabel, footer
 end
 
-task.wait(1) -- Slight delay to allow other parts of script to load (optional)
+-- Tween helpers
+local function tweenObject(obj, props, time, style, direction)
+	local info = TweenInfo.new(time or 0.45, style or Enum.EasingStyle.Quad, direction or Enum.EasingDirection.Out)
+	local tw = TweenService:Create(obj, info, props)
+	tw:Play()
+	return tw
+end
 
--- SECONDARY KILL SWITCH CHECK
- if not enabled then
-	local stillAuthorized = false
-	local retrySuccess, retryResult = pcall(function()
-		local response = game:HttpGet(url, true)
-		return HttpService:JSONDecode(response)
-	end)
-
-	if retrySuccess and retryResult then
-		local whitelist = retryResult.whitelist or {}
-		if isWhitelisted(player.UserId, whitelist) then
-			stillAuthorized = true
+-- Kick helper (safe pcall)
+local function safeKick(reason)
+	local ok, _ = pcall(function()
+		-- Local kick; server is authoritative but this will disconnect the local client view
+		if player and player.Kick then
+			player:Kick(reason or "Kicked by kill switch.")
+		else
+			-- fallback: force close by setting CoreGui? keep simple and just warn
+			warn("Unable to call player:Kick() from LocalScript.")
 		end
+	end)
+	return ok
+end
+
+-- Main flow
+local function run()
+	-- create GUI
+	local gui, frame, statusLabel, footer = createGui()
+
+	-- fade in frame and text
+	tweenObject(frame, {BackgroundTransparency = 0.06}, 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	tweenObject(statusLabel, {TextTransparency = 0}, 0.6)
+
+	-- small initial pause
+	task.wait(1.2)
+
+	-- animated check sequence
+	local function step(text, delayTime)
+		-- fade out text
+		local out = tweenObject(statusLabel, {TextTransparency = 1}, 0.35)
+		out.Completed:Wait()
+		statusLabel.Text = text
+		-- fade in
+		tweenObject(statusLabel, {TextTransparency = 0}, 0.35)
+		task.wait(delayTime or 1.4)
 	end
 
-	if not stillAuthorized then
-		player:Kick("⚠️ Unauthorized user detected.")
+	step("🔍 Checking Whitelist...", 1.3)
+	step("🛡️ Checking Kill Switch Status...", 1.3)
+	step("🚫 Checking Banned Users...", 1.3)
+
+	-- Fetch banlist (safe)
+	local banlistRaw = safeHttpGet(BANLIST_URL)
+	local banlist = {}
+	if banlistRaw then
+		local decoded = safeDecode(banlistRaw)
+		if decoded and type(decoded) == "table" then
+			banlist = decoded.banned or {}
+		end
+	else
+		footer.Text = "⚠️ Could not fetch banlist."
+		footer.TextTransparency = 0
+		tweenObject(footer, {TextTransparency = 0}, 0.4)
+		task.wait(1.2)
+		tweenObject(footer, {TextTransparency = 1}, 0.4)
+	end
+
+	-- Fetch switcher
+	local switchRaw = safeHttpGet(SWITCH_URL)
+	local whitelist = {}
+	local enabled = true -- default: kill-switch not actively requiring whitelist
+	if switchRaw then
+		local decoded = safeDecode(switchRaw)
+		if decoded and type(decoded) == "table" then
+			enabled = decoded.enabled == nil and enabled or decoded.enabled
+			whitelist = decoded.whitelist or {}
+		end
+	else
+		footer.Text = "⚠️ Could not fetch kill switch status."
+		footer.TextTransparency = 0
+		tweenObject(footer, {TextTransparency = 0}, 0.4)
+		task.wait(1.2)
+		tweenObject(footer, {TextTransparency = 1}, 0.4)
+	end
+
+	-- Compute verification results
+	local whitelisted, banned, username, userId, requiresWhitelist =
+		verifyUser(player, whitelist, banlist, enabled)
+
+	-- Build the final message and action logic
+	local whitelistMsg = whitelisted and "✅ Yes — you are whitelisted." or "❌ No — you are NOT whitelisted."
+	local bannedMsg = banned and "🚫 Yes — you are BANNED." or "❌ No"
+	local killSwitchStateMsg
+	if enabled == false then
+		killSwitchStateMsg = "Kill switch: ON — whitelist required."
+	else
+		killSwitchStateMsg = "Kill switch: OFF — whitelist NOT required."
+	end
+
+	-- Compose display text
+	local finalText = string.format(
+		"✅ Verification Complete\n\nName: %s\nUserId: %d\n\nWhitelist: %s\nBanned: %s\n\n%s",
+		tostring(username), tonumber(userId) or 0, (whitelisted and "✅ Yes" or "❌ No"), (banned and "🚫 Yes" or "❌ No"),
+		killSwitchStateMsg
+	)
+
+	-- Fade into final text smoothly
+	step(finalText, 2.6)
+
+	-- Additional friendly messages and actions
+	-- Priority: if banned -> show banned message and kick
+	-- Next: if kill-switch requires whitelist and user not whitelisted -> show kick message and kick
+	-- Else: show friendly "you can continue" message
+
+	if banned then
+		step("🚫 You are BANNED — you will be kicked in an instant.", 1.6)
+		-- brief pause so player sees message
+		task.wait(0.8)
+		safeKick("You are permanently banned.")
 		return
+	end
+
+	if requiresWhitelist and not whitelisted then
+		step("⚠️ Sorry — you are NOT whitelisted. You will be kicked in an instant.", 1.6)
+		task.wait(0.9)
+		-- attempt client-side kick
+		safeKick("Your UserID is not whitelisted.")
+		return
+	end
+
+	-- If kill switch is off (whitelist not required), show that as info
+	if not requiresWhitelist then
+		step("ℹ️ Kill switch is OFF — whitelist not required. You may continue.", 1.6)
+		task.wait(1)
+	else
+		-- whitelisted and whitelist required
+		step("🎉 Great — you are whitelisted! You may continue.", 1.6)
+		task.wait(1)
+	end
+
+	-- End animation: fade out frame & text
+	tweenObject(statusLabel, {TextTransparency = 1}, 0.55)
+	local outFrame = tweenObject(frame, {BackgroundTransparency = 1}, 0.8)
+	outFrame.Completed:Wait()
+	-- Clean up
+	if gui and gui.Parent then
+		gui:Destroy()
 	end
 end
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local trapRemote = ReplicatedStorage:WaitForChild("ExploitTrap", 1)
-if trapRemote then
-    trapRemote:FireServer()
+-- Run the flow in a protected pcall so script doesn't error unexpectedly
+local ok, err = pcall(run)
+if not ok then
+	warn("AveryHubIntro LocalScript error:", tostring(err))
 end
 -- ENABLES THE SCRIPT AND LOADS THE GUI performs safety checks first
 local lib = {}
