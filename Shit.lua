@@ -99,7 +99,7 @@ brandLabel.TextColor3 = Theme.Accent
 brandLabel.TextTransparency = 1
 brandLabel.TextXAlignment = Enum.TextXAlignment.Left
 brandLabel.TextYAlignment = Enum.TextYAlignment.Top
-brandLabel.Text = "🔒 This switch is made by Avery/Riko"
+brandLabel.Text = "🔒 This switch is made by Avery"
 brandLabel.Parent = frame
 
 -- Outro
