@@ -2,11 +2,15 @@
 -- Features: Dual Save, Indicator, Auto TP Fix, Minimize, Draggable Toolbar, Fancy Effects
 
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local Debris = game:GetService("Debris")
 local player = Players.LocalPlayer
 
 -- Variables for spawn points
 local spawn1, spawn2 = nil, nil
 local activeSpawn = nil
+local activeTween = nil -- track ongoing tween
 
 -- Create ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -24,7 +28,7 @@ frame.Active = true
 frame.Draggable = true
 frame.Parent = screenGui
 
--- UICorner for smoothness
+-- UICorner
 local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 10)
 corner.Parent = frame
@@ -61,10 +65,10 @@ local function flash(color)
 	flashFrame.BackgroundTransparency = 0.5
 	flashFrame.ZIndex = 10
 	flashFrame.Parent = frame
-	game:GetService("Debris"):AddItem(flashFrame, 0.25)
+	Debris:AddItem(flashFrame, 0.25)
 end
 
--- Function to update indicator
+-- Update indicator
 local function updateIndicator()
 	if activeSpawn == spawn1 then
 		indicator.Text = "Active: Spawn 1"
@@ -75,7 +79,7 @@ local function updateIndicator()
 	end
 end
 
--- Scrolling container for buttons
+-- Scrolling frame for buttons
 local buttonContainer = Instance.new("ScrollingFrame")
 buttonContainer.Size = UDim2.new(1, -10, 0, 210)
 buttonContainer.Position = UDim2.new(0, 5, 0, 60)
@@ -84,7 +88,7 @@ buttonContainer.ScrollBarThickness = 6
 buttonContainer.BackgroundTransparency = 1
 buttonContainer.Parent = frame
 
--- Create Buttons
+-- Button creation
 local function createButton(text, posY)
 	local btn = Instance.new("TextButton")
 	btn.Size = UDim2.new(1, -10, 0, 30)
@@ -143,10 +147,10 @@ local cornerClose = Instance.new("UICorner")
 cornerClose.CornerRadius = UDim.new(0, 6)
 cornerClose.Parent = closeBtn
 
--- Open Menu Button (on side)
+-- Open Menu Button
 local openBtn = Instance.new("TextButton")
 openBtn.Size = UDim2.new(0, 140, 0, 40)
-openBtn.Position = UDim2.new(0, 15, 0.8, 0) -- ✅ Side position fixed
+openBtn.Position = UDim2.new(0, 15, 0.8, 0)
 openBtn.Text = "Open Spawn Menu"
 openBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 openBtn.BackgroundColor3 = Color3.fromRGB(40, 120, 40)
@@ -206,6 +210,10 @@ end)
 
 clearBtn.MouseButton1Click:Connect(function()
 	activeSpawn = nil
+	if activeTween then
+		activeTween:Cancel()
+		activeTween = nil
+	end
 	updateIndicator()
 	flash(Color3.fromRGB(255, 0, 0))
 end)
@@ -230,14 +238,31 @@ openBtn.MouseButton1Click:Connect(function()
 	openBtn.Visible = false
 end)
 
--- CharacterAdded + Auto Correct Spawn
+-- CharacterAdded + Auto Correct Spawn with Fast Tween & Movement Cancel
 player.CharacterAdded:Connect(function(char)
-	char:WaitForChild("HumanoidRootPart")
-	task.wait(0.5)
-	if activeSpawn then
-		local hrp = char:FindFirstChild("HumanoidRootPart")
-		if hrp and (hrp.Position - activeSpawn.Position).Magnitude > 10 then
-			hrp.CFrame = activeSpawn
-		end
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	task.wait(0.05)
+
+	if activeSpawn and hrp then
+		local tweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+		local tweenGoal = {CFrame = activeSpawn}
+		local tween = TweenService:Create(hrp, tweenInfo, tweenGoal)
+		activeTween = tween
+
+		local initialPos = hrp.Position
+		local conn
+		conn = RunService.RenderStepped:Connect(function()
+			if (hrp.Position - initialPos).Magnitude > 0.1 or not activeSpawn then
+				tween:Cancel()
+				conn:Disconnect()
+				activeTween = nil
+			end
+		end)
+
+		tween:Play()
+		tween.Completed:Connect(function()
+			if conn then conn:Disconnect() end
+			activeTween = nil
+		end)
 	end
 end)
