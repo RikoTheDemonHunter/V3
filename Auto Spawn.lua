@@ -1,16 +1,55 @@
--- Avery's Auto Spawn GUI (Advanced, Clean, Fancy, and Safe)
+-- Avery's Auto Spawn GUI (Advanced, Clean, Fancy, Safe, Auto-Save + Active Spawn Memory)
 -- Features: Dual Save, Indicator, Auto TP Fix, Minimize, Draggable Toolbar, Fancy Effects
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local Debris = game:GetService("Debris")
+local DataStoreService = game:GetService("DataStoreService")
+local spawnStore = DataStoreService:GetDataStore("AverySpawnData")
+
 local player = Players.LocalPlayer
 
 -- Variables for spawn points
 local spawn1, spawn2 = nil, nil
 local activeSpawn = nil
 local activeTween = nil -- track ongoing tween
+
+-- Function to save spawns and active spawn
+local function saveSpawns()
+    local success, err = pcall(function()
+        spawnStore:SetAsync(player.UserId, {
+            spawn1 = spawn1 and {CFrame = {spawn1.Position, spawn1.LookVector}} or nil,
+            spawn2 = spawn2 and {CFrame = {spawn2.Position, spawn2.LookVector}} or nil,
+            active = activeSpawn == spawn1 and 1 or activeSpawn == spawn2 and 2 or nil
+        })
+    end)
+    if not success then
+        warn("Failed to save spawn data: "..tostring(err))
+    end
+end
+
+-- Function to load spawns and active spawn
+local function loadSpawns()
+    local success, data = pcall(function()
+        return spawnStore:GetAsync(player.UserId)
+    end)
+    if success and data then
+        if data.spawn1 then
+            spawn1 = CFrame.new(data.spawn1.CFrame[1], data.spawn1.CFrame[1] + data.spawn1.CFrame[2])
+        end
+        if data.spawn2 then
+            spawn2 = CFrame.new(data.spawn2.CFrame[1], data.spawn2.CFrame[1] + data.spawn2.CFrame[2])
+        end
+        if data.active == 1 then
+            activeSpawn = spawn1
+        elseif data.active == 2 then
+            activeSpawn = spawn2
+        else
+            activeSpawn = nil
+        end
+    end
+end
 
 -- Create ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -28,7 +67,6 @@ frame.Active = true
 frame.Draggable = true
 frame.Parent = screenGui
 
--- UICorner
 local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 10)
 corner.Parent = frame
@@ -169,14 +207,16 @@ cornerOpen.Parent = openBtn
 set1.MouseButton1Click:Connect(function()
 	if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
 		spawn1 = player.Character.HumanoidRootPart.CFrame
-		flash(Color3.fromRGB(0, 255, 0))
+		flash(Color3.fromRGB(0,255,0))
+		saveSpawns()
 	end
 end)
 
 set2.MouseButton1Click:Connect(function()
 	if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
 		spawn2 = player.Character.HumanoidRootPart.CFrame
-		flash(Color3.fromRGB(0, 255, 0))
+		flash(Color3.fromRGB(0,255,0))
+		saveSpawns()
 	end
 end)
 
@@ -184,7 +224,8 @@ use1.MouseButton1Click:Connect(function()
 	if spawn1 then
 		activeSpawn = spawn1
 		updateIndicator()
-		flash(Color3.fromRGB(0, 255, 255))
+		flash(Color3.fromRGB(0,255,255))
+		saveSpawns()
 	end
 end)
 
@@ -192,7 +233,8 @@ use2.MouseButton1Click:Connect(function()
 	if spawn2 then
 		activeSpawn = spawn2
 		updateIndicator()
-		flash(Color3.fromRGB(0, 255, 255))
+		flash(Color3.fromRGB(0,255,255))
+		saveSpawns()
 	end
 end)
 
@@ -208,6 +250,7 @@ tp2.MouseButton1Click:Connect(function()
 	end
 end)
 
+-- Clear active spawn fully stops teleport
 clearBtn.MouseButton1Click:Connect(function()
 	activeSpawn = nil
 	if activeTween then
@@ -215,7 +258,8 @@ clearBtn.MouseButton1Click:Connect(function()
 		activeTween = nil
 	end
 	updateIndicator()
-	flash(Color3.fromRGB(255, 0, 0))
+	flash(Color3.fromRGB(255,0,0))
+	saveSpawns()
 end)
 
 -- Minimize
@@ -238,9 +282,21 @@ openBtn.MouseButton1Click:Connect(function()
 	openBtn.Visible = false
 end)
 
--- CharacterAdded + Auto Correct Spawn with Fast Tween & Movement Cancel
+-- Load saved spawns
+loadSpawns()
+updateIndicator()
+
+-- Save spawns on leave
+game.Players.PlayerRemoving:Connect(function(p)
+	if p == player then
+		saveSpawns()
+	end
+end)
+
+-- CharacterAdded + Auto Correct Spawn with Fast Tween & Cancel on Player Move
 player.CharacterAdded:Connect(function(char)
 	local hrp = char:WaitForChild("HumanoidRootPart")
+	local humanoid = char:WaitForChild("Humanoid")
 	task.wait(0.05)
 
 	if activeSpawn and hrp then
@@ -249,10 +305,14 @@ player.CharacterAdded:Connect(function(char)
 		local tween = TweenService:Create(hrp, tweenInfo, tweenGoal)
 		activeTween = tween
 
-		local initialPos = hrp.Position
 		local conn
 		conn = RunService.RenderStepped:Connect(function()
-			if (hrp.Position - initialPos).Magnitude > 0.1 or not activeSpawn then
+			-- Cancel only if player actively moves
+			if humanoid.MoveDirection.Magnitude > 0 then
+				tween:Cancel()
+				conn:Disconnect()
+				activeTween = nil
+			elseif not activeSpawn then
 				tween:Cancel()
 				conn:Disconnect()
 				activeTween = nil
