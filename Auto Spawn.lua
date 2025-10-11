@@ -1,36 +1,43 @@
 -- Avery's Auto Spawn GUI (Advanced, Clean, Fancy, Safe, Auto-Save + Active Spawn Memory)
--- Features: Dual Save, Indicator, Auto TP Fix, Minimize, Draggable Toolbar, Fancy Effects
+-- Fixed version with error prevention
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local Debris = game:GetService("Debris")
 local DataStoreService = game:GetService("DataStoreService")
-local spawnStore = DataStoreService:GetDataStore("AverySpawnData")
 
 local player = Players.LocalPlayer
 
--- Variables for spawn points
+-- Variables
 local spawn1, spawn2 = nil, nil
 local activeSpawn = nil
-local activeTween = nil -- track ongoing tween
+local activeTween = nil
+local spawnStore
 
--- Function to save spawns and active spawn
+-- Safely get DataStore
+pcall(function()
+    spawnStore = DataStoreService:GetDataStore("AverySpawnData")
+end)
+if not spawnStore then
+    warn("DataStore access failed. Spawns will not persist.")
+end
+
+-- Function to save spawns
 local function saveSpawns()
-    local success, err = pcall(function()
+    if not spawnStore then return end
+    pcall(function()
         spawnStore:SetAsync(player.UserId, {
             spawn1 = spawn1 and {CFrame = {spawn1.Position, spawn1.LookVector}} or nil,
             spawn2 = spawn2 and {CFrame = {spawn2.Position, spawn2.LookVector}} or nil,
             active = activeSpawn == spawn1 and 1 or activeSpawn == spawn2 and 2 or nil
         })
     end)
-    if not success then
-        warn("Failed to save spawn data: "..tostring(err))
-    end
 end
 
--- Function to load spawns and active spawn
+-- Function to load spawns
 local function loadSpawns()
+    if not spawnStore then return end
     local success, data = pcall(function()
         return spawnStore:GetAsync(player.UserId)
     end)
@@ -51,13 +58,12 @@ local function loadSpawns()
     end
 end
 
--- Create ScreenGui
+-- Create GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "SpawnPointGUI"
 screenGui.Parent = player:WaitForChild("PlayerGui")
 screenGui.ResetOnSpawn = false
 
--- Main Frame
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 250, 0, 300)
 frame.Position = UDim2.new(0.5, -125, 0.5, -150)
@@ -71,7 +77,6 @@ local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 10)
 corner.Parent = frame
 
--- Title
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, -30, 0, 30)
 title.Position = UDim2.new(0, 10, 0, 0)
@@ -83,7 +88,6 @@ title.TextSize = 18
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = frame
 
--- Active Spawn Indicator
 local indicator = Instance.new("TextLabel")
 indicator.Size = UDim2.new(1, -20, 0, 20)
 indicator.Position = UDim2.new(0, 10, 0, 35)
@@ -95,7 +99,6 @@ indicator.TextSize = 16
 indicator.TextXAlignment = Enum.TextXAlignment.Left
 indicator.Parent = frame
 
--- Flash effect
 local function flash(color)
 	local flashFrame = Instance.new("Frame")
 	flashFrame.Size = UDim2.new(1, 0, 1, 0)
@@ -106,7 +109,6 @@ local function flash(color)
 	Debris:AddItem(flashFrame, 0.25)
 end
 
--- Update indicator
 local function updateIndicator()
 	if activeSpawn == spawn1 then
 		indicator.Text = "Active: Spawn 1"
@@ -117,7 +119,7 @@ local function updateIndicator()
 	end
 end
 
--- Scrolling frame for buttons
+-- Scrolling Frame
 local buttonContainer = Instance.new("ScrollingFrame")
 buttonContainer.Size = UDim2.new(1, -10, 0, 210)
 buttonContainer.Position = UDim2.new(0, 5, 0, 60)
@@ -126,7 +128,6 @@ buttonContainer.ScrollBarThickness = 6
 buttonContainer.BackgroundTransparency = 1
 buttonContainer.Parent = frame
 
--- Button creation
 local function createButton(text, posY)
 	local btn = Instance.new("TextButton")
 	btn.Size = UDim2.new(1, -10, 0, 30)
@@ -146,7 +147,6 @@ local function createButton(text, posY)
 	return btn
 end
 
--- Buttons
 local set1 = createButton("Set Spawn 1", 0)
 local set2 = createButton("Set Spawn 2", 35)
 local use1 = createButton("Use Spawn 1", 70)
@@ -155,7 +155,7 @@ local tp1 = createButton("Teleport to Spawn 1", 140)
 local tp2 = createButton("Teleport to Spawn 2", 175)
 local clearBtn = createButton("Clear Active Spawn", 210)
 
--- Minimize Button
+-- Minimize & Close
 local minimizeBtn = Instance.new("TextButton")
 minimizeBtn.Size = UDim2.new(0, 25, 0, 25)
 minimizeBtn.Position = UDim2.new(1, -55, 0, 5)
@@ -165,12 +165,10 @@ minimizeBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 minimizeBtn.Font = Enum.Font.GothamBold
 minimizeBtn.TextSize = 18
 minimizeBtn.Parent = frame
-
 local cornerMini = Instance.new("UICorner")
 cornerMini.CornerRadius = UDim.new(0, 6)
 cornerMini.Parent = minimizeBtn
 
--- Close Button
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 25, 0, 25)
 closeBtn.Position = UDim2.new(1, -30, 0, 5)
@@ -180,12 +178,11 @@ closeBtn.BackgroundColor3 = Color3.fromRGB(120, 50, 50)
 closeBtn.Font = Enum.Font.GothamBold
 closeBtn.TextSize = 16
 closeBtn.Parent = frame
-
 local cornerClose = Instance.new("UICorner")
 cornerClose.CornerRadius = UDim.new(0, 6)
 cornerClose.Parent = closeBtn
 
--- Open Menu Button
+-- Open Button
 local openBtn = Instance.new("TextButton")
 openBtn.Size = UDim2.new(0, 140, 0, 40)
 openBtn.Position = UDim2.new(0, 15, 0.8, 0)
@@ -198,7 +195,6 @@ openBtn.Draggable = true
 openBtn.Font = Enum.Font.GothamBold
 openBtn.TextSize = 16
 openBtn.Parent = screenGui
-
 local cornerOpen = Instance.new("UICorner")
 cornerOpen.CornerRadius = UDim.new(0, 8)
 cornerOpen.Parent = openBtn
@@ -250,7 +246,6 @@ tp2.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Clear active spawn fully stops teleport
 clearBtn.MouseButton1Click:Connect(function()
 	activeSpawn = nil
 	if activeTween then
@@ -262,43 +257,38 @@ clearBtn.MouseButton1Click:Connect(function()
 	saveSpawns()
 end)
 
--- Minimize
-local minimized = false
 minimizeBtn.MouseButton1Click:Connect(function()
-	minimized = not minimized
-	buttonContainer.Visible = not minimized
-	indicator.Visible = not minimized
+	local minimized = buttonContainer.Visible
+	buttonContainer.Visible = minimized
+	indicator.Visible = minimized
 end)
 
--- Close (Hide)
 closeBtn.MouseButton1Click:Connect(function()
 	frame.Visible = false
 	openBtn.Visible = true
 end)
 
--- Reopen
 openBtn.MouseButton1Click:Connect(function()
 	frame.Visible = true
 	openBtn.Visible = false
 end)
 
--- Load saved spawns
+-- Load saved data
 loadSpawns()
 updateIndicator()
 
--- Save spawns on leave
+-- Save on leave
 game.Players.PlayerRemoving:Connect(function(p)
 	if p == player then
 		saveSpawns()
 	end
 end)
 
--- CharacterAdded + Auto Correct Spawn with Fast Tween & Cancel on Player Move
+-- Auto Correct Spawn on CharacterAdded
 player.CharacterAdded:Connect(function(char)
 	local hrp = char:WaitForChild("HumanoidRootPart")
-	local humanoid = char:WaitForChild("Humanoid")
+	local humanoid = char:FindFirstChild("Humanoid")
 	task.wait(0.05)
-
 	if activeSpawn and hrp then
 		local tweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 		local tweenGoal = {CFrame = activeSpawn}
@@ -307,8 +297,7 @@ player.CharacterAdded:Connect(function(char)
 
 		local conn
 		conn = RunService.RenderStepped:Connect(function()
-			-- Cancel only if player actively moves
-			if humanoid.MoveDirection.Magnitude > 0 then
+			if humanoid and humanoid.MoveDirection.Magnitude > 0 then
 				tween:Cancel()
 				conn:Disconnect()
 				activeTween = nil
