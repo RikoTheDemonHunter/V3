@@ -288,7 +288,7 @@ end)
 player.CharacterAdded:Connect(function(char)
 	local hrp = char:WaitForChild("HumanoidRootPart")
 	local humanoid = char:FindFirstChild("Humanoid")
-	task.wait(0.05)
+	task.wait(0.5)
 	if activeSpawn and hrp then
 		local tweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 		local tweenGoal = {CFrame = activeSpawn}
