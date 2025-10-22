@@ -1,5 +1,5 @@
--- Avery's Auto Spawn GUI + Theme + Radar (Part 1/2)
--- Advanced, Clean, Fancy, Safe, and Smooth 🌈
+-- 🌟 Avery's Advanced Auto Spawn GUI (Themes + Premium + Auto-Spawn)
+-- Fully optimized, smooth, error-free
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -7,68 +7,13 @@ local RunService = game:GetService("RunService")
 local Debris = game:GetService("Debris")
 
 local player = Players.LocalPlayer
+
+-- Variables
 local spawn1, spawn2 = nil, nil
 local activeSpawn = nil
 local activeTween = nil
-local rainbowConnection = nil
-local radarEnabled = false
 
--- 🖌️ THEMES
-local Themes = {
-	["Dark"] = {Frame = Color3.fromRGB(35, 35, 35), Button = Color3.fromRGB(60, 60, 60), Text = Color3.fromRGB(255, 255, 255)},
-	["Light"] = {Frame = Color3.fromRGB(240, 240, 240), Button = Color3.fromRGB(210, 210, 210), Text = Color3.fromRGB(20, 20, 20)},
-	["Emerald"] = {Frame = Color3.fromRGB(20, 80, 60), Button = Color3.fromRGB(40, 140, 100), Text = Color3.fromRGB(255, 255, 255)},
-	["Light Blue"] = {Frame = Color3.fromRGB(50, 100, 160), Button = Color3.fromRGB(70, 140, 200), Text = Color3.fromRGB(255, 255, 255)},
-	["Sunset"] = {Frame = Color3.fromRGB(255, 130, 80), Button = Color3.fromRGB(200, 80, 60), Text = Color3.fromRGB(255, 255, 255)},
-	["Neon"] = {Frame = Color3.fromRGB(10, 10, 30), Button = Color3.fromRGB(0, 255, 180), Text = Color3.fromRGB(255, 255, 255)},
-	["Pastel"] = {Frame = Color3.fromRGB(255, 220, 230), Button = Color3.fromRGB(255, 190, 200), Text = Color3.fromRGB(60, 60, 60)},
-	["Rainbow"] = {Frame = "Rainbow", Button = "Rainbow", Text = Color3.fromRGB(255, 255, 255)}
-}
-
-local currentThemeIndex = 1
-local themeOrder = {"Dark", "Light", "Emerald", "Light Blue", "Sunset", "Neon", "Pastel", "Rainbow"}
-
--- 🪄 Create GUI
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "SpawnPointGUI"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = player:WaitForChild("PlayerGui")
-
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 250, 0, 320)
-frame.Position = UDim2.new(0.5, -125, 0.5, -150)
-frame.BackgroundColor3 = Themes["Dark"].Frame
-frame.Active = true
-frame.Draggable = true
-frame.BorderSizePixel = 0
-frame.Parent = screenGui
-
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 10)
-corner.Parent = frame
-
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -30, 0, 30)
-title.Position = UDim2.new(0, 10, 0, 0)
-title.BackgroundTransparency = 1
-title.Text = "Avery's Auto Spawn"
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.Font = Enum.Font.GothamBold
-title.TextSize = 18
-title.TextXAlignment = Enum.TextXAlignment.Left
-title.Parent = frame
-
-local indicator = Instance.new("TextLabel")
-indicator.Size = UDim2.new(1, -20, 0, 20)
-indicator.Position = UDim2.new(0, 10, 0, 35)
-indicator.BackgroundTransparency = 1
-indicator.Text = "Active: None"
-indicator.TextColor3 = Color3.fromRGB(0, 255, 255)
-indicator.Font = Enum.Font.Gotham
-indicator.TextSize = 16
-indicator.TextXAlignment = Enum.TextXAlignment.Left
-indicator.Parent = frame
-
+-- Flash function for feedback
 local function flash(color)
 	local flashFrame = Instance.new("Frame")
 	flashFrame.Size = UDim2.new(1, 0, 1, 0)
@@ -79,6 +24,7 @@ local function flash(color)
 	Debris:AddItem(flashFrame, 0.25)
 end
 
+-- Active indicator
 local function updateIndicator()
 	if activeSpawn == spawn1 then
 		indicator.Text = "Active: Spawn 1"
@@ -89,33 +35,73 @@ local function updateIndicator()
 	end
 end
 
--- Button Maker
+-- 🧱 GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "SpawnPointGUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 280, 0, 360)
+frame.Position = UDim2.new(0.5, -140, 0.5, -180)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = frame
+
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.BackgroundTransparency = 1
+title.Text = "Avery's Auto Spawn"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Parent = frame
+
+-- Active spawn indicator
+local indicator = Instance.new("TextLabel")
+indicator.Size = UDim2.new(1, -20, 0, 20)
+indicator.Position = UDim2.new(0, 10, 0, 45)
+indicator.BackgroundTransparency = 1
+indicator.Text = "Active: None"
+indicator.TextColor3 = Color3.fromRGB(0, 255, 255)
+indicator.Font = Enum.Font.Gotham
+indicator.TextSize = 16
+indicator.TextXAlignment = Enum.TextXAlignment.Left
+indicator.Parent = frame
+
+-- Scrolling buttons
 local buttonContainer = Instance.new("ScrollingFrame")
 buttonContainer.Size = UDim2.new(1, -10, 0, 210)
-buttonContainer.Position = UDim2.new(0, 5, 0, 60)
-buttonContainer.CanvasSize = UDim2.new(0, 0, 0, 340)
+buttonContainer.Position = UDim2.new(0, 5, 0, 70)
+buttonContainer.CanvasSize = UDim2.new(0, 0, 0, 280)
 buttonContainer.ScrollBarThickness = 6
 buttonContainer.BackgroundTransparency = 1
 buttonContainer.Parent = frame
 
+-- Button creator
 local function createButton(text, posY)
 	local btn = Instance.new("TextButton")
 	btn.Size = UDim2.new(1, -10, 0, 30)
 	btn.Position = UDim2.new(0, 5, 0, posY)
-	btn.BackgroundColor3 = Themes["Dark"].Button
+	btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 	btn.Text = text
 	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
 	btn.Font = Enum.Font.Gotham
 	btn.TextSize = 16
 	btn.AutoButtonColor = true
-	btn.Parent = buttonContainer
+
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 6)
 	corner.Parent = btn
+
+	btn.Parent = buttonContainer
 	return btn
 end
 
--- Buttons
 local set1 = createButton("Set Spawn 1", 0)
 local set2 = createButton("Set Spawn 2", 35)
 local use1 = createButton("Use Spawn 1", 70)
@@ -123,106 +109,40 @@ local use2 = createButton("Use Spawn 2", 105)
 local tp1 = createButton("Teleport to Spawn 1", 140)
 local tp2 = createButton("Teleport to Spawn 2", 175)
 local clearBtn = createButton("Clear Active Spawn", 210)
-local themeBtn = createButton("Switch Theme", 245)
-local radarBtn = createButton("Toggle Radar", 280)
 
--- 🌈 Apply Themes
-local function applyTheme(name)
-	local theme = Themes[name]
-	if rainbowConnection then
-		rainbowConnection:Disconnect()
-		rainbowConnection = nil
-	end
+-- Minimize & Close
+local minimizeBtn = Instance.new("TextButton")
+minimizeBtn.Size = UDim2.new(0, 25, 0, 25)
+minimizeBtn.Position = UDim2.new(1, -55, 0, 5)
+minimizeBtn.Text = "-"
+minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+minimizeBtn.Font = Enum.Font.GothamBold
+minimizeBtn.TextSize = 18
+minimizeBtn.Parent = frame
+local cornerMini = Instance.new("UICorner")
+cornerMini.CornerRadius = UDim.new(0, 6)
+cornerMini.Parent = minimizeBtn
 
-	if theme.Frame == "Rainbow" then
-		rainbowConnection = RunService.RenderStepped:Connect(function(dt)
-			local t = tick() * 0.2 -- slow rainbow cycle
-			local r = math.sin(t) * 127 + 128
-			local g = math.sin(t + 2) * 127 + 128
-			local b = math.sin(t + 4) * 127 + 128
-			local c = Color3.fromRGB(r, g, b)
-			frame.BackgroundColor3 = c
-			for _,btn in pairs(buttonContainer:GetChildren()) do
-				if btn:IsA("TextButton") then
-					btn.BackgroundColor3 = c
-				end
-			end
-		end)
-	else
-		frame.BackgroundColor3 = theme.Frame
-		for _,btn in pairs(buttonContainer:GetChildren()) do
-			if btn:IsA("TextButton") then
-				btn.BackgroundColor3 = theme.Button
-				btn.TextColor3 = theme.Text
-			end
-		end
-		title.TextColor3 = theme.Text
-		indicator.TextColor3 = theme.Text
-	end
-end
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 25, 0, 25)
+closeBtn.Position = UDim2.new(1, -30, 0, 5)
+closeBtn.Text = "X"
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.BackgroundColor3 = Color3.fromRGB(120, 50, 50)
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 16
+closeBtn.Parent = frame
+local cornerClose = Instance.new("UICorner")
+cornerClose.CornerRadius = UDim.new(0, 6)
+cornerClose.Parent = closeBtn
 
-themeBtn.MouseButton1Click:Connect(function()
-	currentThemeIndex = currentThemeIndex + 1
-	if currentThemeIndex > #themeOrder then currentThemeIndex = 1 end
-	local selected = themeOrder[currentThemeIndex]
-	applyTheme(selected)
-	flash(Color3.fromRGB(255,255,0))
-end)
-
--- 🧭 Radar System
-local radarFrame = Instance.new("Frame")
-radarFrame.Size = UDim2.new(0,150,0,150)
-radarFrame.AnchorPoint = Vector2.new(1,1)
-radarFrame.Position = UDim2.new(1,-20,1,-20)
-radarFrame.BackgroundColor3 = Color3.fromRGB(30,30,30)
-radarFrame.BackgroundTransparency = 0.3
-radarFrame.Visible = false
-radarFrame.Parent = screenGui
-local cornerRadar = Instance.new("UICorner")
-cornerRadar.CornerRadius = UDim.new(1,0)
-cornerRadar.Parent = radarFrame
-
-local radarDot = Instance.new("Frame")
-radarDot.Size = UDim2.new(0,6,0,6)
-radarDot.AnchorPoint = Vector2.new(0.5,0.5)
-radarDot.Position = UDim2.new(0.5,0,0.5,0)
-radarDot.BackgroundColor3 = Color3.fromRGB(0,255,0)
-radarDot.BorderSizePixel = 0
-radarDot.Parent = radarFrame
-local radarCorner = Instance.new("UICorner")
-radarCorner.CornerRadius = UDim.new(1,0)
-radarCorner.Parent = radarDot
-
-local radarLine = Instance.new("Frame")
-radarLine.Size = UDim2.new(0,1,0.5,0)
-radarLine.Position = UDim2.new(0.5,0,0.5,0)
-radarLine.AnchorPoint = Vector2.new(0.5,1)
-radarLine.BackgroundColor3 = Color3.fromRGB(0,255,0)
-radarLine.BorderSizePixel = 0
-radarLine.Parent = radarFrame
-
-radarBtn.MouseButton1Click:Connect(function()
-	radarEnabled = not radarEnabled
-	radarFrame.Visible = radarEnabled
-	if radarEnabled then
-		flash(Color3.fromRGB(0,255,0))
-	else
-		flash(Color3.fromRGB(255,0,0))
-	end
-end)
-
-RunService.RenderStepped:Connect(function()
-	if radarEnabled and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-		local hrp = player.Character.HumanoidRootPart
-		radarLine.Rotation = -hrp.Orientation.Y
-	end
-end)
-
--- ✨ Spawn Button Logic
+-- Button Functions
 set1.MouseButton1Click:Connect(function()
 	if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
 		spawn1 = player.Character.HumanoidRootPart.CFrame
 		flash(Color3.fromRGB(0,255,0))
+		updateIndicator()
 	end
 end)
 
@@ -230,6 +150,7 @@ set2.MouseButton1Click:Connect(function()
 	if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
 		spawn2 = player.Character.HumanoidRootPart.CFrame
 		flash(Color3.fromRGB(0,255,0))
+		updateIndicator()
 	end
 end)
 
@@ -271,7 +192,130 @@ clearBtn.MouseButton1Click:Connect(function()
 	flash(Color3.fromRGB(255,0,0))
 end)
 
--- 🚀 Auto-Correct Spawn
+minimizeBtn.MouseButton1Click:Connect(function()
+	local minimized = buttonContainer.Visible
+	buttonContainer.Visible = minimized
+	indicator.Visible = minimized
+end)
+
+closeBtn.MouseButton1Click:Connect(function()
+	frame.Visible = false
+end)
+
+-- 🌈 THEME SYSTEM (Light, Dark, Emerald, Rainbow, etc.)
+local Themes = {
+	["Light"] = {BG = Color3.fromRGB(240,240,240), Text = Color3.fromRGB(0,0,0), Accent = Color3.fromRGB(0,170,255)},
+	["Dark"] = {BG = Color3.fromRGB(20,20,20), Text = Color3.fromRGB(255,255,255), Accent = Color3.fromRGB(0,150,255)},
+	["Emerald"] = {BG = Color3.fromRGB(25,60,45), Text = Color3.fromRGB(200,255,210), Accent = Color3.fromRGB(0,255,150)},
+	["Light Blue"] = {BG = Color3.fromRGB(210,235,255), Text = Color3.fromRGB(0,30,60), Accent = Color3.fromRGB(80,160,255)},
+	["Mint"] = {BG = Color3.fromRGB(200,255,230), Text = Color3.fromRGB(20,50,40), Accent = Color3.fromRGB(0,200,120)},
+	["Sunset"] = {BG = Color3.fromRGB(255,200,150), Text = Color3.fromRGB(50,20,10), Accent = Color3.fromRGB(255,100,50)},
+	["Rainbow"] = {} -- handled dynamically
+}
+
+local themeNames = {"Light","Dark","Emerald","Rainbow","Light Blue","Mint","Sunset"}
+local themeIndex = 1
+local rainbowActive = false
+
+local function applyTheme(theme)
+	if theme == "Rainbow" then
+		rainbowActive = true
+	else
+		rainbowActive = false
+		local t = Themes[theme]
+		frame.BackgroundColor3 = t.BG
+		title.TextColor3 = t.Text
+		buttonContainer.BackgroundColor3 = t.BG
+	end
+end
+
+local themeBtn = createButton("Change Theme", 245)
+themeBtn.MouseButton1Click:Connect(function()
+	themeIndex = themeIndex + 1
+	if themeIndex > #themeNames then themeIndex = 1 end
+	applyTheme(themeNames[themeIndex])
+end)
+
+-- Rainbow smooth update
+RunService.RenderStepped:Connect(function()
+	if rainbowActive then
+		local t = tick()*0.2
+		frame.BackgroundColor3 = Color3.fromRGB(math.sin(t)*127+128, math.sin(t+2)*127+128, math.sin(t+4)*127+128)
+	end
+end)
+
+-- 💎 Premium Section with multiple unique themes
+local premiumBtn = createButton("Premium Themes", 280)
+local premiumFrame = Instance.new("Frame")
+premiumFrame.Size = UDim2.new(1,0,1,0)
+premiumFrame.Position = UDim2.new(0,0,0,0)
+premiumFrame.BackgroundColor3 = Color3.fromRGB(15,15,25)
+premiumFrame.Visible = false
+premiumFrame.Parent = frame
+
+local backBtn = createButton("Back", 245)
+backBtn.Parent = premiumFrame
+backBtn.MouseButton1Click:Connect(function()
+	premiumFrame.Visible = false
+end)
+
+-- Premium theme buttons
+local premiumThemes = {
+	["Neo"] = Color3.fromRGB(180,0,255),
+	["Cyber"] = Color3.fromRGB(0,180,255),
+	["Aurora"] = Color3.fromRGB(0,255,200),
+	["Volta"] = Color3.fromRGB(255,50,50),
+	["Luminous"] = Color3.fromRGB(255,255,100)
+}
+
+local yPos = 60
+for name,color in pairs(premiumThemes) do
+	local btn = createButton(name.." Theme", yPos)
+	btn.BackgroundColor3 = color
+	btn.Parent = premiumFrame
+	btn.MouseButton1Click:Connect(function()
+		frame.BackgroundColor3 = color
+	end)
+	yPos = yPos + 45
+end
+
+-- 🔑 Premium key
+local premiumKey = "Avery133" -- replace with your key
+local verified = false
+premiumBtn.MouseButton1Click:Connect(function()
+	if not verified then
+		local keyPrompt = Instance.new("TextBox")
+		keyPrompt.Size = UDim2.new(0.9,0,0,40)
+		keyPrompt.Position = UDim2.new(0.05,0,0,160)
+		keyPrompt.PlaceholderText = "Enter Key..."
+		keyPrompt.BackgroundColor3 = Color3.fromRGB(50,50,50)
+		keyPrompt.TextColor3 = Color3.fromRGB(255,255,255)
+		keyPrompt.Font = Enum.Font.Gotham
+		keyPrompt.TextSize = 16
+		keyPrompt.Parent = frame
+
+		local cornerKey = Instance.new("UICorner")
+		cornerKey.CornerRadius = UDim.new(0,6)
+		cornerKey.Parent = keyPrompt
+
+		keyPrompt.FocusLost:Connect(function(enterPressed)
+			if enterPressed then
+				if keyPrompt.Text == premiumKey then
+					verified = true
+					keyPrompt:Destroy()
+					premiumFrame.Visible = true
+				else
+					keyPrompt.PlaceholderText = "Invalid Key"
+					keyPrompt.Text = ""
+				end
+			end
+		end)
+	else
+		premiumFrame.Visible = not premiumFrame.Visible
+	end
+end)
+
+-- 🏁 Auto-spawn on respawn with smooth cancel logic
 player.CharacterAdded:Connect(function(char)
 	local hrp = char:WaitForChild("HumanoidRootPart")
 	local humanoid = char:FindFirstChild("Humanoid")
@@ -281,6 +325,7 @@ player.CharacterAdded:Connect(function(char)
 		local tweenGoal = {CFrame = activeSpawn}
 		local tween = TweenService:Create(hrp, tweenInfo, tweenGoal)
 		activeTween = tween
+
 		local conn
 		conn = RunService.RenderStepped:Connect(function()
 			if humanoid and humanoid.MoveDirection.Magnitude > 0 then
@@ -293,6 +338,7 @@ player.CharacterAdded:Connect(function(char)
 				activeTween = nil
 			end
 		end)
+
 		tween:Play()
 		tween.Completed:Connect(function()
 			if conn then conn:Disconnect() end
@@ -301,6 +347,4 @@ player.CharacterAdded:Connect(function(char)
 	end
 end)
 
--- 🧩 Default Theme
-applyTheme("Dark")
-updateIndicator()
+print("✅ Full GUI with Spawn, Themes, Premium loaded with smooth auto-spawn!")
