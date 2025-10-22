@@ -383,4 +383,6 @@ player.CharacterAdded:Connect(function(char)
 	end
 end)
 
-print("✅ Full GUI Fixed: Flash + Active Spawn + Premium Scroll + Themes + Rainbow + Draggable + Auto-Spawn!")
+print("✅ AUTO Spawn Loaded to access premium key you need to ask avery on discord!")
+print("DISCORD USERNAME: 90averyxx")
+print("This is officially made on visual studio tryting to copy this script will result in a copyright strike!")
