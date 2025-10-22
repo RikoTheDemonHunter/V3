@@ -1,4 +1,4 @@
--- 🌟 Avery's Advanced Auto Spawn GUI (Premium Scroll + Back Arrow + Full Fix)
+-- Avery's Advanced Auto Spawn GUI (Fixed Full Version)
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -11,29 +11,7 @@ local spawn1, spawn2 = nil, nil
 local activeSpawn = nil
 local activeTween = nil
 
--- Flash function
-local function flash(color)
-	local flashFrame = Instance.new("Frame")
-	flashFrame.Size = UDim2.new(1, 0, 1, 0)
-	flashFrame.BackgroundColor3 = color
-	flashFrame.BackgroundTransparency = 0.5
-	flashFrame.ZIndex = 10
-	flashFrame.Parent = frame
-	Debris:AddItem(flashFrame, 0.25)
-end
-
--- Active indicator
-local function updateIndicator()
-	if activeSpawn == spawn1 then
-		indicator.Text = "Active: Spawn 1"
-	elseif activeSpawn == spawn2 then
-		indicator.Text = "Active: Spawn 2"
-	else
-		indicator.Text = "Active: None"
-	end
-end
-
--- 🧱 Main GUI Setup
+-- GUI Setup
 local gui = Instance.new("ScreenGui")
 gui.Name = "SpawnPointGUI"
 gui.ResetOnSpawn = false
@@ -73,7 +51,29 @@ indicator.TextSize = 16
 indicator.TextXAlignment = Enum.TextXAlignment.Left
 indicator.Parent = frame
 
--- Scrolling frame for buttons
+-- Flash effect
+local function flash(color)
+	local flashFrame = Instance.new("Frame")
+	flashFrame.Size = UDim2.new(1, 0, 1, 0)
+	flashFrame.BackgroundColor3 = color
+	flashFrame.BackgroundTransparency = 0.5
+	flashFrame.ZIndex = 10
+	flashFrame.Parent = frame
+	Debris:AddItem(flashFrame, 0.25)
+end
+
+-- Update active spawn indicator
+local function updateIndicator()
+	if activeSpawn == spawn1 then
+		indicator.Text = "Active: Spawn 1"
+	elseif activeSpawn == spawn2 then
+		indicator.Text = "Active: Spawn 2"
+	else
+		indicator.Text = "Active: None"
+	end
+end
+
+-- Button container
 local buttonContainer = Instance.new("ScrollingFrame")
 buttonContainer.Size = UDim2.new(1, -10, 0, 210)
 buttonContainer.Position = UDim2.new(0, 5, 0, 70)
@@ -102,6 +102,7 @@ local function createButton(text, posY, parent)
 	return btn
 end
 
+-- Main buttons
 local set1 = createButton("Set Spawn 1", 0, buttonContainer)
 local set2 = createButton("Set Spawn 2", 35, buttonContainer)
 local use1 = createButton("Use Spawn 1", 70, buttonContainer)
@@ -139,7 +140,6 @@ local cornerClose = Instance.new("UICorner")
 cornerClose.CornerRadius = UDim.new(0, 6)
 cornerClose.Parent = closeBtn
 
--- Open button
 local openBtn = Instance.new("TextButton")
 openBtn.Size = UDim2.new(0, 140, 0, 40)
 openBtn.Position = UDim2.new(0, 15, 0.8, 0)
@@ -160,25 +160,24 @@ openBtn.MouseButton1Click:Connect(function()
 	frame.Visible = true
 	openBtn.Visible = false
 end)
-
 closeBtn.MouseButton1Click:Connect(function()
 	frame.Visible = false
 	openBtn.Visible = true
 end)
 
--- Button functions (spawn system)
+-- Spawn button functions (fixed flash + indicator)
 set1.MouseButton1Click:Connect(function()
 	if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
 		spawn1 = player.Character.HumanoidRootPart.CFrame
-		flash(Color3.fromRGB(0,255,0))
 		updateIndicator()
+		flash(Color3.fromRGB(0,255,0))
 	end
 end)
 set2.MouseButton1Click:Connect(function()
 	if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
 		spawn2 = player.Character.HumanoidRootPart.CFrame
-		flash(Color3.fromRGB(0,255,0))
 		updateIndicator()
+		flash(Color3.fromRGB(0,255,0))
 	end
 end)
 use1.MouseButton1Click:Connect(function()
@@ -214,12 +213,13 @@ clearBtn.MouseButton1Click:Connect(function()
 	updateIndicator()
 	flash(Color3.fromRGB(255,0,0))
 end)
+
 minimizeBtn.MouseButton1Click:Connect(function()
 	buttonContainer.Visible = not buttonContainer.Visible
 	indicator.Visible = not indicator.Visible
 end)
 
--- Themes & Rainbow logic
+-- Themes
 local Themes = {
 	["Light"]={BG=Color3.fromRGB(240,240,240),Text=Color3.fromRGB(0,0,0)},
 	["Dark"]={BG=Color3.fromRGB(20,20,20),Text=Color3.fromRGB(255,255,255)},
@@ -254,23 +254,25 @@ end)
 RunService.RenderStepped:Connect(function()
 	if rainbowActive then
 		local t=tick()*0.2
-		frame.BackgroundColor3=Color3.fromRGB(math.sin(t)*127+128,math.sin(t+2)*127+128,math.sin(t+4)*127+128)
+		frame.BackgroundColor3=Color3.fromRGB(
+			math.sin(t)*127+128,
+			math.sin(t+2)*127+128,
+			math.sin(t+4)*127+128
+		)
 	end
 end)
 
--- Premium section setup
+-- Premium Section
 local premiumFrame = Instance.new("Frame")
 premiumFrame.Size=UDim2.new(1,0,1,0)
 premiumFrame.Position=UDim2.new(0,0,0,0)
 premiumFrame.BackgroundColor3=Color3.fromRGB(25,25,25)
 premiumFrame.Visible=false
 premiumFrame.Parent=frame
-
 local premiumCorner=Instance.new("UICorner")
 premiumCorner.CornerRadius=UDim.new(0,12)
 premiumCorner.Parent=premiumFrame
 
--- Back arrow
 local backArrow = Instance.new("TextButton")
 backArrow.Size=UDim2.new(0,35,0,25)
 backArrow.Position=UDim2.new(0,10,0,10)
@@ -288,7 +290,6 @@ backArrow.MouseButton1Click:Connect(function()
 	premiumFrame.Visible=false
 end)
 
--- Premium scrolling frame
 local premiumScroll=Instance.new("ScrollingFrame")
 premiumScroll.Size=UDim2.new(1,-10,1,-50)
 premiumScroll.Position=UDim2.new(0,5,0,40)
@@ -297,7 +298,6 @@ premiumScroll.ScrollBarThickness=6
 premiumScroll.BackgroundTransparency=1
 premiumScroll.Parent=premiumFrame
 
--- Premium theme buttons
 local premiumThemes={
 	["Neo"]=Color3.fromRGB(180,0,255),
 	["Cyber"]=Color3.fromRGB(0,180,255),
@@ -305,7 +305,6 @@ local premiumThemes={
 	["Volta"]=Color3.fromRGB(255,50,50),
 	["Luminous"]=Color3.fromRGB(255,255,100)
 }
-
 local yPos=0
 for name,color in pairs(premiumThemes) do
 	local btn=createButton(name.." Theme",yPos,premiumScroll)
@@ -352,7 +351,7 @@ premiumBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
--- 🏁 Auto-spawn logic
+-- Auto-spawn logic
 player.CharacterAdded:Connect(function(char)
 	local hrp=char:WaitForChild("HumanoidRootPart")
 	local humanoid=char:FindFirstChild("Humanoid")
@@ -384,4 +383,4 @@ player.CharacterAdded:Connect(function(char)
 	end
 end)
 
-print("✅ Fully fixed GUI with Premium Scroll, Back Arrow, Auto-Spawn, Themes, Rainbow, Draggable, Open Button!")
+print("✅ Full GUI Fixed: Flash + Active Spawn + Premium Scroll + Themes + Rainbow + Draggable + Auto-Spawn!")
