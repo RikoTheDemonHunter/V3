@@ -243,7 +243,7 @@ if banned then
 	player:Kick("🚫 You are banned from Avery Hub.")
 	return
 elseif not whitelisted and not enabled then
-	fadeText(("❌ Not Whitelisted.\nKill switch is ON.\nName: %s\nUserId: %d"):format(username, userId), 3)
+	fadeText(("❌ Not Whitelisted.\nKill switch is OFF.\nName: %s\nUserId: %d"):format(username, userId), 3)
 	showOutro(2)
 	task.wait(1.5)
 	player:Kick("❌ You are not whitelisted and kill switch is ON.")
@@ -252,7 +252,7 @@ elseif not whitelisted then
 	fadeText(("❌ Not Whitelisted.\nName: %s\nUserId: %d"):format(username, userId), 3)
 	showOutro(2)
 	task.wait(1.5)
-	player:Kick("❌ You are not whitelisted.")
+	player:Kick("❌ You are not whitelisted!.")
 	return
 else
 	local ksStatus = enabled and "DISABLED" or "ENABLED (bypassed)"
@@ -261,7 +261,7 @@ else
 end
 
 -- ⚠️ Final warning before closing
-fadeText("⚠️ You cannot modify this switch now. F*** off.", 2)
+fadeText("⚠️ You cannot modify this switch.", 2)
 
 -- 🎬 Closing animation
 local shrink = TweenService:Create(uiScale, TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Scale = 0})
@@ -1205,3 +1205,5 @@ end)
 Scripts:Button("FriendList", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FriendList.lua"))()
 end)
+
+print("Avery Hub loaded all function script is now online!")
