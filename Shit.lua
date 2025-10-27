@@ -62,23 +62,31 @@ corner.Parent = frame
 
 local dateLabel = Instance.new("TextLabel")
 dateLabel.AnchorPoint = Vector2.new(0.5, 0)
-dateLabel.Position = UDim2.new(0.5, 0, 0, -38) -- moves it slightly above the title area
+dateLabel.Position = UDim2.new(0.5, 0, 0, -38)
 dateLabel.Size = UDim2.new(0.85, 0, 0, 26)
 dateLabel.BackgroundTransparency = 1
 dateLabel.Font = Enum.Font.GothamSemibold
 dateLabel.TextScaled = true
 dateLabel.TextWrapped = true
 dateLabel.TextColor3 = Theme.Highlight
-dateLabel.TextTransparency = 1 -- start hidden
+dateLabel.TextTransparency = 1
 dateLabel.Text = os.date("%A, %B %d %Y  |  %I:%M:%S %p")
-dateLabel.ZIndex = 5 -- stays on top visually
+dateLabel.ZIndex = 5
 dateLabel.Parent = frame
 
--- 🧩 Padding for clean look
+-- 🧩 Padding
 local padding = Instance.new("UIPadding")
 padding.PaddingLeft = UDim.new(0, 10)
 padding.PaddingRight = UDim.new(0, 10)
 padding.Parent = dateLabel
+
+-- ✨ Neon UIStroke (subtle glow)
+local clockGlow = Instance.new("UIStroke")
+clockGlow.Thickness = 1.8
+clockGlow.Transparency = 0.5
+clockGlow.Color = Theme.Highlight
+clockGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Outside
+clockGlow.Parent = dateLabel
 
 -- ⏱️ Update every second
 task.spawn(function()
@@ -88,9 +96,18 @@ task.spawn(function()
 	end
 end)
 
--- 🌈 Fade-in animation (appears gently after GUI spawns)
-local fadeClock = TweenService:Create(dateLabel, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {TextTransparency = 0})
-fadeClock:Play()
+-- 🌈 Fade-in for first appearance
+TweenService:Create(dateLabel, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
+
+-- 💫 Breathing glow animation (soft pulse forever)
+task.spawn(function()
+	while gui.Parent do
+		TweenService:Create(clockGlow, TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 0.15}):Play()
+		task.wait(1.8)
+		TweenService:Create(clockGlow, TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {Transparency = 0.5}):Play()
+		task.wait(1.8)
+	end
+end)
 
 -- ✨ Neon Stroke (breathing glow)
 local glow = Instance.new("UIStroke")
