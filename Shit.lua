@@ -74,21 +74,11 @@ dateLabel.Text = os.date("%A, %B %d %Y  |  %I:%M:%S %p")
 dateLabel.ZIndex = 5
 dateLabel.Parent = frame
 
--- 🧩 Padding
 local padding = Instance.new("UIPadding")
 padding.PaddingLeft = UDim.new(0, 10)
 padding.PaddingRight = UDim.new(0, 10)
 padding.Parent = dateLabel
 
--- ✨ Neon UIStroke (subtle glow)
-local clockGlow = Instance.new("UIStroke")
-clockGlow.Thickness = 1.8
-clockGlow.Transparency = 0.5
-clockGlow.Color = Theme.Highlight
-clockGlow.ApplyStrokeMode = Enum.ApplyStrokeMode.Outside
-clockGlow.Parent = dateLabel
-
--- ⏱️ Update every second
 task.spawn(function()
 	while gui.Parent do
 		dateLabel.Text = os.date("%A, %B %d %Y  |  %I:%M:%S %p")
@@ -96,18 +86,8 @@ task.spawn(function()
 	end
 end)
 
--- 🌈 Fade-in for first appearance
-TweenService:Create(dateLabel, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
-
--- 💫 Breathing glow animation (soft pulse forever)
-task.spawn(function()
-	while gui.Parent do
-		TweenService:Create(clockGlow, TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {Transparency = 0.15}):Play()
-		task.wait(1.8)
-		TweenService:Create(clockGlow, TweenInfo.new(1.8, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {Transparency = 0.5}):Play()
-		task.wait(1.8)
-	end
-end)
+local fadeClock = TweenService:Create(dateLabel, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {TextTransparency = 0})
+fadeClock:Play()
 
 -- ✨ Neon Stroke (breathing glow)
 local glow = Instance.new("UIStroke")
@@ -129,7 +109,7 @@ end)
 -- 📏 Scale adjust
 local uiScale = Instance.new("UIScale")
 uiScale.Scale = UserInputService.TouchEnabled and 1.25 or 1
-uiScale.Parent = frame
+uiScale.Parent = fram
 
 -- 🌟 Title
 local title = Instance.new("TextLabel")
