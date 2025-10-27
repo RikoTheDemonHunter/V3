@@ -17,7 +17,7 @@
 
   
   "master_lock": {
-    "enabled": true,                        
+    "enabled": false,                        
     "locked_at": null,
     "locked_by": null,
     "reason": null,
