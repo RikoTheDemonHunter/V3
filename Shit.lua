@@ -1207,4 +1207,4 @@ Scripts:Button("FriendList", function()
 end)
 
 print("Avery Hub loaded all function script is now online!")
-print("Welcome %s | UserId: %d (YOU)"):format(name, id)")
+
