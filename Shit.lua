@@ -89,6 +89,11 @@ end)
 local fadeClock = TweenService:Create(dateLabel, TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {TextTransparency = 0})
 fadeClock:Play()
 
+-- 📏 Scale adjust
+local uiScale = Instance.new("UIScale")
+uiScale.Scale = UserInputService.TouchEnabled and 1.25 or 1
+uiScale.Parent = frame
+
 -- ✨ Neon Stroke (breathing glow)
 local glow = Instance.new("UIStroke")
 glow.Color = Theme.Accent
