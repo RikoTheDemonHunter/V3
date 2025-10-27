@@ -1,4 +1,159 @@
 {
-  "enabled": false,
-  "whitelist": [1497286101, 4441876607, 1639398692]
-}  
+  "version": "2.6.0",
+  "meta": {
+    "name": "Advanced Kill Switch Config — Hardened",
+    "description": "High-tier modernized configuration with tamper protection, master lockdown and strengthened whitelist integrity. Backwards compatible.",
+    "author": "Avery",
+    "last_updated": "2025-10-27T00:00:00+08:00",
+    "schema_version": "2.1"
+  },
+
+  "enabled": false,                          /* Original logic preserved for backward compat */
+  "whitelist": [1497286101, 4441876607, 1639398692],
+
+  /* Core behavior */
+  "mode": "whitelist",
+  "fallback_action": "deny",
+
+  /* MASTER LOCK — disables the entire script without changing `enabled` */
+  "master_lock": {
+    "enabled": false,                        /* when true, script is forced-disabled regardless of `enabled` */
+    "locked_at": null,
+    "locked_by": null,
+    "reason": null,
+    "auth": {
+      "method": "keyfile",                 /* keyfile | passphrase | otp */
+      "key_id": "master_lock_key_01",
+      "require_signature": true
+    },
+    "persist_across_restarts": true         /* if true, lock survives restarts until explicitly unlocked */
+  },
+
+  /* Whitelist integrity — make bypassing harder */
+  "whitelist_integrity": {
+    "store": "encrypted",                  /* encrypted | plain | remote */
+    "encryption": {
+      "algorithm": "AES-256-GCM",
+      "key_id": "switcher_key_01",
+      "rotate_on_change": true
+    },
+    "hash_algorithm": "SHA-256",
+    "salted_hash": true,
+    "salt_id": "whitelist_salt_01",
+    "require_signed_rules": true,           /* rules must be signed to be trusted */
+    "immutable_on_load": true               /* after load, in-memory whitelist is write-protected */
+  },
+
+  /* Anti-tamper protections and runtime watchdog */
+  "tamper_protection": {
+    "enabled": true,
+    "enforce_signature_on_load": true,      /* reject config that isn't cryptographically signed */
+    "signature_key_id": "switcher_signing_01",
+    "checksum_algo": "SHA-256",
+    "watchdog": {
+      "enabled": true,
+      "check_interval_seconds": 5,
+      "action_on_change": "rollback",     /* rollback | restart | lock */
+      "rollback_path": "backups/switcher/last_good.json"
+    },
+    "immutable_paths": [
+      "whitelist",
+      "master_lock",
+      "security.signing"
+    ]
+  },
+
+  /* Hardening against whitelist bypass */
+  "bypass_protection": {
+    "enabled": true,
+    "tamper_threshold": 2,                  /* number of suspicious events before auto-lock */
+    "lockout_minutes": 30,
+    "require_reauth_after_change": true,    /* require re-auth for admin actions after config change */
+    "admin_notify": true,
+    "notify_channels": ["console", "email"]
+  },
+
+  "ui": {
+    "theme": "neo-dark",
+    "accent_color": "#00FFC6",
+    "animation": true,
+    "status_icons": true
+  },
+
+  "logging": {
+    "enabled": true,
+    "level": "debug",
+    "output": ["console", "file"],
+    "file_path": "logs/switcher.log",
+    "log_integrity": true                    /* logs are checksummed/signed to prevent tamper */
+  },
+
+  "rules": [
+    {
+      "id": 1497286101,
+      "label": "primary-admin",
+      "priority": 1,
+      "enabled": true,
+      "role": "owner",
+      "notes": "System root access",
+      "signed": true
+    },
+    {
+      "id": 4441876607,
+      "label": "trusted-bot",
+      "priority": 2,
+      "enabled": true,
+      "role": "automation",
+      "notes": "AI/Service account",
+      "signed": true
+    },
+    {
+      "id": 1639398692,
+      "label": "backup-user",
+      "priority": 3,
+      "enabled": true,
+      "role": "moderator",
+      "notes": "Backup admin role",
+      "signed": true
+    }
+  ],
+
+  "security": {
+    "encryption": {
+      "enabled": true,
+      "algorithm": "AES-256-GCM",
+      "key_id": "switcher_key_01"
+    },
+    "signing": {
+      "enabled": true,
+      "algorithm": "HS512",
+      "signature": "",
+      "auto_verify": true
+    },
+    "integrity": {
+      "config_checksum": "",
+      "checksum_algo": "SHA-256",
+      "last_verified": null
+    }
+  },
+
+  "network": {
+    "sync": true,
+    "remote_validation": false,
+    "timeout_ms": 2500,
+    "retry_attempts": 3
+  },
+
+  "maintenance": {
+    "auto_backup": true,
+    "backup_interval": 24,
+    "backup_path": "backups/switcher/",
+    "notify_on_change": true
+  },
+
+  "advanced": {
+    "fail_safe_mode": true,
+    "cooldown_seconds": 3,
+    "analytics": false
+  }
+}
