@@ -8,10 +8,10 @@
     "schema_version": "2.1"
   },
 
-  "enabled": false,                          /* Original logic preserved for backward compat */
+  "enabled": false,                          
   "whitelist": [1497286101, 4441876607, 1639398692],
 
-  /* Core behavior */
+ 
   "mode": "whitelist",
   "fallback_action": "deny",
 
