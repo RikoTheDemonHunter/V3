@@ -15,23 +15,23 @@
   "mode": "whitelist",
   "fallback_action": "deny",
 
-  /* MASTER LOCK — disables the entire script without changing `enabled` */
+  
   "master_lock": {
-    "enabled": false,                        /* when true, script is forced-disabled regardless of `enabled` */
+    "enabled": false,                        
     "locked_at": null,
     "locked_by": null,
     "reason": null,
     "auth": {
-      "method": "keyfile",                 /* keyfile | passphrase | otp */
+      "method": "keyfile",                 
       "key_id": "master_lock_key_01",
       "require_signature": true
     },
-    "persist_across_restarts": true         /* if true, lock survives restarts until explicitly unlocked */
+    "persist_across_restarts": true         
   },
 
   /* Whitelist integrity — make bypassing harder */
   "whitelist_integrity": {
-    "store": "encrypted",                  /* encrypted | plain | remote */
+    "store": "encrypted",                  
     "encryption": {
       "algorithm": "AES-256-GCM",
       "key_id": "switcher_key_01",
@@ -40,20 +40,20 @@
     "hash_algorithm": "SHA-256",
     "salted_hash": true,
     "salt_id": "whitelist_salt_01",
-    "require_signed_rules": true,           /* rules must be signed to be trusted */
-    "immutable_on_load": true               /* after load, in-memory whitelist is write-protected */
+    "require_signed_rules": true,           
+    "immutable_on_load": true               
   },
 
-  /* Anti-tamper protections and runtime watchdog */
+
   "tamper_protection": {
     "enabled": true,
-    "enforce_signature_on_load": true,      /* reject config that isn't cryptographically signed */
+    "enforce_signature_on_load": true,      
     "signature_key_id": "switcher_signing_01",
     "checksum_algo": "SHA-256",
     "watchdog": {
       "enabled": true,
       "check_interval_seconds": 5,
-      "action_on_change": "rollback",     /* rollback | restart | lock */
+      "action_on_change": "rollback",     
       "rollback_path": "backups/switcher/last_good.json"
     },
     "immutable_paths": [
@@ -63,12 +63,12 @@
     ]
   },
 
-  /* Hardening against whitelist bypass */
+  
   "bypass_protection": {
     "enabled": true,
-    "tamper_threshold": 2,                  /* number of suspicious events before auto-lock */
+    "tamper_threshold": 2,                  
     "lockout_minutes": 30,
-    "require_reauth_after_change": true,    /* require re-auth for admin actions after config change */
+    "require_reauth_after_change": true,    
     "admin_notify": true,
     "notify_channels": ["console", "email"]
   },
@@ -85,7 +85,7 @@
     "level": "debug",
     "output": ["console", "file"],
     "file_path": "logs/switcher.log",
-    "log_integrity": true                    /* logs are checksummed/signed to prevent tamper */
+    "log_integrity": true                    
   },
 
   "rules": [
