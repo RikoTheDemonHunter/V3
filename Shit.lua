@@ -1,5 +1,5 @@
 
--- 🌌 Avery Hub | Hybrid Neon + Glass Intro (Modernized + Fixed + Slow Glow)
+-- 🌌 Avery Hub
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
