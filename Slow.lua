@@ -833,23 +833,27 @@ end)
 
 AutoFarm:Toggle("Auto Drink", function(v)
 	getgenv().autodrink = v
-				while getgenv().autodrink do wait(2.4)
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
+	local drinkEvent = game.ReplicatedStorage:WaitForChild("RemoteEvents"):WaitForChild("DrinkEvent")
+	local drinks = {
+		"Starter Drink", "Second Drink", "Third Drink", "Fourth Drink",
+		"Fifth Drink", "Sixth Drink", "Seventh Drink", "Eighth Drink",
+		"Ninth Drink", "Atomic Drink", "Omega Burp Juice",
+		"Thunder Fizz", "Garlic Juice"
+	}
 
+	if v then
+		print("[AutoDrink] ⚡ Ultra-speed mode ON")
+	else
+		print("[AutoDrink] ❌ Stopped")
 	end
-end)
+
+	while getgenv().autodrink do
+		for _, drinkName in ipairs(drinks) do
+			drinkEvent:FireServer(drinkName)
+		end
+		task.wait() -- minimal yield to prevent freezing (runs every frame)
+	end
+end
 
 AutoFarm:Toggle("Fast Drink", function(v)
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/v2.lua"))()
