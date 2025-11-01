@@ -1,99 +1,95 @@
--- Optimized Void Platform (2000x2000, re-exec safe, plastic & transparent)
--- Re-run this script to delete the old platform and spawn a new one
+-- 🌌 Optimized Void Platform with Reliable Safe Zone
+-- No false "entered/left" detection, re-exec safe
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Config
-local PLATFORM_SIZE = Vector3.new(2000, 5, 2000) -- gigantic void floor
-local PLATFORM_COLOR = Color3.fromRGB(0, 191, 255) -- light blue
-local PLATFORM_OFFSET = -13 -- studs below HumanoidRootPart
+-- 🧩 CONFIG
+local PLATFORM_SIZE = Vector3.new(2000, 5, 2000)
+local PLATFORM_COLOR = Color3.fromRGB(0, 191, 255)
+local PLATFORM_OFFSET = -13
+local SAFE_HEIGHT = 30
+local DETECTION_BUFFER = 1 -- tolerance buffer (anti-flicker)
 
--- delete old one if it exists (safe for re-exec)
+-- 🧹 Remove old platform
 local oldPlatform = workspace:FindFirstChild("VoidPlatform")
 if oldPlatform then
-    oldPlatform:Destroy()
+	oldPlatform:Destroy()
 end
 
--- make sure character exists
+-- 🧍 Setup character
 local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
 local hrp = character:WaitForChild("HumanoidRootPart")
 
--- create platform
+-- 🪶 Create platform
 local platform = Instance.new("Part")
 platform.Name = "VoidPlatform"
 platform.Size = PLATFORM_SIZE
 platform.Anchored = true
 platform.CanCollide = true
 platform.Color = PLATFORM_COLOR
-platform.Material = Enum.Material.Plastic -- lightweight
-platform.Transparency = 0.8 -- very see-through
+platform.Material = Enum.Material.Plastic
+platform.Transparency = 0.8
 platform.CFrame = hrp.CFrame * CFrame.new(0, PLATFORM_OFFSET, 0)
-
 platform.Parent = workspace
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
-local hrp = character:WaitForChild("HumanoidRootPart")
-
-local platform = workspace:FindFirstChild("VoidPlatform")
-if not platform then return end
-
-local SAFE_HEIGHT = 30
+-- 🛡️ Safe Zone Logic
 local platformY = platform.Position.Y
+local platformHalf = PLATFORM_SIZE.Y / 2
 local inSafeZone = false
 
--- soft aura ring (visual only)
-local aura = Instance.new("Part")
-aura.Anchored = true
-aura.CanCollide = false
-aura.Material = Enum.Material.Neon
-aura.Color = Color3.fromRGB(0, 200, 255)
-aura.Transparency = 0.9
-aura.Size = Vector3.new(platform.Size.X, 0.2, platform.Size.Z)
-aura.CFrame = platform.CFrame * CFrame.new(0, 2.5, 0)
-aura.Name = "ProtectionAura"
-aura.Parent = workspace
-
--- gentle pulse
 task.spawn(function()
-	while aura.Parent do
-		local t = tick() * 2
-		local s = 0.9 + math.sin(t) * 0.05
-		aura.Transparency = s
-		task.wait(0.05)
+	while task.wait(0.25) do
+		if not (platform and platform.Parent and humanoid and humanoid.Parent) then break end
+
+		local hrpPos = hrp.Position
+		local zoneBottom = platformY + platformHalf - 2 - DETECTION_BUFFER
+		local zoneTop = platformY + SAFE_HEIGHT + DETECTION_BUFFER
+
+		local isSafe =
+			hrpPos.Y >= zoneBottom
+			and hrpPos.Y <= zoneTop
+			and math.abs(hrpPos.X - platform.Position.X) <= PLATFORM_SIZE.X / 2
+			and math.abs(hrpPos.Z - platform.Position.Z) <= PLATFORM_SIZE.Z / 2
+
+		if isSafe then
+			if not inSafeZone then
+				inSafeZone = true
+				print("[SafeZone] Entered Sanctuary Field")
+			end
+			if humanoid.Health < humanoid.MaxHealth then
+				humanoid.Health = humanoid.MaxHealth
+			end
+			humanoid:SetAttribute("IsSafe", true)
+		else
+			if inSafeZone then
+				inSafeZone = false
+				print("[SafeZone] Left Sanctuary Field")
+			end
+			humanoid:SetAttribute("IsSafe", false)
+		end
 	end
 end)
 
--- healing / feedback loop
+-- 🌀 ForceField protection
 task.spawn(function()
-	while humanoid and humanoid.Parent and platform.Parent do
-		local posY = hrp.Position.Y
-		local isSafe = posY > (platformY - 2) and posY < (platformY + SAFE_HEIGHT)
+	while task.wait(0.5) do
+		if not (platform and platform.Parent and humanoid and humanoid.Parent) then break end
 
-		if isSafe and not inSafeZone then
-			inSafeZone = true
-			print("[Aura] Entered peaceful zone")
-			TweenService:Create(aura, TweenInfo.new(0.5), {Transparency = 0.7}):Play()
-		elseif not isSafe and inSafeZone then
-			inSafeZone = false
-			print("[Aura] Left peaceful zone")
-			TweenService:Create(aura, TweenInfo.new(0.5), {Transparency = 0.9}):Play()
+		if inSafeZone then
+			if not character:FindFirstChildOfClass("ForceField") then
+				Instance.new("ForceField", character)
+			end
+		else
+			local ff = character:FindFirstChildOfClass("ForceField")
+			if ff then ff:Destroy() end
 		end
-
-		if inSafeZone and humanoid.Health < humanoid.MaxHealth then
-			humanoid.Health = math.min(humanoid.Health + 1, humanoid.MaxHealth)
-		end
-		task.wait(0.25)
 	end
 end)
 
--- cleanup
+-- 🧽 Cleanup
 humanoid.Died:Connect(function()
-	if aura and aura.Parent then aura:Destroy() end
+	local ff = character:FindFirstChildOfClass("ForceField")
+	if ff then ff:Destroy() end
 end)
-
