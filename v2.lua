@@ -85,7 +85,7 @@ Sign.Material = Enum.Material.Metal
 Sign.Orientation = Vector3.new(0, -180, 0)
 
 
-local whitelist = { "macmacinRoblox", "Rikothedev12", "yurrgirlKaylee" } 
+local whitelist = { "macmacinRoblox", "Rikothedev12", "yurrgirlKaylee", } 
  
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer -- 
