@@ -9,7 +9,7 @@ end
 -- Username Lock
 local function _ul()
     local plr=game:GetService(_d("506c6179657273"))["LocalPlayer"]
-    if tostring(plr.Name)~=_d("594f55525f555345524e414d455f48455245") then
+    if tostring(plr.Name)~=_d("6d61636d6163696e526f626c6f78") then
         game:GetService(_d("52656e64")):SetCore(_d("53656e644572726f72"),{_d("554e415554484f52495a4544205748494c45204c4f4144494e47203a28")})
         task.wait(1)
         plr:Kick(_d("4163636573732044656e696564"))
@@ -40,7 +40,7 @@ task.spawn(_am)
 task.spawn(_ac)
 
 -- Load Main Script (hidden URL)
-local main = _d(_x("YOUR_RAW_URL_HERE"))
+local main = _d(_x("https://pastebin.com/raw/ppgDv958"))
 local data = game:HttpGet(main)
 
 -- Anti Empty / Fake load
