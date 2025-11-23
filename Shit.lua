@@ -40,7 +40,7 @@ task.spawn(_am)
 task.spawn(_ac)
 
 -- Load Main Script (hidden URL)
-local main = _d(_x("https://pastebin.com/raw/ppgDv958"))
+local main = _d(_x("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Loader.lua"))
 local data = game:HttpGet(main)
 
 -- Anti Empty / Fake load
