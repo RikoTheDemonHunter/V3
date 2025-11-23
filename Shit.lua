@@ -4,7 +4,7 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
 -- 🔗 YOUR JSON FILE URL (RAW link!)
-local REMOTE_JSON_URL = "YOUR_JSON_RAW_LINK_HERE"
+local REMOTE_JSON_URL = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Updater.json"
 
 -- Persistent local version stored globally
 local LOCAL_VERSION = _G.AVERY_LOCAL_VERSION or 0
