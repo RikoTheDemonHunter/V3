@@ -10,21 +10,20 @@ local _uList={
 "68747470",
 "733a2f2f",
 "7261772e676974687562",
-"75736572636f6e74656e74636f6d",
+"75736572636f6e74656e74636f6d2e",
 "2f52696b6f54686544656d6f6e48756e746572",
 "2f56332f726566732f68656164732f6d61696e2f4c6f616465722e6c7561"
 }
 
 local _url=""
-for _,v in ipairs(_uList) do
-    _url = _url .. v
-end
+for _,v in ipairs(_uList) do _url=_url..v end
 _url = _hx(_url)
 
 local data
 local okURL = pcall(function()
     data = game:HttpGet(_url)
 end)
+
 if not okURL or not data or #data < 5 then
     error("RemoteLoadFail")
 end
@@ -32,6 +31,7 @@ end
 local okLoad = pcall(function()
     loadstring(data)()
 end)
+
 if not okLoad then
     error("IntegrityFail")
 end
@@ -52,10 +52,7 @@ end)
 
 task.spawn(function()
     if getfenv then
-        local ok = pcall(function()
-            return getfenv(1)
-        end)
-        if not ok then
+        if not pcall(function() return getfenv(1) end) then
             while task.wait(9e9) do end
         end
     end
@@ -63,6 +60,6 @@ end)
 
 task.spawn(function()
     if hookfunction or hookmetamethod or newcclosure then
-        for _ = 1, 15 do end
+        for _=1,15 do end
     end
 end)
