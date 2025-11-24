@@ -67,3 +67,4 @@ task.spawn(function()
         for _=1,15 do end
     end
 end)
+print:("Hub Loader Executed")
