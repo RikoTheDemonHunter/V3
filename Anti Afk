@@ -22,3 +22,80 @@ RunService.Heartbeat:Connect(function()
         simulateActivity()
     end
 end)
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+local pingHistory = {}
+local maxPingSamples = 60
+local positionHistory = {}
+local maxPositionSamples = 6
+
+local function getSmoothedPing()
+    local total = 0
+    for _, v in ipairs(pingHistory) do
+        total = total + v
+    end
+    if #pingHistory > 0 then
+        return total / #pingHistory
+    else
+        return 0
+    end
+end
+
+local function addPingSample()
+    local rawPing = LocalPlayer:GetNetworkPing() * 1000
+    table.insert(pingHistory, rawPing)
+    if #pingHistory > maxPingSamples then
+        table.remove(pingHistory, 1)
+    end
+end
+
+local function bufferPosition(pos)
+    table.insert(positionHistory, pos)
+    if #positionHistory > maxPositionSamples then
+        table.remove(positionHistory, 1)
+    end
+end
+
+local function getSmoothedPosition()
+    if #positionHistory == 0 then
+        return nil
+    end
+    local sum = Vector3.new(0, 0, 0)
+    for _, v in ipairs(positionHistory) do
+        sum = sum + v
+    end
+    return sum / #positionHistory
+end
+
+RunService.Heartbeat:Connect(function()
+    addPingSample()
+
+    local char = LocalPlayer.Character
+    if not char then return end
+
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    bufferPosition(root.Position)
+
+    local smoothPing = getSmoothedPing()
+
+    if smoothPing > 120 then
+        local smoothed = getSmoothedPosition()
+        if smoothed then
+            local current = root.Position
+            local difference = smoothed - current
+            root.Velocity = difference * 2
+        end
+    end
+end)
+
+task.spawn(function()
+    while true do
+        print(math.floor(getSmoothedPing()))
+        task.wait(2)
+    end
+end)
