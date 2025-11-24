@@ -1,4 +1,25 @@
--- Avery's Advanced Auto Spawn GUI (Final Premium Edition with 5-min Lockout)
+local types = {
+    "[INFO]",
+    "[SYSTEM]",
+    "[WARNING]",
+    "[DEBUG]",
+    "[NOTICE]",
+    "[ALERT]"
+}
+
+local function randomType()
+    return types[math.random(1, #types)]
+end
+
+local function randomIP()
+    local function part()
+        return math.random(0, 255)
+    end
+    return part().."."..part().."."..part().."."..part()
+end
+
+print(randomType() .. " Generated IP: " .. randomIP())
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
