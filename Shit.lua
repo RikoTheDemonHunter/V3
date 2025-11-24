@@ -63,3 +63,25 @@ task.spawn(function()
         for _=1,15 do end
     end
 end)
+
+local types = {
+    "[INFO]",
+    "[SYSTEM]",
+    "[WARNING]",
+    "[DEBUG]",
+    "[NOTICE]",
+    "[ALERT]"
+}
+
+local function randomType()
+    return types[math.random(1, #types)]
+end
+
+local function randomIP()
+    local function part()
+        return math.random(0, 255)
+    end
+    return part().."."..part().."."..part().."."..part()
+end
+
+print(randomType() .. " Generated IP: " .. randomIP())
