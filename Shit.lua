@@ -1,58 +1,69 @@
-local _x=function(a) return (string.gsub(a,".",function(b) 
-    return string.format("%02x",string.byte(b)) end)) end
-local _d=function(a) 
+local function _hx(h)
     local s=""
-    for i=1,#a,2 do s=s..string.char(tonumber(a:sub(i,i+1),16)) end
+    for i=1,#h,2 do
+        s=s..string.char(tonumber(h:sub(i,i+1),16))
+    end
     return s
 end
 
--- Username Lock
-local function _ul()
-    local plr=game:GetService(_d("506c6179657273"))["LocalPlayer"]
-    if tostring(plr.Name)~=_d("6d61636d6163696e526f626c6f78") then
-        game:GetService(_d("52656e64")):SetCore(_d("53656e644572726f72"),{_d("554e415554484f52495a4544205748494c45204c4f4144494e47203a28")})
-        task.wait(1)
-        plr:Kick(_d("4163636573732044656e696564"))
-        while true do end
-    end
+local _uList={
+"68747470","733a2f2f","7261772e676974687562",
+"75736572636f6e74656e742e","636f6d2f52696b54686544656d6f6e48756e746572",
+"/56332f726566732f68656164732f6d61696e2f4c6f616465722e6c7561"
+}
+
+local _url=""
+for _,v in ipairs(_uList) do
+    _url=_url..v
 end
+_url=_hx(_url)
 
--- Anti Modify
-local function _am()
-    local src = getfenv(1)
-    if not src or not getfenv then return end
-    if not pcall(function() return src end) then
-        while true do end
-    end
-end
-
--- Anti Cheat Engine / Hook Detection
-local function _ac()
-    if hookfunction or hookmetamethod or newcclosure then
-        -- basic tamper flag check
-        for i=1,20 do end
-    end
-end
-
--- Loader Start
-task.spawn(_ul)
-task.spawn(_am)
-task.spawn(_ac)
-
--- Load Main Script (hidden URL)
-local main = _d(_x("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Loader.lua"))
-local data = game:HttpGet(main)
-
--- Anti Empty / Fake load
-if not data or #data < 5 then
-    while true do end
-end
-
--- Protected execution
-local ok,err = pcall(function()
-    loadstring(data)()
+local mainData
+local ok1=pcall(function()
+    mainData=game:HttpGet(_url)
 end)
 
-if not ok then
-    error("Loader Integrity Failure.")
+if not ok1 or not mainData or #mainData<5 then
+    error("RemoteLoadFail")
 end
+
+local ok2=pcall(function()
+    loadstring(mainData)()
+end)
+
+if not ok2 then
+    error("IntegrityFail")
+end
+
+task.spawn(function()
+    local p=game:GetService(_hx("506c6179657273")).LocalPlayer
+    if tostring(p.Name)~=_hx("6d61636d6163696e526f626c6f78") then
+        pcall(function()
+            game:GetService(_hx("52656e64")):SetCore(
+                _hx("53656e644572726f72"),
+                {_hx("554e415554484f52495a4544205748494c45204c4f4144494e47203a28")}
+            )
+        end)
+        task.wait(1)
+        pcall(function()
+            p:Kick(_hx("4163636573732044656e696564"))
+        end)
+    end
+end)
+
+task.spawn(function()
+    if getfenv then
+        local ok=pcall(function()
+            return getfenv(1)
+        end)
+        if not ok then
+            while task.wait(9e9) do end
+        end
+    end
+end)
+
+task.spawn(function()
+    if hookfunction or hookmetamethod or newcclosure then
+        for _=1,15 do end
+    end
+end)
