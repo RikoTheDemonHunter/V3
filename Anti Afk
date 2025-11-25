@@ -1,78 +1,24 @@
 local Players = game:GetService("Players")
-local Player = Players.LocalPlayer
 local VirtualUser = game:GetService("VirtualUser")
 local RunService = game:GetService("RunService")
 
+local LocalPlayer = Players.LocalPlayer
+
 VirtualUser:CaptureController()
 
-local keywords = {
-    "still here",
-    "Click if you are still here(30)",
-    "afk",
-    "idle",
-    "verify",
-    "continue",
-    "away",
-    "timeout"
-}
-
-local function getText(obj)
-    if obj:IsA("TextLabel") or obj:IsA("TextButton") then
-        return string.lower(obj.Text or "")
-    end
-    local t1 = obj:FindFirstChildWhichIsA("TextLabel")
-    local t2 = obj:FindFirstChildWhichIsA("TextButton")
-    if t1 then return string.lower(t1.Text or "") end
-    if t2 then return string.lower(t2.Text or "") end
-    return ""
+local function simulateActivity()
+    local x = math.random(0, 50)
+    local y = math.random(0, 50)
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new(x, y))
 end
 
-local function isPopup(obj)
-    if not obj:IsA("GuiObject") then return false end
-    local size = obj.AbsoluteSize
-    if size.X > 120 and size.X < 900 and size.Y > 70 and size.Y < 900 then
-        return true
-    end
-    local text = getText(obj)
-    for _, word in ipairs(keywords) do
-        if text ~= "" and string.find(text, word) then
-            return true
-        end
-    end
-    return false
-end
-
-local function closePopup(obj)
-    if not obj or not obj.Parent then return end
-    local button = obj:FindFirstChildWhichIsA("TextButton") or obj:FindFirstChildWhichIsA("ImageButton")
-    if button then
-        pcall(function() button:Activate() end)
-    end
-    pcall(function() obj.Visible = false end)
-    pcall(function() obj:Destroy() end)
-end
-
-local function scan(parent)
-    for _, obj in ipairs(parent:GetDescendants()) do
-        if isPopup(obj) then
-            closePopup(obj)
-        end
-    end
-end
+LocalPlayer.Idled:Connect(function()
+    simulateActivity()
+end)
 
 RunService.Heartbeat:Connect(function()
-    if math.random() < 0.04 then
-        scan(Player:WaitForChild("PlayerGui"))
+    if math.random() < 0.01 then
+        simulateActivity()
     end
-end)
-
-Player.PlayerGui.DescendantAdded:Connect(function(obj)
-    if isPopup(obj) then
-        closePopup(obj)
-    end
-end)
-
-Player.Idled:Connect(function()
-    VirtualUser:CaptureController()
-    VirtualUser:ClickButton2(Vector2.new(0, 0))
 end)
