@@ -6,12 +6,12 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 
-local safeZoneFolder = nil
+local safeZoneFolder
 local running = false
 local safeZoneParts = {}
-local signPart = nil
-local billboardLabel = nil
-local shieldPart = nil
+local signPart
+local billboardLabel
+local shieldPart
 local safeZoneCenter = Vector3.new(0,3600,0)
 local safeZoneHalfExtents = Vector3.new(300,50,300)
 
@@ -21,7 +21,6 @@ local baseSaturation = 0.7
 local healEnabled = false
 local healRate = 5
 local wallTransparency = 0.4
-local signEnabled = true
 local shieldEnabled = true
 local autoTeleportEnabled = false
 
@@ -29,9 +28,9 @@ local function RGBEffect(label)
 	if not label then return end
 	task.spawn(function()
 		while label and label.Parent do
-			for h = 0, 1, 0.01 do
+			for h = 0,1,0.01 do
 				if not (label and label.Parent) then break end
-				label.TextColor3 = Color3.fromHSV(h, 1, 1)
+				label.TextColor3 = Color3.fromHSV(h,1,1)
 				task.wait(0.05)
 			end
 		end
@@ -60,7 +59,7 @@ local function createShield(wSize, duration)
 	shieldPart.Material = Enum.Material.Glass
 	shieldPart.Color = Color3.fromRGB(170,170,255)
 	shieldPart.Parent = workspace
-	local targetSize = Vector3.new(wSize * 1.2, wSize * 1.2, wSize * 1.2)
+	local targetSize = Vector3.new(wSize*1.2, wSize*1.2, wSize*1.2)
 	local tweenInfo = TweenInfo.new(math.max(0.6, duration), Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 	local tw = TweenService:Create(shieldPart, tweenInfo, {Size = targetSize, Transparency = 0.85})
 	tw:Play()
@@ -91,87 +90,87 @@ local function createSafeZone()
 	safeZoneHalfExtents = Vector3.new(cubeSize/2, cubeHeight/2, cubeSize/2)
 
 	local floor = Instance.new("Part")
-	floor.Size = Vector3.new(cubeSize, 10, cubeSize)
-	floor.Position = Vector3.new(0, yPos + 5, 0)
+	floor.Size = Vector3.new(cubeSize,10,cubeSize)
+	floor.Position = Vector3.new(0, yPos+5,0)
 	floor.Anchored = true
 	floor.Material = Enum.Material.SmoothPlastic
 	floor.Transparency = 0.5
 	floor.Reflectance = 0.2
-	floor.Color = Color3.fromRGB(0, 0, 255)
+	floor.Color = Color3.fromRGB(0,0,255)
 	floor.Parent = safeZoneFolder
 	table.insert(safeZoneParts, floor)
 
-	local function createWall(position, size, orientation)
+	local function createWall(position,size,orientation)
 		local wall = Instance.new("Part")
 		wall.Size = size
 		wall.Position = position
 		wall.Anchored = true
 		wall.Material = Enum.Material.SmoothPlastic
 		wall.Transparency = wallTransparency
-		wall.Color = Color3.fromRGB(0, 0, 255)
+		wall.Color = Color3.fromRGB(0,0,255)
 		if orientation then wall.Orientation = orientation end
 		wall.Parent = safeZoneFolder
 		table.insert(safeZoneParts, wall)
 		return wall
 	end
 
-	createWall(Vector3.new(-cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(20, cubeHeight, cubeSize))
-	createWall(Vector3.new(cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(20, cubeHeight, cubeSize))
-	createWall(Vector3.new(0, yPos + cubeHeight/2, cubeSize/2), Vector3.new(cubeSize, cubeHeight, 20))
+	createWall(Vector3.new(-cubeSize/2,yPos+cubeHeight/2,0),Vector3.new(20,cubeHeight,cubeSize))
+	createWall(Vector3.new(cubeSize/2,yPos+cubeHeight/2,0),Vector3.new(20,cubeHeight,cubeSize))
+	createWall(Vector3.new(0,yPos+cubeHeight/2,cubeSize/2),Vector3.new(cubeSize,cubeHeight,20))
 
 	local frontLeft = Instance.new("Part")
-	frontLeft.Size = Vector3.new((cubeSize - entranceWidth) / 2, cubeHeight, 20)
-	frontLeft.Position = Vector3.new(-(cubeSize - entranceWidth) / 4 - entranceWidth / 2, yPos + cubeHeight/2, -cubeSize/2)
+	frontLeft.Size = Vector3.new((cubeSize-entranceWidth)/2,cubeHeight,20)
+	frontLeft.Position = Vector3.new(-(cubeSize-entranceWidth)/4 - entranceWidth/2, yPos+cubeHeight/2, -cubeSize/2)
 	frontLeft.Anchored = true
 	frontLeft.Material = Enum.Material.SmoothPlastic
 	frontLeft.Transparency = wallTransparency
-	frontLeft.Color = Color3.fromRGB(0, 0, 255)
+	frontLeft.Color = Color3.fromRGB(0,0,255)
 	frontLeft.Parent = safeZoneFolder
 	table.insert(safeZoneParts, frontLeft)
 
 	local frontRight = Instance.new("Part")
-	frontRight.Size = Vector3.new((cubeSize - entranceWidth) / 2, cubeHeight, 20)
-	frontRight.Position = Vector3.new((cubeSize - entranceWidth) / 4 + entranceWidth/2, yPos + cubeHeight/2, -cubeSize/2)
+	frontRight.Size = Vector3.new((cubeSize-entranceWidth)/2,cubeHeight,20)
+	frontRight.Position = Vector3.new((cubeSize-entranceWidth)/4 + entranceWidth/2, yPos+cubeHeight/2, -cubeSize/2)
 	frontRight.Anchored = true
 	frontRight.Material = Enum.Material.SmoothPlastic
 	frontRight.Transparency = wallTransparency
-	frontRight.Color = Color3.fromRGB(0, 0, 255)
+	frontRight.Color = Color3.fromRGB(0,0,255)
 	frontRight.Parent = safeZoneFolder
 	table.insert(safeZoneParts, frontRight)
 
 	local path = Instance.new("Part")
-	path.Size = Vector3.new(pathWidth, 10, pathLength)
-	path.Position = Vector3.new(0, yPos + 5, -cubeSize/2 - pathLength/2)
+	path.Size = Vector3.new(pathWidth,10,pathLength)
+	path.Position = Vector3.new(0, yPos+5, -cubeSize/2 - pathLength/2)
 	path.Anchored = true
 	path.Material = Enum.Material.Concrete
-	path.Color = Color3.fromRGB(128, 128, 128)
+	path.Color = Color3.fromRGB(128,128,128)
 	path.Parent = safeZoneFolder
 
 	local baseplate = Instance.new("Part")
-	baseplate.Size = Vector3.new(baseplateWidth, 10, baseplateDepth)
-	baseplate.Position = Vector3.new(0, yPos - 5, -cubeSize/2 - pathLength - baseplateDepth/2)
+	baseplate.Size = Vector3.new(baseplateWidth,10,baseplateDepth)
+	baseplate.Position = Vector3.new(0, yPos-5, -cubeSize/2 - pathLength - baseplateDepth/2)
 	baseplate.Anchored = true
 	baseplate.Material = Enum.Material.Grass
-	baseplate.Color = Color3.fromRGB(0, 255, 0)
+	baseplate.Color = Color3.fromRGB(0,255,0)
 	baseplate.Parent = safeZoneFolder
 
 	signPart = Instance.new("Part")
-	signPart.Size = Vector3.new(200, 50, 5)
-	signPart.Position = Vector3.new(0, yPos + 60, -cubeSize/2 - pathLength - baseplateDepth/2)
+	signPart.Size = Vector3.new(200,50,5)
+	signPart.Position = Vector3.new(0, yPos+60, -cubeSize/2 - pathLength - baseplateDepth/2)
 	signPart.Anchored = true
 	signPart.Material = Enum.Material.SmoothPlastic
-	signPart.Color = Color3.fromRGB(255, 0, 255)
+	signPart.Color = Color3.fromRGB(255,0,255)
 	signPart.Transparency = 0.7
 	signPart.Parent = safeZoneFolder
 
 	local billboard = Instance.new("BillboardGui")
-	billboard.Size = UDim2.new(0, 200, 0, 50)
+	billboard.Size = UDim2.new(0,200,0,50)
 	billboard.AlwaysOnTop = true
 	billboard.Adornee = signPart
 	billboard.Parent = signPart
 
 	local label = Instance.new("TextLabel")
-	label.Size = UDim2.new(1, 0, 1, 0)
+	label.Size = UDim2.new(1,0,1,0)
 	label.BackgroundTransparency = 1
 	label.Text = "Made by Avery"
 	label.TextScaled = true
@@ -180,14 +179,10 @@ local function createSafeZone()
 	label.Parent = billboard
 	billboardLabel = label
 
-	if not signEnabled then
-		signPart.Parent = nil
-	end
-
 	RGBEffect(label)
 
 	if shieldEnabled then
-		createShield(cubeSize, 0.8)
+		createShield(600,0.8)
 	end
 end
 
@@ -210,8 +205,8 @@ local function insideSafeZone(pos)
 	local min = safeZoneCenter - safeZoneHalfExtents
 	local max = safeZoneCenter + safeZoneHalfExtents
 	return pos.X >= min.X and pos.X <= max.X
-		and pos.Y >= min.Y and pos.Y <= max.Y
-		and pos.Z >= min.Z and pos.Z <= max.Z
+	   and pos.Y >= min.Y and pos.Y <= max.Y
+	   and pos.Z >= min.Z and pos.Z <= max.Z
 end
 
 local lastHealTick = 0
@@ -248,13 +243,14 @@ RunService.RenderStepped:Connect(function(deltaTime)
 	end
 end)
 
+-- GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "SafeZoneGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 220, 0, 340)
+mainFrame.Size = UDim2.new(0, 250, 0, 380)
 mainFrame.Position = UDim2.new(0.05,0,0.2,0)
 mainFrame.BackgroundColor3 = Color3.fromRGB(40,40,40)
 mainFrame.BorderSizePixel = 0
@@ -296,7 +292,7 @@ minimizeButton.MouseButton1Click:Connect(function()
 	if mainFrame.Size.Y.Offset > 40 then
 		mainFrame.Size = UDim2.new(mainFrame.Size.X.Scale, mainFrame.Size.X.Offset, 0, 30)
 	else
-		mainFrame.Size = UDim2.new(0,220,0,340)
+		mainFrame.Size = UDim2.new(0,250,0,380)
 	end
 end)
 
@@ -304,16 +300,30 @@ closeButton.MouseButton1Click:Connect(function()
 	mainFrame.Visible = false
 end)
 
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-	if gameProcessed then return end
-	if input.KeyCode == Enum.KeyCode.F1 then
-		mainFrame.Visible = not mainFrame.Visible
+-- Mobile-Friendly Show/Hide Button
+local toggleGUIButton = Instance.new("TextButton")
+toggleGUIButton.Size = UDim2.new(0, 100, 0, 40)
+toggleGUIButton.Position = UDim2.new(0.01, 0, 0.85, 0)
+toggleGUIButton.Text = "Show GUI"
+toggleGUIButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+toggleGUIButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleGUIButton.Font = Enum.Font.SourceSansBold
+toggleGUIButton.TextSize = 16
+toggleGUIButton.Parent = screenGui
+toggleGUIButton.ZIndex = 10
+
+toggleGUIButton.MouseButton1Click:Connect(function()
+	mainFrame.Visible = not mainFrame.Visible
+	if mainFrame.Visible then
+		toggleGUIButton.Text = "Hide GUI"
+	else
+		toggleGUIButton.Text = "Show GUI"
 	end
 end)
 
+-- Dragging
 local dragging = false
 local dragInput, dragStart, startPos
-
 header.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 then
 		dragging = true
@@ -337,5 +347,82 @@ UserInputService.InputChanged:Connect(function(input)
 	if input == dragInput and dragging then
 		local delta = input.Position - dragStart
 		mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
+end)
+
+-- Feature Buttons
+local function createButton(parent, y, text, callback)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0, 200, 0, 30)
+	btn.Position = UDim2.new(0,25,0,y)
+	btn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+	btn.TextColor3 = Color3.fromRGB(255,255,255)
+	btn.Text = text
+	btn.Font = Enum.Font.SourceSansBold
+	btn.TextSize = 18
+	btn.Parent = parent
+	btn.MouseButton1Click:Connect(callback)
+	return btn
+end
+
+local function createToggleButton(parent, y, text, variable)
+	local btn = createButton(parent, y, text.." : OFF", function()
+		variable[1] = not variable[1]
+		btn.Text = text.." : "..(variable[1] and "ON" or "OFF")
+	end)
+	btn.Text = text.." : "..(variable[1] and "ON" or "OFF")
+	return btn
+end
+
+local safeZoneVar = {running}
+local healVar = {healEnabled}
+local shieldVar = {shieldEnabled}
+local autoTPVar = {autoTeleportEnabled}
+
+createToggleButton(mainFrame, 50, "SafeZone", safeZoneVar)
+createToggleButton(mainFrame, 90, "Heal", healVar)
+createToggleButton(mainFrame, 130, "Shield", shieldVar)
+createToggleButton(mainFrame, 170, "Auto-Teleport", autoTPVar)
+
+local sliderLabel = Instance.new("TextLabel")
+sliderLabel.Size = UDim2.new(0,200,0,20)
+sliderLabel.Position = UDim2.new(0,25,0,220)
+sliderLabel.BackgroundTransparency = 1
+sliderLabel.TextColor3 = Color3.fromRGB(255,255,255)
+sliderLabel.Font = Enum.Font.SourceSansBold
+sliderLabel.TextSize = 16
+sliderLabel.Text = "RGB Speed: "..colorSpeedMultiplier
+sliderLabel.Parent = mainFrame
+
+local slider = Instance.new("TextBox")
+slider.Size = UDim2.new(0,200,0,30)
+slider.Position = UDim2.new(0,25,0,245)
+slider.BackgroundColor3 = Color3.fromRGB(70,70,70)
+slider.TextColor3 = Color3.fromRGB(255,255,255)
+slider.Font = Enum.Font.SourceSansBold
+slider.TextSize = 18
+slider.Text = tostring(colorSpeedMultiplier)
+slider.Parent = mainFrame
+
+slider.FocusLost:Connect(function(enterPressed)
+	local num = tonumber(slider.Text)
+	if num and num > 0 then
+		colorSpeedMultiplier = num
+		sliderLabel.Text = "RGB Speed: "..num
+		slider.Text = tostring(num)
+	else
+		slider.Text = tostring(colorSpeedMultiplier)
+	end
+end)
+
+RunService.Heartbeat:Connect(function()
+	running = safeZoneVar[1]
+	healEnabled = healVar[1]
+	shieldEnabled = shieldVar[1]
+	autoTeleportEnabled = autoTPVar[1]
+	if running and not safeZoneFolder then
+		createSafeZone()
+	elseif not running and safeZoneFolder then
+		removeSafeZone()
 	end
 end)
