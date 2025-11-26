@@ -56,7 +56,7 @@ local function insideSafeZone(pos)
 	   and pos.Z >= min.Z and pos.Z <= max.Z
 end
 
--- Create shield visual (invisible)
+-- Create shield (invisible, non-colliding)
 local function createShield(wSize)
 	if shieldPart and shieldPart.Parent then shieldPart:Destroy() end
 	shieldPart = Instance.new("Part")
@@ -64,8 +64,8 @@ local function createShield(wSize)
 	shieldPart.Size = Vector3.new(wSize,wSize,wSize)
 	shieldPart.Position = safeZoneCenter
 	shieldPart.Anchored = true
-	shieldPart.CanCollide = true
-	shieldPart.Transparency = 1 -- invisible
+	shieldPart.CanCollide = false
+	shieldPart.Transparency = 1
 	shieldPart.Parent = workspace
 end
 
@@ -211,7 +211,6 @@ screenGui.Name = "SafeZoneGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Always-visible toggle button
 local toggleButton = Instance.new("TextButton")
 toggleButton.Size = UDim2.new(0,40,0,40)
 toggleButton.Position = UDim2.new(0,10,0,10)
@@ -231,7 +230,7 @@ toggleButton.MouseButton1Click:Connect(function()
 	mainFrame.Visible = not mainFrame.Visible
 end)
 
--- Helper to create buttons
+-- Button helper
 local function createButton(text, pos, callback)
 	local btn = Instance.new("TextButton")
 	btn.Size = UDim2.new(0,200,0,40)
@@ -246,9 +245,7 @@ local function createButton(text, pos, callback)
 	return btn
 end
 
--- SafeZone toggle
-local toggleSafeZoneBtn
-toggleSafeZoneBtn = createButton("SafeZone: OFF", UDim2.new(0,25,0,20), function()
+local toggleSafeZoneBtn = createButton("SafeZone: OFF", UDim2.new(0,25,0,20), function()
 	if running then
 		removeSafeZone()
 		toggleSafeZoneBtn.Text = "SafeZone: OFF"
@@ -259,16 +256,12 @@ toggleSafeZoneBtn = createButton("SafeZone: OFF", UDim2.new(0,25,0,20), function
 	running = not running
 end)
 
--- Heal toggle
-local toggleHealBtn
-toggleHealBtn = createButton("Heal: OFF", UDim2.new(0,25,0,70), function()
+local toggleHealBtn = createButton("Heal: OFF", UDim2.new(0,25,0,70), function()
 	healEnabled = not healEnabled
 	toggleHealBtn.Text = "Heal: "..(healEnabled and "ON" or "OFF")
 end)
 
--- Shield toggle
-local toggleShieldBtn
-toggleShieldBtn = createButton("Shield: ON", UDim2.new(0,25,0,120), function()
+local toggleShieldBtn = createButton("Shield: ON", UDim2.new(0,25,0,120), function()
 	shieldEnabled = not shieldEnabled
 	toggleShieldBtn.Text = "Shield: "..(shieldEnabled and "ON" or "OFF")
 	if shieldEnabled and running then
@@ -278,9 +271,7 @@ toggleShieldBtn = createButton("Shield: ON", UDim2.new(0,25,0,120), function()
 	end
 end)
 
--- Auto-Teleport toggle
-local toggleAutoTPBtn
-toggleAutoTPBtn = createButton("AutoTP: OFF", UDim2.new(0,25,0,170), function()
+local toggleAutoTPBtn = createButton("AutoTP: OFF", UDim2.new(0,25,0,170), function()
 	autoTeleportEnabled = not autoTeleportEnabled
 	toggleAutoTPBtn.Text = "AutoTP: "..(autoTeleportEnabled and "ON" or "OFF")
 end)
@@ -336,11 +327,8 @@ RunService.Heartbeat:Connect(function(dt)
 		player.Character.Humanoid.Health = math.min(player.Character.Humanoid.MaxHealth, player.Character.Humanoid.Health + healRate * dt)
 	end
 
-	if shieldEnabled and safeZoneFolder and player.Character and player.Character:FindFirstChild("Humanoid") then
-		local hum = player.Character.Humanoid
-		if hum.Health < hum.MaxHealth then
-			hum.Health = hum.MaxHealth
-		end
+	if shieldEnabled and shieldPart and shieldPart.Parent then
+		shieldPart.Position = safeZoneCenter
 	end
 end)
 
