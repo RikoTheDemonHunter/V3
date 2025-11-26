@@ -317,33 +317,29 @@ end)
 
 -- Heartbeat logic
 RunService.Heartbeat:Connect(function(dt)
-	if running and not safeZoneFolder then
-		createSafeZone()
-	elseif not running and safeZoneFolder then
-		removeSafeZone()
-	end
-
+	-- Heal
 	if healEnabled and player.Character and player.Character:FindFirstChild("Humanoid") then
-		player.Character.Humanoid.Health = math.min(player.Character.Humanoid.MaxHealth, player.Character.Humanoid.Health + healRate * dt)
+		local hum = player.Character.Humanoid
+		hum.Health = math.min(hum.MaxHealth, hum.Health + healRate * dt)
 	end
 
+	-- Shield follows SafeZone
 	if shieldEnabled and shieldPart and shieldPart.Parent then
 		shieldPart.Position = safeZoneCenter
 	end
-end)
 
-RunService.RenderStepped:Connect(function(dt)
-	if running then
-		updatePartsColor(dt)
-	end
-end)
-
-RunService.Heartbeat:Connect(function()
+	-- Auto-Teleport if outside SafeZone
 	if running and autoTeleportEnabled then
 		local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 		local hum = player.Character and player.Character:FindFirstChild("Humanoid")
 		if root and hum and hum.Health > 0 and not insideSafeZone(root.Position) then
 			smoothTeleport(safeZoneCenter,0.6)
 		end
+	end
+end)
+
+RunService.RenderStepped:Connect(function(dt)
+	if running then
+		updatePartsColor(dt)
 	end
 end)
