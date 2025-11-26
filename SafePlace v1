@@ -56,21 +56,17 @@ local function insideSafeZone(pos)
 	   and pos.Z >= min.Z and pos.Z <= max.Z
 end
 
--- Create shield visual
+-- Create shield visual (invisible)
 local function createShield(wSize)
 	if shieldPart and shieldPart.Parent then shieldPart:Destroy() end
 	shieldPart = Instance.new("Part")
 	shieldPart.Shape = Enum.PartType.Ball
-	shieldPart.Size = Vector3.new(1,1,1)
+	shieldPart.Size = Vector3.new(wSize,wSize,wSize)
 	shieldPart.Position = safeZoneCenter
 	shieldPart.Anchored = true
-	shieldPart.CanCollide = false
-	shieldPart.Transparency = 0.6
-	shieldPart.Material = Enum.Material.Glass
-	shieldPart.Color = Color3.fromRGB(170,170,255)
+	shieldPart.CanCollide = true
+	shieldPart.Transparency = 1 -- invisible
 	shieldPart.Parent = workspace
-	local tweenInfo = TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-	TweenService:Create(shieldPart, tweenInfo, {Size = Vector3.new(wSize*1.2, wSize*1.2, wSize*1.2), Transparency = 0.85}):Play()
 end
 
 -- Create SafeZone
@@ -209,33 +205,34 @@ local function smoothTeleport(targetPos, duration)
 	end
 end
 
--- GUI
+-- GUI Setup
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "SafeZoneGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
-local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0,250,0,300)
-mainFrame.Position = UDim2.new(0.05,0,0.2,0)
-mainFrame.BackgroundColor3 = Color3.fromRGB(35,35,35)
-mainFrame.AnchorPoint = Vector2.new(0,0)
-mainFrame.Parent = screenGui
+-- Always-visible toggle button
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0,40,0,40)
+toggleButton.Position = UDim2.new(0,10,0,10)
+toggleButton.Text = "☰"
+toggleButton.Parent = screenGui
+toggleButton.ZIndex = 10
 
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0,250,0,360)
+mainFrame.Position = UDim2.new(0,60,0,10)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35,35,35)
 mainFrame.Active = true
 mainFrame.Draggable = true
+mainFrame.Parent = screenGui
 
-local toggleHide = Instance.new("TextButton")
-toggleHide.Size = UDim2.new(0,30,0,30)
-toggleHide.Position = UDim2.new(1,-35,0,5)
-toggleHide.Text = "-"
-toggleHide.Parent = mainFrame
-
-toggleHide.MouseButton1Click:Connect(function()
+toggleButton.MouseButton1Click:Connect(function()
 	mainFrame.Visible = not mainFrame.Visible
 end)
 
-local function createButton(name, text, pos, callback)
+-- Helper to create buttons
+local function createButton(text, pos, callback)
 	local btn = Instance.new("TextButton")
 	btn.Size = UDim2.new(0,200,0,40)
 	btn.Position = pos
@@ -249,8 +246,9 @@ local function createButton(name, text, pos, callback)
 	return btn
 end
 
+-- SafeZone toggle
 local toggleSafeZoneBtn
-toggleSafeZoneBtn = createButton("ToggleSafeZone","SafeZone: OFF",UDim2.new(0,25,0,50),function()
+toggleSafeZoneBtn = createButton("SafeZone: OFF", UDim2.new(0,25,0,20), function()
 	if running then
 		removeSafeZone()
 		toggleSafeZoneBtn.Text = "SafeZone: OFF"
@@ -261,14 +259,16 @@ toggleSafeZoneBtn = createButton("ToggleSafeZone","SafeZone: OFF",UDim2.new(0,25
 	running = not running
 end)
 
+-- Heal toggle
 local toggleHealBtn
-toggleHealBtn = createButton("Heal","Heal: OFF",UDim2.new(0,25,0,100),function()
+toggleHealBtn = createButton("Heal: OFF", UDim2.new(0,25,0,70), function()
 	healEnabled = not healEnabled
 	toggleHealBtn.Text = "Heal: "..(healEnabled and "ON" or "OFF")
 end)
 
+-- Shield toggle
 local toggleShieldBtn
-toggleShieldBtn = createButton("Shield","Shield: ON",UDim2.new(0,25,0,150),function()
+toggleShieldBtn = createButton("Shield: ON", UDim2.new(0,25,0,120), function()
 	shieldEnabled = not shieldEnabled
 	toggleShieldBtn.Text = "Shield: "..(shieldEnabled and "ON" or "OFF")
 	if shieldEnabled and running then
@@ -278,10 +278,50 @@ toggleShieldBtn = createButton("Shield","Shield: ON",UDim2.new(0,25,0,150),funct
 	end
 end)
 
+-- Auto-Teleport toggle
 local toggleAutoTPBtn
-toggleAutoTPBtn = createButton("AutoTP","AutoTP: OFF",UDim2.new(0,25,0,200),function()
+toggleAutoTPBtn = createButton("AutoTP: OFF", UDim2.new(0,25,0,170), function()
 	autoTeleportEnabled = not autoTeleportEnabled
 	toggleAutoTPBtn.Text = "AutoTP: "..(autoTeleportEnabled and "ON" or "OFF")
+end)
+
+-- RGB speed slider
+local sliderLabel = Instance.new("TextLabel")
+sliderLabel.Size = UDim2.new(0,200,0,30)
+sliderLabel.Position = UDim2.new(0,25,0,220)
+sliderLabel.Text = "RGB Speed: 1"
+sliderLabel.BackgroundTransparency = 0.5
+sliderLabel.BackgroundColor3 = Color3.fromRGB(50,50,50)
+sliderLabel.TextColor3 = Color3.fromRGB(255,255,255)
+sliderLabel.Font = Enum.Font.SourceSans
+sliderLabel.TextSize = 16
+sliderLabel.Parent = mainFrame
+
+local slider = Instance.new("TextButton")
+slider.Size = UDim2.new(0,200,0,20)
+slider.Position = UDim2.new(0,25,0,250)
+slider.BackgroundColor3 = Color3.fromRGB(100,100,100)
+slider.Text = ""
+slider.Parent = mainFrame
+
+local dragging = false
+slider.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+	end
+end)
+slider.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = false
+	end
+end)
+slider.InputChanged:Connect(function(input)
+	if dragging then
+		local mouse = UserInputService:GetMouseLocation()
+		local pos = math.clamp(mouse.X - slider.AbsolutePosition.X,0,slider.AbsoluteSize.X)
+		colorSpeedMultiplier = pos/50
+		sliderLabel.Text = "RGB Speed: "..string.format("%.1f", colorSpeedMultiplier)
+	end
 end)
 
 -- Heartbeat logic
