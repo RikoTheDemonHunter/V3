@@ -3,8 +3,8 @@ repeat task.wait() until game:IsLoaded()
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
-local player = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
 
 local safeZoneFolder
 local running = false
@@ -15,11 +15,13 @@ local safeZoneHalfExtents = Vector3.new(300,50,300)
 local hueValue = 0
 local colorSpeedMultiplier = 1
 local baseSaturation = 0.7
+
 local healEnabled = false
 local shieldEnabled = true
 local autoTeleportEnabled = false
 local healRate = 5
 
+-- RGB text effect
 local function RGBEffect(label)
 	if not label then return end
 	task.spawn(function()
@@ -33,6 +35,7 @@ local function RGBEffect(label)
 	end)
 end
 
+-- Smooth color cycle
 local function updatePartsColor(dt)
 	hueValue = (hueValue + dt * 0.1 * colorSpeedMultiplier) % 1
 	local color = Color3.fromHSV(hueValue, baseSaturation, 1)
@@ -43,6 +46,7 @@ local function updatePartsColor(dt)
 	end
 end
 
+-- Check if position is inside SafeZone
 local function insideSafeZone(pos)
 	if not safeZoneFolder then return false end
 	local min = safeZoneCenter - safeZoneHalfExtents
@@ -52,7 +56,8 @@ local function insideSafeZone(pos)
 	   and pos.Z >= min.Z and pos.Z <= max.Z
 end
 
-local function createShield(wSize, duration)
+-- Create shield visual
+local function createShield(wSize)
 	if shieldPart and shieldPart.Parent then shieldPart:Destroy() end
 	shieldPart = Instance.new("Part")
 	shieldPart.Shape = Enum.PartType.Ball
@@ -64,12 +69,11 @@ local function createShield(wSize, duration)
 	shieldPart.Material = Enum.Material.Glass
 	shieldPart.Color = Color3.fromRGB(170,170,255)
 	shieldPart.Parent = workspace
-	local targetSize = Vector3.new(wSize*1.2, wSize*1.2, wSize*1.2)
-	local tweenInfo = TweenInfo.new(math.max(0.6, duration), Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-	local tw = TweenService:Create(shieldPart, tweenInfo, {Size = targetSize, Transparency = 0.85})
-	tw:Play()
+	local tweenInfo = TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	TweenService:Create(shieldPart, tweenInfo, {Size = Vector3.new(wSize*1.2, wSize*1.2, wSize*1.2), Transparency = 0.85}):Play()
 end
 
+-- Create SafeZone
 local function createSafeZone()
 	if safeZoneFolder then return end
 	safeZoneFolder = Instance.new("Folder")
@@ -178,7 +182,7 @@ local function createSafeZone()
 	RGBEffect(label)
 
 	if shieldEnabled then
-		createShield(600,0.8)
+		createShield(600)
 	end
 end
 
@@ -200,17 +204,88 @@ local function smoothTeleport(targetPos, duration)
 		local root = char:FindFirstChild("HumanoidRootPart")
 		if root then
 			local tweenInfo = TweenInfo.new(duration or 0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-			local goal = {CFrame = CFrame.new(targetPos + Vector3.new(0,10,0))}
-			TweenService:Create(root, tweenInfo, goal):Play()
+			TweenService:Create(root, tweenInfo, {CFrame = CFrame.new(targetPos + Vector3.new(0,10,0))}):Play()
 		end
 	end
 end
 
--- GUI code omitted for brevity; same as previous polished version, fully draggable, minimize/hide, persist on respawn
+-- GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "SafeZoneGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0,250,0,300)
+mainFrame.Position = UDim2.new(0.05,0,0.2,0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(35,35,35)
+mainFrame.AnchorPoint = Vector2.new(0,0)
+mainFrame.Parent = screenGui
+
+mainFrame.Active = true
+mainFrame.Draggable = true
+
+local toggleHide = Instance.new("TextButton")
+toggleHide.Size = UDim2.new(0,30,0,30)
+toggleHide.Position = UDim2.new(1,-35,0,5)
+toggleHide.Text = "-"
+toggleHide.Parent = mainFrame
+
+toggleHide.MouseButton1Click:Connect(function()
+	mainFrame.Visible = not mainFrame.Visible
+end)
+
+local function createButton(name, text, pos, callback)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(0,200,0,40)
+	btn.Position = pos
+	btn.Text = text
+	btn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+	btn.TextColor3 = Color3.fromRGB(255,255,255)
+	btn.Font = Enum.Font.SourceSansBold
+	btn.TextSize = 18
+	btn.Parent = mainFrame
+	btn.MouseButton1Click:Connect(callback)
+	return btn
+end
+
+local toggleSafeZoneBtn
+toggleSafeZoneBtn = createButton("ToggleSafeZone","SafeZone: OFF",UDim2.new(0,25,0,50),function()
+	if running then
+		removeSafeZone()
+		toggleSafeZoneBtn.Text = "SafeZone: OFF"
+	else
+		createSafeZone()
+		toggleSafeZoneBtn.Text = "SafeZone: ON"
+	end
+	running = not running
+end)
+
+local toggleHealBtn
+toggleHealBtn = createButton("Heal","Heal: OFF",UDim2.new(0,25,0,100),function()
+	healEnabled = not healEnabled
+	toggleHealBtn.Text = "Heal: "..(healEnabled and "ON" or "OFF")
+end)
+
+local toggleShieldBtn
+toggleShieldBtn = createButton("Shield","Shield: ON",UDim2.new(0,25,0,150),function()
+	shieldEnabled = not shieldEnabled
+	toggleShieldBtn.Text = "Shield: "..(shieldEnabled and "ON" or "OFF")
+	if shieldEnabled and running then
+		createShield(600)
+	elseif shieldPart then
+		shieldPart:Destroy()
+	end
+end)
+
+local toggleAutoTPBtn
+toggleAutoTPBtn = createButton("AutoTP","AutoTP: OFF",UDim2.new(0,25,0,200),function()
+	autoTeleportEnabled = not autoTeleportEnabled
+	toggleAutoTPBtn.Text = "AutoTP: "..(autoTeleportEnabled and "ON" or "OFF")
+end)
 
 -- Heartbeat logic
 RunService.Heartbeat:Connect(function(dt)
-	running = running
 	if running and not safeZoneFolder then
 		createSafeZone()
 	elseif not running and safeZoneFolder then
@@ -221,7 +296,6 @@ RunService.Heartbeat:Connect(function(dt)
 		player.Character.Humanoid.Health = math.min(player.Character.Humanoid.MaxHealth, player.Character.Humanoid.Health + healRate * dt)
 	end
 
-	-- Shield functional: prevent damage
 	if shieldEnabled and safeZoneFolder and player.Character and player.Character:FindFirstChild("Humanoid") then
 		local hum = player.Character.Humanoid
 		if hum.Health < hum.MaxHealth then
