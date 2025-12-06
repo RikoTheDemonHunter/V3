@@ -34,56 +34,50 @@ platform.Transparency = 0.8
 platform.CFrame = hrp.CFrame * CFrame.new(0, PLATFORM_OFFSET, 0)
 platform.Parent = workspace
 
--- 🛡️ Safe Zone Logic
-local platformY = platform.Position.Y
-local platformHalf = PLATFORM_SIZE.Y / 2
+-- 🛡️ Safe Zone Logic (FIXED + SIZE-CHANGE SAFE)
 local inSafeZone = false
+local SIZE_CHANGE_BUFFER = 6 -- prevents shield from disappearing when you shrink/grow
 
 task.spawn(function()
-	while task.wait(0.25) do
-		if not (platform and platform.Parent and humanoid and humanoid.Parent) then break end
+	while task.wait(0.1) do
+		if not (platform and platform.Parent and humanoid and humanoid.Parent) then
+			break
+		end
+
+		-- Always update platform position in case of respawn / re-exec
+		local platformY = platform.Position.Y
+		local platformHalf = PLATFORM_SIZE.Y / 2
+
+		-- Safe zone height range
+		local zoneBottom = platformY + platformHalf - DETECTION_BUFFER
+		local zoneTop = zoneBottom + SAFE_HEIGHT
 
 		local hrpPos = hrp.Position
-		local zoneBottom = platformY + platformHalf - 2 - DETECTION_BUFFER
-		local zoneTop = platformY + SAFE_HEIGHT + DETECTION_BUFFER
 
-		local isSafe =
-			hrpPos.Y >= zoneBottom
-			and hrpPos.Y <= zoneTop
-			and math.abs(hrpPos.X - platform.Position.X) <= PLATFORM_SIZE.X / 2
-			and math.abs(hrpPos.Z - platform.Position.Z) <= PLATFORM_SIZE.Z / 2
+		-- X/Z check with extra buffer so growing/shrinking doesn't break the zone
+		local withinXZ =
+			math.abs(hrpPos.X - platform.Position.X) <= (PLATFORM_SIZE.X / 2) + SIZE_CHANGE_BUFFER
+			and math.abs(hrpPos.Z - platform.Position.Z) <= (PLATFORM_SIZE.Z / 2) + SIZE_CHANGE_BUFFER
 
-		if isSafe then
-			if not inSafeZone then
-				inSafeZone = true
-				
-			end
-			if humanoid.Health < humanoid.MaxHealth then
-				humanoid.Health = humanoid.MaxHealth
-			end
+		-- Y check with buffer so sudden height changes don't kick you out
+		local withinY =
+			hrpPos.Y >= (zoneBottom - SIZE_CHANGE_BUFFER)
+			and hrpPos.Y <= (zoneTop + SIZE_CHANGE_BUFFER)
+
+		local isSafe = withinXZ and withinY
+
+		if isSafe and not inSafeZone then
+			inSafeZone = true
 			humanoid:SetAttribute("IsSafe", true)
-		else
-			if inSafeZone then
-				inSafeZone = false
-				
-			end
+			
+		elseif not isSafe and inSafeZone then
+			inSafeZone = false
 			humanoid:SetAttribute("IsSafe", false)
 		end
-	end
-end)
 
--- 🌀 ForceField protection
-task.spawn(function()
-	while task.wait(0.5) do
-		if not (platform and platform.Parent and humanoid and humanoid.Parent) then break end
-
-		if inSafeZone then
-			if not character:FindFirstChildOfClass("ForceField") then
-				Instance.new("ForceField", character)
-			end
-		else
-			local ff = character:FindFirstChildOfClass("ForceField")
-			if ff then ff:Destroy() end
+		-- Auto-heal while safe
+		if inSafeZone and humanoid.Health < humanoid.MaxHealth then
+			humanoid.Health = humanoid.MaxHealth
 		end
 	end
 end)
