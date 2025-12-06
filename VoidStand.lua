@@ -56,7 +56,7 @@ task.spawn(function()
 		if isSafe then
 			if not inSafeZone then
 				inSafeZone = true
-				print("[SafeZone] Entered Sanctuary Field")
+				
 			end
 			if humanoid.Health < humanoid.MaxHealth then
 				humanoid.Health = humanoid.MaxHealth
@@ -65,7 +65,7 @@ task.spawn(function()
 		else
 			if inSafeZone then
 				inSafeZone = false
-				print("[SafeZone] Left Sanctuary Field")
+				
 			end
 			humanoid:SetAttribute("IsSafe", false)
 		end
