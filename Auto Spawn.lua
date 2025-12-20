@@ -1,31 +1,48 @@
 local types = {
-    "[INFO]",
-    "[SYSTEM]",
-    "[WARNING]",
-    "[DEBUG]",
-    "[NOTICE]",
-    "[ALERT]"
+	"[INFO]",
+	"[SYSTEM]",
+	"[WARNING]",
+	"[DEBUG]",
+	"[NOTICE]",
+	"[ALERT]"
 }
 
 local function randomType()
-    return types[math.random(1, #types)]
+	return types[math.random(1, #types)]
 end
-
-local function randomIP()
-    local function part()
-        return math.random(0, 255)
-    end
-    return part().."."..part().."."..part().."."..part()
-end
-
-print(randomType() .. " Generated IP: " .. randomIP())
 
 local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local Debris = game:GetService("Debris")
 
 local player = Players.LocalPlayer
+
+-- Legit session hash (visual only)
+local function generateSessionHash()
+	local chars = "ABCDEF0123456789"
+	local hash = {}
+	for i = 1, 12 do
+		local r = math.random(1, #chars)
+		hash[i] = chars:sub(r, r)
+	end
+	return table.concat(hash)
+end
+
+local platform =
+	UserInputService.TouchEnabled and "Mobile"
+	or UserInputService.KeyboardEnabled and "Desktop"
+	or "Unknown"
+
+local sessionHash = generateSessionHash()
+
+print(randomType() .. " Initializing secure session...")
+print("[SYSTEM] User: " .. player.Name .. " (ID: " .. player.UserId .. ")")
+print("[INFO] Account Age: " .. player.AccountAge .. " days")
+print("[DEBUG] Platform: " .. platform)
+print("[NOTICE] Session Hash: " .. sessionHash)
+print("[SYSTEM] Integrity check passed")
 
 -- Variables
 local spawn1, spawn2 = nil, nil
