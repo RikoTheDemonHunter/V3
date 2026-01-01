@@ -9,11 +9,6 @@ for _, gui in ipairs(game.CoreGui:GetChildren()) do
 	end
 end
 
-local existingUI = game.CoreGui:FindFirstChild("GainUI")
-if existingUI then
-	existingUI:Destroy()
-end
-
 --════════════════════════════════════
 -- Services
 --════════════════════════════════════
