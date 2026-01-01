@@ -181,15 +181,64 @@ end)
 --════════════════════════════════════
 -- Chat Commands (!RGB On / Off)
 --════════════════════════════════════
+local glowEnabled = true
+
+-- Predefine your colors
+local colorMap = {
+	blue = Color3.fromRGB(0, 122, 255),
+	lightgreen = Color3.fromRGB(144, 238, 144),
+	yellow = Color3.fromRGB(255, 255, 0),
+	peppermint = Color3.fromRGB(152, 255, 152),
+	strawberry = Color3.fromRGB(255, 80, 120),
+	pink = Color3.fromRGB(255, 182, 193),
+	ethereal = Color3.fromRGB(180, 200, 255)
+}
+
 player.Chatted:Connect(function(msg)
 	msg = string.lower(msg)
 
+	-- RGB toggle
 	if msg == "!rgb on" then
 		rgbEnabled = true
-
 	elseif msg == "!rgb off" then
 		rgbEnabled = false
 		PrestigeLabel.TextColor3 = defaultColor
 		BPLabel.TextColor3 = defaultColor
+	end
+
+	-- Glow toggle
+	if msg == "!glow on" then
+		glowEnabled = true
+		for _, label in ipairs({PrestigeLabel, BPLabel}) do
+			if not label:FindFirstChild("UIStroke") then
+				local stroke = Instance.new("UIStroke")
+				stroke.Thickness = 1.2
+				stroke.Transparency = 0.4
+				stroke.Parent = label
+			end
+		end
+	elseif msg == "!glow off" then
+		glowEnabled = false
+		for _, label in ipairs({PrestigeLabel, BPLabel}) do
+			local stroke = label:FindFirstChild("UIStroke")
+			if stroke then stroke:Destroy() end
+		end
+	end
+
+	-- Hide/Show UI
+	if msg == "!hide" then
+		GainUI.Enabled = false
+	elseif msg == "!show" then
+		GainUI.Enabled = true
+	end
+
+	-- Color commands
+	for name, color in pairs(colorMap) do
+		if msg == "!color "..name then
+			rgbEnabled = false -- disable RGB when setting static color
+			PrestigeLabel.TextColor3 = color
+			BPLabel.TextColor3 = color
+			break
+		end
 	end
 end)
