@@ -66,7 +66,9 @@ local BPLabel = createLabel(30, "BP Gain: 0")
 -- Drag System (Mouse + Touch)
 --════════════════════════════════════
 local dragging = false
-local dragStart, startPos
+local dragInput
+local dragStart
+local startPos
 
 local function clamp(pos)
 	return UDim2.fromOffset(
@@ -81,18 +83,19 @@ DragFrame.InputBegan:Connect(function(input)
 		dragging = true
 		dragStart = input.Position
 		startPos = DragFrame.Position
+		dragInput = input
+	end
+end)
 
-		input.Changed:Once(function()
-			dragging = false
-		end)
+DragFrame.InputEnded:Connect(function(input)
+	if input == dragInput then
+		dragging = false
+		dragInput = nil
 	end
 end)
 
 UIS.InputChanged:Connect(function(input)
-	if dragging and (
-		input.UserInputType == Enum.UserInputType.MouseMovement
-		or input.UserInputType == Enum.UserInputType.Touch
-	) then
+	if dragging and input == dragInput then
 		local delta = input.Position - dragStart
 		DragFrame.Position = clamp(
 			UDim2.fromOffset(
