@@ -1,135 +1,192 @@
---// Avery's Gain Tracker (Clean, Safe, RGB Cycle + Modern Draggable)
+--// Avery's Gain Tracker (Polished, Clean, Mobile-Friendly + RGB Toggle)
 
--- Remove existing GainUI if already running
-for _, v in pairs(game.CoreGui:GetChildren()) do
-	if v:IsA("ScreenGui") and v.Name == "GainUI" then
-		v:Destroy()
+--════════════════════════════════════
+-- Cleanup
+--════════════════════════════════════
+for _, gui in ipairs(game.CoreGui:GetChildren()) do
+	if gui:IsA("ScreenGui") and gui.Name == "GainUI" then
+		gui:Destroy()
 	end
 end
 
--- Create GUI container
+--════════════════════════════════════
+-- Services
+--════════════════════════════════════
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+--════════════════════════════════════
+-- UI Root
+--════════════════════════════════════
 local GainUI = Instance.new("ScreenGui")
 GainUI.Name = "GainUI"
-GainUI.Parent = game.CoreGui
 GainUI.ResetOnSpawn = false
+GainUI.IgnoreGuiInset = true
+GainUI.Parent = game.CoreGui
 
--- Main draggable frame (invisible)
 local DragFrame = Instance.new("Frame")
-DragFrame.Name = "DragFrame"
 DragFrame.Parent = GainUI
-DragFrame.Size = UDim2.new(0, 220, 0, 60)
-DragFrame.Position = UDim2.new(0.05, 0, 0.1, 0)
+DragFrame.Size = UDim2.fromOffset(220, 60)
+DragFrame.Position = UDim2.fromScale(0.05, 0.1)
 DragFrame.BackgroundTransparency = 1
+DragFrame.Active = true
 
--- Prestige Label
-local PrestigeGain = Instance.new("TextLabel")
-PrestigeGain.Name = "PrestigeGain"
-PrestigeGain.Parent = DragFrame
-PrestigeGain.BackgroundTransparency = 1
-PrestigeGain.Position = UDim2.new(0, 0, 0, 0)
-PrestigeGain.Size = UDim2.new(1, 0, 0, 25)
-PrestigeGain.Font = Enum.Font.SourceSansBold
-PrestigeGain.TextColor3 = Color3.fromRGB(255, 0, 0)
-PrestigeGain.TextScaled = true
-PrestigeGain.TextWrapped = true
-PrestigeGain.Text = "Prestige: 0"
+--════════════════════════════════════
+-- Label Factory
+--════════════════════════════════════
+local function createLabel(y, text)
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, 0, 0, 25)
+	label.Position = UDim2.fromOffset(0, y)
+	label.BackgroundTransparency = 1
+	label.Font = Enum.Font.SourceSansBold
+	label.TextScaled = true
+	label.TextWrapped = true
+	label.Text = text
+	label.TextColor3 = Color3.fromRGB(255, 255, 255)
+	label.Parent = DragFrame
 
--- BP Gain Label
-local BpGain = Instance.new("TextLabel")
-BpGain.Name = "BpGain"
-BpGain.Parent = DragFrame
-BpGain.BackgroundTransparency = 1
-BpGain.Position = UDim2.new(0, 0, 0, 30)
-BpGain.Size = UDim2.new(1, 0, 0, 25)
-BpGain.Font = Enum.Font.SourceSansBold
-BpGain.TextColor3 = Color3.fromRGB(255, 0, 0)
-BpGain.TextScaled = true
-BpGain.TextWrapped = true
-BpGain.Text = "BP Gain: 0"
+	local stroke = Instance.new("UIStroke")
+	stroke.Thickness = 1.2
+	stroke.Transparency = 0.4
+	stroke.Parent = label
 
--- Modern draggable system (reliable)
-local UserInputService = game:GetService("UserInputService")
+	return label
+end
+
+local PrestigeLabel = createLabel(0, "Prestige: 0")
+local BPLabel = createLabel(30, "BP Gain: 0")
+
+--════════════════════════════════════
+-- Drag System (Mouse + Touch)
+--════════════════════════════════════
 local dragging = false
 local dragStart, startPos
 
+local function clamp(pos)
+	return UDim2.fromOffset(
+		math.clamp(pos.X.Offset, 0, camera.ViewportSize.X - DragFrame.Size.X.Offset),
+		math.clamp(pos.Y.Offset, 0, camera.ViewportSize.Y - DragFrame.Size.Y.Offset)
+	)
+end
+
 DragFrame.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+	or input.UserInputType == Enum.UserInputType.Touch then
 		dragging = true
 		dragStart = input.Position
 		startPos = DragFrame.Position
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
+
+		input.Changed:Once(function()
+			dragging = false
 		end)
 	end
 end)
 
-UserInputService.InputChanged:Connect(function(input)
-	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+UIS.InputChanged:Connect(function(input)
+	if dragging and (
+		input.UserInputType == Enum.UserInputType.MouseMovement
+		or input.UserInputType == Enum.UserInputType.Touch
+	) then
 		local delta = input.Position - dragStart
-		DragFrame.Position = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
+		DragFrame.Position = clamp(
+			UDim2.fromOffset(
+				startPos.X.Offset + delta.X,
+				startPos.Y.Offset + delta.Y
+			)
 		)
 	end
 end)
 
--- Safe stat loading
-local player = game.Players.LocalPlayer
+--════════════════════════════════════
+-- Safe Stat Loading
+--════════════════════════════════════
 local leaderstats = player:WaitForChild("leaderstats", 10)
 if not leaderstats then
-	warn("[Gain Tracker] leaderstats not found, stopping script.")
+	warn("[GainTracker] leaderstats missing")
 	return
 end
 
 local bp = leaderstats:WaitForChild("Burp points", 10)
 local prestige = leaderstats:WaitForChild("Prestige", 10)
 if not bp or not prestige then
-	warn("[Gain Tracker] Missing BP or Prestige stat, stopping script.")
+	warn("[GainTracker] Required stats missing")
 	return
 end
 
--- Track gain
+--════════════════════════════════════
+-- Gain Logic
+--════════════════════════════════════
 local lastBP = bp.Value
 local totalGain = 0
 
--- Rainbow function
-local function RainbowColor(hue)
-	return Color3.fromHSV(hue, 1, 1)
+local function flash(label)
+	local tween = TweenService:Create(
+		label,
+		TweenInfo.new(0.15),
+		{TextTransparency = 0.25}
+	)
+	tween:Play()
+	task.delay(0.2, function()
+		label.TextTransparency = 0
+	end)
 end
 
--- Optional: Flash effect when BP increases
-local TweenService = game:GetService("TweenService")
-local function flashText(label)
-	local tweenIn = TweenService:Create(label, TweenInfo.new(0.2), {TextTransparency = 0})
-	local tweenOut = TweenService:Create(label, TweenInfo.new(0.4), {TextTransparency = 0.5})
-	tweenIn:Play()
-	tweenIn.Completed:Wait()
-	tweenOut:Play()
-end
+prestige.Changed:Connect(function()
+	PrestigeLabel.Text = "Prestige: " .. prestige.Value
+end)
 
--- Update loop
-task.spawn(function()
-	local hue = 0
-	while task.wait(0.08) do
-		hue = (hue + 0.005) % 1
-		local color = RainbowColor(hue)
+bp.Changed:Connect(function(newValue)
+	local gain = newValue - lastBP
+	if gain > 0 then
+		totalGain += gain
+		BPLabel.Text = string.format(
+			"BP Gain: +%d (Total: %d)",
+			gain,
+			totalGain
+		)
+		flash(BPLabel)
+	end
+	lastBP = newValue
+end)
 
-		PrestigeGain.TextColor3 = color
-		BpGain.TextColor3 = color
-		PrestigeGain.Text = "Prestige: " .. tostring(prestige.Value)
+PrestigeLabel.Text = "Prestige: " .. prestige.Value
+BPLabel.Text = "BP Gain: 0"
 
-		if bp.Value ~= lastBP then
-			local gain = bp.Value - lastBP
-			if gain > 0 then
-				totalGain += gain
-				BpGain.Text = string.format("BP Gain: +%d (Total: %d)", gain, totalGain)
-				flashText(BpGain)
-			end
-			lastBP = bp.Value
-		end
+--════════════════════════════════════
+-- RGB Toggle System
+--════════════════════════════════════
+local rgbEnabled = true
+local hue = 0
+local defaultColor = Color3.fromRGB(255, 255, 255)
+
+RunService.Heartbeat:Connect(function(dt)
+	if not rgbEnabled then return end
+
+	hue = (hue + dt * 0.08) % 1
+	local color = Color3.fromHSV(hue, 1, 1)
+
+	PrestigeLabel.TextColor3 = color
+	BPLabel.TextColor3 = color
+end)
+
+--════════════════════════════════════
+-- Chat Commands (!RGB On / Off)
+--════════════════════════════════════
+player.Chatted:Connect(function(msg)
+	msg = string.lower(msg)
+
+	if msg == "!rgb on" then
+		rgbEnabled = true
+
+	elseif msg == "!rgb off" then
+		rgbEnabled = false
+		PrestigeLabel.TextColor3 = defaultColor
+		BPLabel.TextColor3 = defaultColor
 	end
 end)
