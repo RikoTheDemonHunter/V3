@@ -9,6 +9,11 @@ for _, gui in ipairs(game.CoreGui:GetChildren()) do
 	end
 end
 
+local existingUI = game.CoreGui:FindFirstChild("GainUI")
+if existingUI then
+	existingUI:Destroy()
+end
+
 --════════════════════════════════════
 -- Services
 --════════════════════════════════════
@@ -166,7 +171,7 @@ BPLabel.Text = "BP Gain: 0"
 --════════════════════════════════════
 local rgbEnabled = true
 local hue = 0
-local defaultColor = Color3.fromRGB(255, 255, 255)
+local defaultColor = Color3.fromRGB(173, 216, 230)
 
 RunService.Heartbeat:Connect(function(dt)
 	if not rgbEnabled then return end
