@@ -233,6 +233,18 @@ player.Chatted:Connect(function(msg)
 	end
 
 	-- Color commands
+if msg == "!color item" or msg == "!color list" then
+	local availableColors = {}
+	for name, _ in pairs(colorMap) do
+		table.insert(availableColors, name)
+	end
+	player:SendNotification({
+		Title = "Available Colors",
+		Text = table.concat(availableColors, ", "),
+		Duration = 5
+	})
+end
+		
 	for name, color in pairs(colorMap) do
 		if msg == "!color "..name then
 			rgbEnabled = false -- disable RGB when setting static color
@@ -242,19 +254,5 @@ player.Chatted:Connect(function(msg)
 		end
 	end
 end)
-
-if msg == "!color item" or msg == "!color list" then
-	local availableColors = {}
-	for name, _ in pairs(colorMap) do
-		table.insert(availableColors, name)
-	end
-	game.StarterGui:SetCore("ChatMakeSystemMessage", {
-		Text = "Available Colors: " .. table.concat(availableColors, ", "),
-		Color = Color3.fromRGB(0, 255, 255),
-		Font = Enum.Font.SourceSansBold,
-		FontSize = Enum.FontSize.Size24
-	})
-end
-
 
 
