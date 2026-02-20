@@ -45,25 +45,47 @@ frame.Parent = gui
 
 Instance.new("UICorner", frame).CornerRadius = UDim.new(0,12)
 
--- Prevent stretch
-local aspect = Instance.new("UIAspectRatioConstraint", frame)
-aspect.AspectRatio = 0.78
+
 
 -- Smart scaling
 local scale = Instance.new("UIScale", frame)
-local function updateScale()
-	local size = workspace.CurrentCamera.ViewportSize
-	local min = math.min(size.X, size.Y)
-	if min < 500 then
-		scale.Scale = 0.75
-	elseif min < 700 then
-		scale.Scale = 0.9
+
+local function applyResponsiveSize()
+
+	local camera = workspace.CurrentCamera
+	if not camera then return end
+	
+	local viewport = camera.ViewportSize
+	local width = viewport.X
+	local height = viewport.Y
+	
+	-- Desktop Large
+	if width >= 1600 then
+		frame.Size = UDim2.new(0, 550, 0, 650)
+		
+	-- Desktop Normal
+	elseif width >= 1200 then
+		frame.Size = UDim2.new(0, 500, 0, 600)
+		
+	-- Small Laptop
+	elseif width >= 900 then
+		frame.Size = UDim2.new(0, 440, 0, 540)
+		
+	-- Tablet
+	elseif width >= 700 then
+		frame.Size = UDim2.new(0, 400, 0, 500)
+		
+	-- Mobile
 	else
-		scale.Scale = 1
+		frame.Size = UDim2.new(0, 340, 0, 480)
 	end
+	
+	frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+	frame.AnchorPoint = Vector2.new(0.5, 0.5)
 end
-updateScale()
-workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(updateScale)
+
+applyResponsiveSize()
+workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(applyResponsiveSize)
 
 -- Blur
 local blur = Instance.new("BlurEffect")
