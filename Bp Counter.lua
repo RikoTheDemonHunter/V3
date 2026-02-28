@@ -210,12 +210,6 @@ local colorMap = {
 	sunsetglow = Color3.fromRGB(255, 150, 180),
 	fairydust = Color3.fromRGB(220, 255, 255),
 	aurora = Color3.fromRGB(120, 255, 200),
-
-	blush = Color3.fromRGB(255, 192, 203),
-	babypurple = Color3.fromRGB(210, 180, 255),
-	skyfoam = Color3.fromRGB(180, 255, 240),
-	mintcloud = Color3.fromRGB(200, 255, 220),
-	rosewater = Color3.fromRGB(255, 210, 230)
 }
 
 player.Chatted:Connect(function(msg)
