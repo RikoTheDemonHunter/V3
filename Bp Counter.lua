@@ -149,8 +149,9 @@ bp.Changed:Connect(function(newValue)
 	if gain > 0 then
 		totalGain += gain
 		BPLabel.Text = string.format(
-			"BP Gain: +%%d",
-			gain
+			"(BP Gain: +%d)",
+			gain,
+			totalGain
 		)
 		flash(BPLabel)
 	end
