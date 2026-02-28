@@ -149,9 +149,8 @@ bp.Changed:Connect(function(newValue)
 	if gain > 0 then
 		totalGain += gain
 		BPLabel.Text = string.format(
-			"(BP Gain: +%d)",
-			gain,
-			totalGain
+			"BP Gain: +%%d",
+			gain
 		)
 		flash(BPLabel)
 	end
@@ -233,18 +232,18 @@ player.Chatted:Connect(function(msg)
 	end
 
 	-- Color commands
-if msg == "!color item" or msg == "!color list" then
-	local availableColors = {}
-	for name, _ in pairs(colorMap) do
-		table.insert(availableColors, name)
+	if msg == "!color item" or msg == "!color list" then
+		local availableColors = {}
+		for name, _ in pairs(colorMap) do
+			table.insert(availableColors, name)
+		end
+		player:SendNotification({
+			Title = "Available Colors",
+			Text = table.concat(availableColors, ", "),
+			Duration = 5
+		})
 	end
-	player:SendNotification({
-		Title = "Available Colors",
-		Text = table.concat(availableColors, ", "),
-		Duration = 5
-	})
-end
-		
+
 	for name, color in pairs(colorMap) do
 		if msg == "!color "..name then
 			rgbEnabled = false -- disable RGB when setting static color
@@ -254,5 +253,3 @@ end
 		end
 	end
 end)
-
-
