@@ -192,19 +192,16 @@ local colorMap = {
 	strawberry = Color3.fromRGB(255, 80, 120),
 	pink = Color3.fromRGB(255, 182, 193),
 	ethereal = Color3.fromRGB(180, 200, 255)
-
 	vanilla = Color3.fromRGB(255, 243, 204),
 	peachcream = Color3.fromRGB(255, 218, 185),
 	lavendermilk = Color3.fromRGB(230, 230, 250),
 	blueberrymilk = Color3.fromRGB(200, 220, 255),
 	matcha = Color3.fromRGB(170, 210, 140)
-
 	cottoncandy = Color3.fromRGB(255, 200, 235),
 	bubblegum = Color3.fromRGB(255, 105, 180),
 	lollipop = Color3.fromRGB(255, 140, 160),
 	lemonade = Color3.fromRGB(255, 250, 170),
 	tangerine = Color3.fromRGB(255, 170, 100),
-
 	stardust = Color3.fromRGB(210, 210, 255),
 	moonlight = Color3.fromRGB(190, 210, 255),
 	sunsetglow = Color3.fromRGB(255, 150, 180),
