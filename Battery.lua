@@ -1,187 +1,75 @@
---// Services
+-- LOCAL SCRIPT: AntiVoid + Scare + Fakeout (no looping)
+-- Place in StarterPlayerScripts
+
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
-local GuiService = game:GetService("GuiService")
 
---// RemoteEvent for Ping
-local PingRemote = ReplicatedStorage:FindFirstChild("PingRemote")
-if not PingRemote then
-    PingRemote = Instance.new("RemoteEvent")
-    PingRemote.Name = "PingRemote"
-    PingRemote.Parent = ReplicatedStorage
+-- Commands
+local COMMAND_ANTIVOID = "!antivoid"
+local COMMAND_SCARE = "!scare"
+local COMMAND_FAKEOUT = "!fakeout"
+
+-- Toggle flag
+local antiVoidEnabled = false
+
+-- Function to teleport in front of a target player
+local function scarePlayer(targetName)
+    local target = Players:FindFirstChild(targetName)
+    if target and target.Character and LocalPlayer.Character then
+        local targetHRP = target.Character:FindFirstChild("HumanoidRootPart")
+        local myHRP = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if targetHRP and myHRP then
+            local frontOffset = targetHRP.CFrame.LookVector * 3
+            myHRP.CFrame = targetHRP.CFrame + frontOffset
+        end
+    end
 end
 
--- Server-side setup (for testing, run on server):
--- PingRemote.OnServerEvent:Connect(function(player) PingRemote:FireClient(player) end)
-
---// ScreenGui
-local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-ScreenGui.Name = "MobileStatsHub"
-ScreenGui.ResetOnSpawn = false
-
---// Main Frame
-local Main = Instance.new("Frame", ScreenGui)
-local screenSize = GuiService:GetScreenResolution()
-Main.Size = UDim2.new(0, math.clamp(screenSize.X*0.45, 250, 400), 0, 150)
-Main.Position = UDim2.new(0.5, -Main.Size.X.Offset/2, 0.05, 0)
-Main.BackgroundColor3 = Color3.fromRGB(35,35,35)
-Main.ClipsDescendants = true
-local UICorner = Instance.new("UICorner", Main)
-UICorner.CornerRadius = UDim.new(0, 12)
-
--- Title Bar
-local TitleBar = Instance.new("Frame", Main)
-TitleBar.Size = UDim2.new(1, 0, 0, 35)
-TitleBar.BackgroundColor3 = Color3.fromRGB(45,45,45)
-
-local Title = Instance.new("TextLabel", TitleBar)
-Title.Size = UDim2.new(1, -60, 1, 0)
-Title.Position = UDim2.new(0, 10, 0, 0)
-Title.Text = "⚡Mobile Stats Hub⚡"
-Title.TextColor3 = Color3.fromRGB(255,255,255)
-Title.BackgroundTransparency = 1
-Title.Font = Enum.Font.FredokaOne
-Title.TextScaled = true
-
--- Close Button
-local CloseButton = Instance.new("TextButton", TitleBar)
-CloseButton.Size = UDim2.new(0,25,0,25)
-CloseButton.Position = UDim2.new(1,-30,0,5)
-CloseButton.Text = "X"
-CloseButton.TextColor3 = Color3.fromRGB(255,0,0)
-CloseButton.BackgroundTransparency = 1
-CloseButton.Font = Enum.Font.FredokaOne
-CloseButton.TextScaled = true
-
--- Minimize Button
-local MinButton = Instance.new("TextButton", TitleBar)
-MinButton.Size = UDim2.new(0,25,0,25)
-MinButton.Position = UDim2.new(1,-60,0,5)
-MinButton.Text = "_"
-MinButton.TextColor3 = Color3.fromRGB(0,255,0)
-MinButton.BackgroundTransparency = 1
-MinButton.Font = Enum.Font.FredokaOne
-MinButton.TextScaled = true
-
--- Content Frame
-local Content = Instance.new("Frame", Main)
-Content.Size = UDim2.new(1,-10,1,-45)
-Content.Position = UDim2.new(0,5,0,40)
-Content.BackgroundTransparency = 1
-
--- Battery
-local BatteryBG = Instance.new("Frame", Content)
-BatteryBG.Size = UDim2.new(1,0,0,25)
-BatteryBG.Position = UDim2.new(0,0,0,0)
-BatteryBG.BackgroundColor3 = Color3.fromRGB(55,55,55)
-BatteryBG.BorderSizePixel = 0
-BatteryBG.ClipsDescendants = true
-
-local BatteryBar = Instance.new("Frame", BatteryBG)
-BatteryBar.Size = UDim2.new(0,0,1,0)
-BatteryBar.BackgroundColor3 = Color3.fromRGB(0,255,0)
-
-local BatteryLabel = Instance.new("TextLabel", BatteryBG)
-BatteryLabel.Size = UDim2.new(1,0,1,0)
-BatteryLabel.BackgroundTransparency = 1
-BatteryLabel.TextColor3 = Color3.fromRGB(255,255,255)
-BatteryLabel.Font = Enum.Font.FredokaOne
-BatteryLabel.TextScaled = true
-BatteryLabel.Text = "Battery: 100% ⚡"
-
--- Ping
-local PingBG = Instance.new("Frame", Content)
-PingBG.Size = UDim2.new(1,0,0,25)
-PingBG.Position = UDim2.new(0,0,0,35)
-PingBG.BackgroundColor3 = Color3.fromRGB(55,55,55)
-PingBG.BorderSizePixel = 0
-PingBG.ClipsDescendants = true
-
-local PingBar = Instance.new("Frame", PingBG)
-PingBar.Size = UDim2.new(0,0,1,0)
-PingBar.BackgroundColor3 = Color3.fromRGB(0,255,255)
-
-local PingLabel = Instance.new("TextLabel", PingBG)
-PingLabel.Size = UDim2.new(1,0,1,0)
-PingLabel.BackgroundTransparency = 1
-PingLabel.TextColor3 = Color3.fromRGB(255,255,255)
-PingLabel.Font = Enum.Font.FredokaOne
-PingLabel.TextScaled = true
-PingLabel.Text = "Ping: 0ms"
-
--- Draggable
-local dragging, dragInput, dragStart, startPos
-local function update(input)
-	local delta = input.Position - dragStart
-	Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+-- Function to do fakeout once
+local function fakeout()
+    local char = LocalPlayer.Character
+    if char then
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            local originalCFrame = hrp.CFrame
+            hrp.CFrame = CFrame.new(0, -5000, 0)
+            wait(0.3)
+            hrp.CFrame = originalCFrame
+        end
+    end
 end
 
-TitleBar.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-		dragStart = input.Position
-		startPos = Main.Position
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
-	end
-end)
+-- Function to handle AntiVoid when toggled
+local function handleAntiVoid()
+    local char = LocalPlayer.Character
+    if antiVoidEnabled and char then
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local humanoid = char:FindFirstChild("Humanoid")
+        if hrp and humanoid and hrp.Position.Y < -50 then
+            hrp.Velocity = Vector3.new(0,0,0)
+            hrp.Position = Vector3.new(hrp.Position.X, -5, hrp.Position.Z)
+            humanoid.Health = humanoid.Health
+        end
+    end
+end
 
-TitleBar.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-		dragInput = input
-	end
-end)
-
-UserInputService.InputChanged:Connect(function(input)
-	if input == dragInput and dragging then
-		update(input)
-	end
-end)
-
--- Close & Minimize
-CloseButton.MouseButton1Click:Connect(function()
-	ScreenGui:Destroy()
-end)
-
-MinButton.MouseButton1Click:Connect(function()
-	Content.Visible = not Content.Visible
-	local size = Content.Visible and UDim2.new(0, Main.Size.X.Offset, 0, Main.Size.Y.Offset) or UDim2.new(0, Main.Size.X.Offset, 0, 35)
-	TweenService:Create(Main, TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = size}):Play()
-end)
-
--- Update Stats (optimized)
-local lastPingUpdate = tick()
-local pingConnection
-
-RunService.RenderStepped:Connect(function()
-    -- Battery
-    local battery = UserInputService:GetBatteryPercentage() or 0
-    local status = UserInputService:GetBatteryStatus() or Enum.BatteryStatus.Discharging
-    local batteryPercent = math.floor(battery*100)
-    local chargingSymbol = status == Enum.BatteryStatus.Charging and " ⚡" or ""
-    BatteryLabel.Text = "Battery: "..batteryPercent.."% "..chargingSymbol
-    TweenService:Create(BatteryBar, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.new(batteryPercent/100,0,1,0)}):Play()
-    BatteryBar.BackgroundColor3 = Color3.fromHSV(batteryPercent/100*0.3,1,1)
-
-    -- Ping (once every 0.5s)
-    if tick() - lastPingUpdate >= 0.5 and PingRemote then
-        lastPingUpdate = tick()
-        if pingConnection then pingConnection:Disconnect() end
-        local startPing = tick()
-        PingRemote:FireServer()
-        pingConnection = PingRemote.OnClientEvent:Connect(function()
-            local pingValue = math.floor((tick()-startPing)*1000)
-            PingLabel.Text = "Ping: "..pingValue.."ms"
-            local pingPercent = math.clamp(1 - (pingValue/300),0,1)
-            TweenService:Create(PingBar, TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {Size = UDim2.new(pingPercent,0,1,0)}):Play()
-            PingBar.BackgroundColor3 = Color3.fromHSV(pingPercent*0.4,1,1)
-        end)
+-- Listen to chat
+LocalPlayer.Chatted:Connect(function(msg)
+    local msgLower = msg:lower()
+    
+    if msgLower == COMMAND_ANTIVOID then
+        antiVoidEnabled = not antiVoidEnabled
+        print("AntiVoid " .. (antiVoidEnabled and "Enabled" or "Disabled"))
+        -- Run AntiVoid once immediately when toggled
+        handleAntiVoid()
+    
+    elseif msgLower:sub(1, #COMMAND_SCARE) == COMMAND_SCARE then
+        local targetName = msg:sub(#COMMAND_SCARE + 2)
+        if targetName ~= "" then
+            scarePlayer(targetName)
+        end
+    
+    elseif msgLower == COMMAND_FAKEOUT then
+        fakeout()
     end
 end)
