@@ -1,3 +1,7 @@
+-- ====================================================================
+-- SYSTEM STATUS: True Continuous Anti-AFK & Anti-Kick Operational
+-- FEATURES: Auto-Movement Enabled | Zero Manual Restrictions
+-- ====================================================================
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
@@ -8,20 +12,49 @@ local player = Players.LocalPlayer
 local camera = Workspace.CurrentCamera
 
 -- --------------------------------------------------------------------
--- LAYER 1: TRUE UNBROKEN FRAME-LEVEL CAMERA SPOOFING
+-- LAYER 1: TRUE SEAMLESS AUTO-MOVEMENT SYSTEM
 -- --------------------------------------------------------------------
--- This runs continuously on every engine heartbeat step. It applies a 
--- microscopic, unnoticeable rotation to your camera vector. Because 
--- camera data replicates to the network layer, the server sees active 
--- user interaction 60+ times a second, completely bypassing idle limits 
--- without ever restricting your manual character walking or jumping.
+-- This system makes your character take tiny random steps every few seconds.
+-- By using Humanoid:Move(), it doesn't lock your physics. If you are away,
+-- your character paces around. If you play manually, your keyboard 
+-- inputs instantly override the script smoothly.
+-- --------------------------------------------------------------------
+task.spawn(function()
+    while true do
+        -- Wait a random interval between 3 to 7 seconds before moving
+        task.wait(math.random(3, 7))
+        
+        pcall(function()
+            local character = player.Character
+            local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+            
+            if humanoid then
+                -- Generate a random directional walking vector
+                local randomDirection = Vector3.new(math.random(-1, 1), 0, math.random(-1, 1))
+                
+                -- Command the humanoid to walk in that direction for 0.5 seconds
+                humanoid:Move(randomDirection, false)
+                task.wait(0.5)
+                
+                -- Stop the automated movement so the character doesn't walk forever
+                humanoid:Move(Vector3.new(0, 0, 0), false)
+            end
+        end)
+    end
+end)
+
+-- --------------------------------------------------------------------
+-- LAYER 2: FRAME-LEVEL CAMERA SPOOFING (Unbroken Replication Data)
+-- --------------------------------------------------------------------
+-- Runs continuously on every frame. Shifts your camera by a microscopic,
+-- invisible fraction of a degree. This forces the client to stream constant
+-- positional network updates to the server, resetting the idle tracker.
 -- --------------------------------------------------------------------
 task.spawn(function()
     while true do
         RunService.Heartbeat:Wait()
         pcall(function()
             if camera then
-                -- Shifts the camera view horizontally by a tiny fraction of a degree
                 camera.CFrame = camera.CFrame * CFrame.Angles(0, math.rad(math.random(-1, 1) / 1000), 0)
             end
         end)
@@ -29,11 +62,11 @@ task.spawn(function()
 end)
 
 -- --------------------------------------------------------------------
--- LAYER 2: BACKSTAGE ENGINE CORE SIGNAL DESTRUCTION
+-- LAYER 3: CORE CLIENT IDLED SIGNAL INTERCEPT (Engine Fail-Safe)
 -- --------------------------------------------------------------------
--- The ultimate engine fail-safe. If the game client registers an internal 
--- Idled state, this connection immediately overrides the engine layer by 
--- firing a hardware-level click emulation through the viewport center.
+-- The ultimate background anchor. If Roblox's internal engine timer 
+-- tries to flag the client as idle, this intercept immediately fires a 
+-- hardware-level click signature through the viewport to clear it.
 -- --------------------------------------------------------------------
 pcall(function()
     player.Idled:Connect(function()
@@ -46,4 +79,4 @@ pcall(function()
     end)
 end)
 
-print("[TRUE SYSTEM]: Unbroken Anti-AFK & Anti-Kick Loaded. Zero movement restrictions.")
+print("[TRUE SYSTEM]: Active Auto-Movement Anti-AFK Loaded. Controls are 100% unlocked.")
