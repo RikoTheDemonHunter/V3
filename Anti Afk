@@ -1,6 +1,3 @@
--- ====================================================================
--- SYSTEM STATUS: True Always-On Anti-AFK & Anti-Kick Operational
--- ====================================================================
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
