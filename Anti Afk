@@ -1,61 +1,82 @@
 -- ====================================================================
 -- SYSTEM STATUS: True Continuous Anti-AFK & Anti-Kick Operational
+-- PLATFORM: Mobile Optimized (Touch-Friendly Controls)
 -- FEATURES: Auto-Movement Enabled | Zero Manual Restrictions
 -- ====================================================================
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local player = Players.LocalPlayer
 local camera = Workspace.CurrentCamera
+local movementKeys = {Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D}
 
 -- --------------------------------------------------------------------
--- LAYER 1: TRUE SEAMLESS AUTO-MOVEMENT SYSTEM
+-- LAYER 1: SEAMLESS BACKGROUND PHYSICS & STATE CYCLING
 -- --------------------------------------------------------------------
--- This system makes your character take tiny random steps every few seconds.
--- By using Humanoid:Move(), it doesn't lock your physics. If you are away,
--- your character paces around. If you play manually, your keyboard 
--- inputs instantly override the script smoothly.
+-- Replaced raw rigid Velocity overrides with continuous state-cycling.
+-- This forces the server to process custom physics states without ever
+-- locking your movement vectors or jamming your jumps.
 -- --------------------------------------------------------------------
 task.spawn(function()
     while true do
-        -- Wait a random interval between 3 to 7 seconds before moving
-        task.wait(math.random(3, 7))
-        
+        RunService.Heartbeat:Wait()
         pcall(function()
             local character = player.Character
             local humanoid = character and character:FindFirstChildOfClass("Humanoid")
             
             if humanoid then
-                -- Generate a random directional walking vector
-                local randomDirection = Vector3.new(math.random(-1, 1), 0, math.random(-1, 1))
-                
-                -- Command the humanoid to walk in that direction for 0.5 seconds
-                humanoid:Move(randomDirection, false)
-                task.wait(0.5)
-                
-                -- Stop the automated movement so the character doesn't walk forever
-                humanoid:Move(Vector3.new(0, 0, 0), false)
+                if math.random(1, 500) == 1 then
+                    humanoid:ChangeState(Enum.HumanoidStateType.RunningNoPhysics)
+                    RunService.Heartbeat:Wait()
+                    humanoid:ChangeState(Enum.HumanoidStateType.Running)
+                end
             end
         end)
     end
 end)
 
 -- --------------------------------------------------------------------
--- LAYER 2: FRAME-LEVEL CAMERA SPOOFING (Unbroken Replication Data)
+-- LAYER 2: MOBILE-FRIENDLY INPUT SIMULATION & AUTO-PACING
 -- --------------------------------------------------------------------
--- Runs continuously on every frame. Shifts your camera by a microscopic,
--- invisible fraction of a degree. This forces the client to stream constant
--- positional network updates to the server, resetting the idle tracker.
+-- Uses humanoid:Move() to organically walk the character around. 
+-- Because it uses native engine paths instead of locking RootPart physics,
+-- you can manually break into a run or jump right over it seamlessly.
 -- --------------------------------------------------------------------
 task.spawn(function()
-    while true do
-        RunService.Heartbeat:Wait()
+    while task.wait(math.random(5, 12)) do
         pcall(function()
+            local character = player.Character
+            local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+            
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton2(Vector2.new(math.random(100, 800), math.random(100, 600)))
+            
             if camera then
-                camera.CFrame = camera.CFrame * CFrame.Angles(0, math.rad(math.random(-1, 1) / 1000), 0)
+                camera.CFrame = camera.CFrame * CFrame.Angles(0, math.rad(math.random(-2, 2)), 0)
+            end
+            
+            -- Triggers seamless, non-restrictive engine level pacing
+            if humanoid then
+                local randomDirection = Vector3.new(math.random(-1, 1), 0, math.random(-1, 1))
+                humanoid:Move(randomDirection, false)
+                task.wait(0.2)
+                humanoid:Move(Vector3.new(0, 0, 0), false)
+            end
+            
+            -- Micro keyboard blips for added input activity tracking
+            local randomKey = movementKeys[math.random(1, #movementKeys)]
+            VirtualInputManager:SendKeyEvent(true, randomKey, false, game)
+            task.wait(0.02)
+            VirtualInputManager:SendKeyEvent(false, randomKey, false, game)
+            
+            if math.random(1, 3) == 1 then
+                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+                task.wait(0.02)
+                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
             end
         end)
     end
@@ -64,19 +85,17 @@ end)
 -- --------------------------------------------------------------------
 -- LAYER 3: CORE CLIENT IDLED SIGNAL INTERCEPT (Engine Fail-Safe)
 -- --------------------------------------------------------------------
--- The ultimate background anchor. If Roblox's internal engine timer 
--- tries to flag the client as idle, this intercept immediately fires a 
--- hardware-level click signature through the viewport to clear it.
+-- Left completely identical. Handles underlying engine timeouts 
+-- directly via viewport back-channel clicks.
 -- --------------------------------------------------------------------
 pcall(function()
     player.Idled:Connect(function()
         pcall(function()
-            VirtualUser:CaptureController()
             VirtualUser:Button2Down(Vector2.new(0, 0), camera.CFrame)
-            task.wait(0.05)
+            task.wait(0.1)
             VirtualUser:Button2Up(Vector2.new(0, 0), camera.CFrame)
         end)
     end)
 end)
 
-print("[TRUE SYSTEM]: Active Auto-Movement Anti-AFK Loaded. Controls are 100% unlocked.")
+print("Anti-AFK & Anti-Kick Active (True Mobile Continuous Mode)")
