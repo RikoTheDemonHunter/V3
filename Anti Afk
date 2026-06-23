@@ -63,3 +63,5 @@ pcall(function()
         end)
     end)
 end)
+
+print("Anti-AFK & Anti-Kick Active")
