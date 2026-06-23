@@ -1,25 +1,22 @@
 -- ====================================================================
--- SYSTEM STATUS: True Continuous Anti-AFK & Anti-Kick Operational
--- PLATFORM: Mobile Optimized (Touch-Friendly Controls)
--- FEATURES: Auto-Movement Enabled | Zero Manual Restrictions
+-- SYSTEM STATUS: Mobile-Safe Anti-AFK & Anti-Kick Operational
+-- PLATFORM: Pure Mobile Native (No UI Freezing / No Hidden Inputs)
+-- FEATURES: Auto-Movement Enabled | Controls 100% Free
 -- ====================================================================
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
-local VirtualInputManager = game:GetService("VirtualInputManager")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local player = Players.LocalPlayer
 local camera = Workspace.CurrentCamera
-local movementKeys = {Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D}
 
 -- --------------------------------------------------------------------
--- LAYER 1: SEAMLESS BACKGROUND PHYSICS & STATE CYCLING
+-- LAYER 1: SEAMLESS STATE CYCLING (No Physics Manipulation)
 -- --------------------------------------------------------------------
--- Replaced raw rigid Velocity overrides with continuous state-cycling.
--- This forces the server to process custom physics states without ever
--- locking your movement vectors or jamming your jumps.
+-- This runs safely in the background without touching your RootPart's 
+-- velocity, keeping your jumping physics completely normal.
 -- --------------------------------------------------------------------
 task.spawn(function()
     while true do
@@ -40,53 +37,42 @@ task.spawn(function()
 end)
 
 -- --------------------------------------------------------------------
--- LAYER 2: MOBILE-FRIENDLY INPUT SIMULATION & AUTO-PACING
+-- LAYER 2: MOBILE TOUCH-SAFE PACING LOOP
 -- --------------------------------------------------------------------
--- Uses humanoid:Move() to organically walk the character around. 
--- Because it uses native engine paths instead of locking RootPart physics,
--- you can manually break into a run or jump right over it seamlessly.
+-- Removed VirtualInputManager completely. Now it ONLY uses native 
+-- camera shifts and humanoid:Move() which allows your mobile joystick 
+-- and jump button to remain visible and fully functional.
 -- --------------------------------------------------------------------
 task.spawn(function()
-    while task.wait(math.random(5, 12)) do
+    while task.wait(math.random(6, 15)) do
         pcall(function()
             local character = player.Character
             local humanoid = character and character:FindFirstChildOfClass("Humanoid")
             
+            -- Triggers a soft camera twitch and a screen tap simulation
             VirtualUser:CaptureController()
-            VirtualUser:ClickButton2(Vector2.new(math.random(100, 800), math.random(100, 600)))
+            VirtualUser:ClickButton2(Vector2.new(math.random(100, 500), math.random(100, 500)))
             
             if camera then
-                camera.CFrame = camera.CFrame * CFrame.Angles(0, math.rad(math.random(-2, 2)), 0)
+                camera.CFrame = camera.CFrame * CFrame.Angles(0, math.rad(math.random(-1, 1)), 0)
             end
             
-            -- Triggers seamless, non-restrictive engine level pacing
-            if humanoid then
+            -- Micro-pacing: Character takes a tiny step only if you aren't touching the joystick
+            if humanoid and humanoid.MoveDirection.Magnitude == 0 then
                 local randomDirection = Vector3.new(math.random(-1, 1), 0, math.random(-1, 1))
                 humanoid:Move(randomDirection, false)
-                task.wait(0.2)
+                task.wait(0.15)
                 humanoid:Move(Vector3.new(0, 0, 0), false)
-            end
-            
-            -- Micro keyboard blips for added input activity tracking
-            local randomKey = movementKeys[math.random(1, #movementKeys)]
-            VirtualInputManager:SendKeyEvent(true, randomKey, false, game)
-            task.wait(0.02)
-            VirtualInputManager:SendKeyEvent(false, randomKey, false, game)
-            
-            if math.random(1, 3) == 1 then
-                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-                task.wait(0.02)
-                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
             end
         end)
     end
 end)
 
 -- --------------------------------------------------------------------
--- LAYER 3: CORE CLIENT IDLED SIGNAL INTERCEPT (Engine Fail-Safe)
+-- LAYER 3: CORE CLIENT IDLED INTERCEPT
 -- --------------------------------------------------------------------
--- Left completely identical. Handles underlying engine timeouts 
--- directly via viewport back-channel clicks.
+-- Bypasses the core 20-minute Roblox disconnection timer by firing 
+-- direct back-channel clicks when the client goes completely idle.
 -- --------------------------------------------------------------------
 pcall(function()
     player.Idled:Connect(function()
@@ -98,4 +84,4 @@ pcall(function()
     end)
 end)
 
-print("Anti-AFK & Anti-Kick Active (True Mobile Continuous Mode)")
+print("Anti-AFK Active: Mobile UI Fixed & Controls Unlocked")
