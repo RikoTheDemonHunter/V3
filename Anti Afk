@@ -1,96 +1,52 @@
 -- ====================================================================
--- SYSTEM STATUS: Anti-AFK & Anti-Kick Active (Manual Controls Enabled)
+-- SYSTEM STATUS: True Always-On Anti-AFK & Anti-Kick Operational
 -- ====================================================================
 
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
-local VirtualInputManager = game:GetService("VirtualInputManager")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local player = Players.LocalPlayer
 local camera = Workspace.CurrentCamera
-local movementKeys = {Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D}
 
 -- --------------------------------------------------------------------
--- LAYER 1: STRUCTURAL PHYSICS ACTIVITY SYSTEM (Anti-Idle Engine Kick)
+-- LAYER 1: TRUE UNBROKEN FRAME-LEVEL CAMERA SPOOFING
 -- --------------------------------------------------------------------
--- This system hooks into Roblox's frame renderer to update physics 
--- vectors continuously, forcing network replication packets to the server.
+-- This runs continuously on every engine heartbeat step. It applies a 
+-- microscopic, unnoticeable rotation to your camera vector. Because 
+-- camera data replicates to the network layer, the server sees active 
+-- user interaction 60+ times a second, completely bypassing idle limits 
+-- without ever restricting your manual character walking or jumping.
 -- --------------------------------------------------------------------
 task.spawn(function()
     while true do
         RunService.Heartbeat:Wait()
         pcall(function()
-            local character = player.Character
-            local root = character and character:FindFirstChild("HumanoidRootPart")
-            local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-            
-            -- Only activates if the player is standing still to protect manual movement
-            if root and humanoid and humanoid.MoveDirection.Magnitude == 0 then
-                root.Velocity = Vector3.new(math.random(-5, 5) / 100, 0, math.random(-5, 5) / 100)
-                root.RotVelocity = Vector3.new(0, math.random(-5, 5) / 100, 0)
-                
-                if math.random(1, 500) == 1 then
-                    humanoid:ChangeState(Enum.HumanoidStateType.RunningNoPhysics)
-                    RunService.Heartbeat:Wait()
-                    humanoid:ChangeState(Enum.HumanoidStateType.Running)
-                end
+            if camera then
+                -- Shifts the camera view horizontally by a tiny fraction of a degree
+                camera.CFrame = camera.CFrame * CFrame.Angles(0, math.rad(math.random(-1, 1) / 1000), 0)
             end
         end)
     end
 end)
 
 -- --------------------------------------------------------------------
--- LAYER 2: HARDWARE-EMULATED INPUT SIMULATION (Anti-Pattern Scanner Kick)
+-- LAYER 2: BACKSTAGE ENGINE CORE SIGNAL DESTRUCTION
 -- --------------------------------------------------------------------
--- This system fires human-like inputs (WASD, Clicks, Space bar, and Camera
--- shifts) on unpredictable timers to evade game-specific detection scripts.
--- --------------------------------------------------------------------
-task.spawn(function()
-    while task.wait(math.random(5, 12)) do
-        pcall(function()
-            local character = player.Character
-            local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-            
-            -- Only fires simulated inputs if you are away/idle
-            if humanoid and humanoid.MoveDirection.Magnitude == 0 then
-                VirtualUser:CaptureController()
-                VirtualUser:ClickButton2(Vector2.new(math.random(100, 800), math.random(100, 600)))
-                
-                if camera then
-                    camera.CFrame = camera.CFrame * CFrame.Angles(0, math.rad(math.random(-2, 2)), 0)
-                end
-                
-                local randomKey = movementKeys[math.random(1, #movementKeys)]
-                VirtualInputManager:SendKeyEvent(true, randomKey, false, game)
-                task.wait(0.02)
-                VirtualInputManager:SendKeyEvent(false, randomKey, false, game)
-                
-                if math.random(1, 3) == 1 then
-                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-                    task.wait(0.02)
-                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
-                end
-            end
-        end)
-    end
-end)
-
--- --------------------------------------------------------------------
--- LAYER 3: CORE CLIENT IDLED SIGNAL INTERCEPT (Roblox Engine Fail-Safe)
--- --------------------------------------------------------------------
--- This serves as the ultimate engine-level fail-safe. If Roblox's internal
--- idle timer somehow flags the client, this immediately overrides the signal.
+-- The ultimate engine fail-safe. If the game client registers an internal 
+-- Idled state, this connection immediately overrides the engine layer by 
+-- firing a hardware-level click emulation through the viewport center.
 -- --------------------------------------------------------------------
 pcall(function()
     player.Idled:Connect(function()
         pcall(function()
+            VirtualUser:CaptureController()
             VirtualUser:Button2Down(Vector2.new(0, 0), camera.CFrame)
-            task.wait(0.1)
+            task.wait(0.05)
             VirtualUser:Button2Up(Vector2.new(0, 0), camera.CFrame)
         end)
     end)
 end)
 
-print("[SYSTEM]: Anti-AFK & Anti-Kick Fully Operational with Manual Controls Enabled.")
+print("[TRUE SYSTEM]: Unbroken Anti-AFK & Anti-Kick Loaded. Zero movement restrictions.")
