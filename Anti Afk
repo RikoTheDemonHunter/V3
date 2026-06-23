@@ -1,3 +1,7 @@
+-- ====================================================================
+-- SYSTEM STATUS: Anti-AFK & Anti-Kick Active (Manual Controls Enabled)
+-- ====================================================================
+
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -8,6 +12,12 @@ local player = Players.LocalPlayer
 local camera = Workspace.CurrentCamera
 local movementKeys = {Enum.KeyCode.W, Enum.KeyCode.A, Enum.KeyCode.S, Enum.KeyCode.D}
 
+-- --------------------------------------------------------------------
+-- LAYER 1: STRUCTURAL PHYSICS ACTIVITY SYSTEM (Anti-Idle Engine Kick)
+-- --------------------------------------------------------------------
+-- This system hooks into Roblox's frame renderer to update physics 
+-- vectors continuously, forcing network replication packets to the server.
+-- --------------------------------------------------------------------
 task.spawn(function()
     while true do
         RunService.Heartbeat:Wait()
@@ -16,7 +26,8 @@ task.spawn(function()
             local root = character and character:FindFirstChild("HumanoidRootPart")
             local humanoid = character and character:FindFirstChildOfClass("Humanoid")
             
-            if root and humanoid then
+            -- Only activates if the player is standing still to protect manual movement
+            if root and humanoid and humanoid.MoveDirection.Magnitude == 0 then
                 root.Velocity = Vector3.new(math.random(-5, 5) / 100, 0, math.random(-5, 5) / 100)
                 root.RotVelocity = Vector3.new(0, math.random(-5, 5) / 100, 0)
                 
@@ -30,30 +41,48 @@ task.spawn(function()
     end
 end)
 
+-- --------------------------------------------------------------------
+-- LAYER 2: HARDWARE-EMULATED INPUT SIMULATION (Anti-Pattern Scanner Kick)
+-- --------------------------------------------------------------------
+-- This system fires human-like inputs (WASD, Clicks, Space bar, and Camera
+-- shifts) on unpredictable timers to evade game-specific detection scripts.
+-- --------------------------------------------------------------------
 task.spawn(function()
     while task.wait(math.random(5, 12)) do
         pcall(function()
-            VirtualUser:CaptureController()
-            VirtualUser:ClickButton2(Vector2.new(math.random(100, 800), math.random(100, 600)))
+            local character = player.Character
+            local humanoid = character and character:FindFirstChildOfClass("Humanoid")
             
-            if camera then
-                camera.CFrame = camera.CFrame * CFrame.Angles(0, math.rad(math.random(-2, 2)), 0)
-            end
-            
-            local randomKey = movementKeys[math.random(1, #movementKeys)]
-            VirtualInputManager:SendKeyEvent(true, randomKey, false, game)
-            task.wait(0.02)
-            VirtualInputManager:SendKeyEvent(false, randomKey, false, game)
-            
-            if math.random(1, 3) == 1 then
-                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+            -- Only fires simulated inputs if you are away/idle
+            if humanoid and humanoid.MoveDirection.Magnitude == 0 then
+                VirtualUser:CaptureController()
+                VirtualUser:ClickButton2(Vector2.new(math.random(100, 800), math.random(100, 600)))
+                
+                if camera then
+                    camera.CFrame = camera.CFrame * CFrame.Angles(0, math.rad(math.random(-2, 2)), 0)
+                end
+                
+                local randomKey = movementKeys[math.random(1, #movementKeys)]
+                VirtualInputManager:SendKeyEvent(true, randomKey, false, game)
                 task.wait(0.02)
-                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+                VirtualInputManager:SendKeyEvent(false, randomKey, false, game)
+                
+                if math.random(1, 3) == 1 then
+                    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+                    task.wait(0.02)
+                    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+                end
             end
         end)
     end
 end)
 
+-- --------------------------------------------------------------------
+-- LAYER 3: CORE CLIENT IDLED SIGNAL INTERCEPT (Roblox Engine Fail-Safe)
+-- --------------------------------------------------------------------
+-- This serves as the ultimate engine-level fail-safe. If Roblox's internal
+-- idle timer somehow flags the client, this immediately overrides the signal.
+-- --------------------------------------------------------------------
 pcall(function()
     player.Idled:Connect(function()
         pcall(function()
@@ -64,4 +93,4 @@ pcall(function()
     end)
 end)
 
-print("Anti-AFK & Anti-Kick Active")
+print("[SYSTEM]: Anti-AFK & Anti-Kick Fully Operational with Manual Controls Enabled.")
