@@ -44,7 +44,7 @@ end)
 -- and jump button to remain visible and fully functional.
 -- --------------------------------------------------------------------
 task.spawn(function()
-    while task.wait(math.random(6, 15)) do
+    while task.wait(math.random(2)) do
         pcall(function()
             local character = player.Character
             local humanoid = character and character:FindFirstChildOfClass("Humanoid")
