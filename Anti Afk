@@ -1,24 +1,27 @@
 local Players = game:GetService("Players")
 local VirtualUser = game:GetService("VirtualUser")
-local RunService = game:GetService("RunService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 
-local LocalPlayer = Players.LocalPlayer
+local player = Players.LocalPlayer
 
-VirtualUser:CaptureController()
-
-local function simulateActivity()
-    local x = math.random(0, 50)
-    local y = math.random(0, 50)
-    VirtualUser:CaptureController()
-    VirtualUser:ClickButton2(Vector2.new(x, y))
-end
-
-LocalPlayer.Idled:Connect(function()
-    simulateActivity()
-end)
-
-RunService.Heartbeat:Connect(function()
-    if math.random() < 0.01 then
-        simulateActivity()
+task.spawn(function()
+    while task.wait(math.random(15, 30)) do
+        pcall(function()
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton2(Vector2.new(math.random(100, 500), math.random(100, 500)))
+            
+            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
+            task.wait(0.1)
+            VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+        end)
     end
 end)
+
+player.Idled:Connect(function()
+    pcall(function()
+        VirtualUser:CaptureController()
+        VirtualUser:ClickButton2(Vector2.new(math.random(50, 200), math.random(50, 200)))
+    end)
+end)
+
+print("Hardened Anti-AFK / Anti-Kick active: Using combined Input Managers.")
