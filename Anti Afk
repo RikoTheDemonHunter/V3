@@ -1,199 +1,34 @@
--- ====================================================================
--- SYSTEM STATUS: RE-ENGINEERED ANTI-AFK CORRECTIONS (2026 UNPATCHED)
--- PLATFORM: Pure Mobile Native Optimization
--- INTERCEPT METHOD: Direct Engine Touch-Plane & Workspace Raycast Emulation
--- ====================================================================
-
 local Players = game:GetService("Players")
-local VirtualUser = game:GetService("VirtualUser")
 local RunService = game:GetService("RunService")
-local Workspace = game:GetService("Workspace")
 
 local player = Players.LocalPlayer
-local camera = Workspace.CurrentCamera
+local autoWalk = false
 
--- Safety check to ensure script execution environment is healthy
-if not player then return end
+player.Chatted:Connect(function(msg)
+	msg = msg:lower()
 
--- --------------------------------------------------------------------
--- LAYER 1: DIRECT VIEWPORT & TOUCH PLANE INJECTION (The Core Patch Bypass)
--- --------------------------------------------------------------------
--- Instead of waiting for the Idled signal, this loop constantly fires 
--- tiny native drag and tap coordinates directly into the screen space.
--- --------------------------------------------------------------------
-task.spawn(function()
-    while true do
-        -- Triggers a mathematical update sequence every 10 to 25 seconds
-        task.wait(math.random(10, 25))
-        
-        pcall(function()
-            -- Captures the core controller state
-            VirtualUser:CaptureController()
-            
-            -- Generate completely randomized coordinate packets on the display matrix
-            local randomX = math.random(150, 600)
-            local randomY = math.random(150, 450)
-            
-            -- Method A: Simulate a native mouse/touch swipe on the UI plane
-            VirtualUser:ClickButton2(Vector2.new(randomX, randomY))
-            
-            -- Method B: Fire an analytical viewport packet right into workspace space
-            if camera then
-                VirtualUser:Button2Down(Vector2.new(randomX, randomY), camera.CFrame)
-                task.wait(0.05)
-                VirtualUser:Button2Up(Vector2.new(randomX, randomY), camera.CFrame)
-            end
-        end)
-    end
+	if msg == "!walk on" then
+		autoWalk = true
+		print("Auto-walk enabled")
+
+	elseif msg == "!walk off" then
+		autoWalk = false
+		print("Auto-walk disabled")
+	end
 end)
 
--- --------------------------------------------------------------------
--- LAYER 2: NON-INTERRUPTING NETWORK SYNC (Camera & Vector Steps)
--- --------------------------------------------------------------------
--- Gently offsets the camera angle by a fraction of a degree and takes 
--- a physical position packet ONLY when your hands are off the screen.
--- --------------------------------------------------------------------
-task.spawn(function()
-    while true do
-        task.wait(math.random(8, 18))
-        
-        pcall(function()
-            local character = player.Character
-            local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-            
-            -- Check if the player is actively moving. If Magnitude > 0, it skips completely
-            if humanoid and humanoid.MoveDirection.Magnitude == 0 then
-                
-                -- Soft camera rotation update to tell the server you look around
-                if camera then
-                    camera.CFrame = camera.CFrame * CFrame.Angles(0, math.rad(math.random(-1, 1)), 0)
-                end
-                
-                -- Tiny physics state update to keep position network traffic active
-                local randomDirection = Vector3.new(math.random(-1, 1), 0, math.random(-1, 1))
-                humanoid:Move(randomDirection, false)
-                task.wait(0.12)
-                humanoid:Move(Vector3.new(0, 0, 0), false)
-            end
-        end)
-    end
+RunService.RenderStepped:Connect(function()
+	if not autoWalk then
+		return
+	end
+
+	local character = player.Character
+	if not character then
+		return
+	end
+
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid:Move(Vector3.new(0, 0, -1), true)
+	end
 end)
-
--- --------------------------------------------------------------------
--- LAYER 3: STATE REFRESH LOCK
--- --------------------------------------------------------------------
--- Periodically shifts the internal Humanoid state machine to flush 
--- any background idling calculations without affecting regular jumping.
--- --------------------------------------------------------------------
-task.spawn(function()
-    while true do
-        RunService.Heartbeat:Wait()
-        pcall(function()
-            local character = player.Character
-            local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-            
-            if humanoid and math.random(1, 800) == 1 then
-                humanoid:ChangeState(Enum.HumanoidStateType.RunningNoPhysics)
-                RunService.Heartbeat:Wait()
-                humanoid:ChangeState(Enum.HumanoidStateType.Running)
-            end
-        end)
-    end
-end)
-
-print("=========================================")
-print("  ANTI-AFK V3 STATUS: FULLY UNPATCHED    ")
-print("  Mobile UI / Touch Inputs Unlocked     ")
-print("=========================================")
-
-
--- ====================================================================
--- SYSTEM STATUS: RE-ENGINEERED ANTI-KICK INTERCEPT (2026 UNPATCHED)
--- METHOD: Dual-Layer Metamethod Overwrite & Direct Function Detour
--- TARGET: Local Client Anti-Cheats & LocalScript Disconnections
--- ====================================================================
-
-local Players = game:GetService("Players")
-local StarterGui = game:GetService("StarterGui")
-local LocalPlayer = Players.LocalPlayer
-
--- Wait until the player instance is fully instantiated in the engine
-if not LocalPlayer then
-    repeat task.wait() until Players.LocalPlayer
-    LocalPlayer = Players.LocalPlayer
-end
-
--- Notification system to let you know a kick was safely blocked
-local function notifyKickAttempt(scriptName)
-    pcall(function()
-        StarterGui:SetCore("SendNotification", {
-            Title = "🛡️ Anti-Kick Activated",
-            Text = "Blocked client kick attempt from:\n" .. tostring(scriptName or "Unknown Script"),
-            Duration = 5,
-            Button1 = "OK"
-        })
-    end)
-end
-
--- --------------------------------------------------------------------
--- LAYER 1: DIRECT FUNCTION HOOKING (Instance.Kick Memory Detour)
--- --------------------------------------------------------------------
--- If a script tries to call LocalPlayer:Kick() directly, this detours
--- the function instruction inside the engine execution pool.
--- --------------------------------------------------------------------
-if hookfunction then
-    local oldKick
-    oldKick = hookfunction(LocalPlayer.Kick, newcclosure(function(self, ...)
-        if self == LocalPlayer and not checkcaller() then
-            local callingScript = getcallingscript() and getcallingscript():GetFullName() or "Internal LocalScript"
-            notifyKickAttempt(callingScript)
-            return task.wait(9e9) -- Infinite stall to prevent execution flow from continuing
-        end
-        return oldKick(self, ...)
-    end))
-end
-
--- --------------------------------------------------------------------
--- LAYER 2: __NAMECALL INTERCEPTION (String execution method bypass)
--- --------------------------------------------------------------------
--- Catches calls structured like game.Players.LocalPlayer:Kick("Reason")
--- by intercepting the engine's internal metamethod handler.
--- --------------------------------------------------------------------
-if hookmetamethod then
-    local oldNamecall
-    oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
-        local method = getnamecallmethod()
-        
-        if self == LocalPlayer and string.lower(method) == "kick" and not checkcaller() then
-            local callingScript = getcallingscript() and getcallingscript():GetFullName() or "Namecall Trigger"
-            notifyKickAttempt(callingScript)
-            return task.wait(9e9) -- Stall thread entirely
-        end
-        
-        return oldNamecall(self, ...)
-    end))
-
-    -- --------------------------------------------------------------------
-    -- LAYER 3: __INDEX INTERCEPTION (Property/Method Lookup bypass)
-    -- --------------------------------------------------------------------
-    -- Catches obfuscated kicks structured like LocalPlayer["Kick"](LocalPlayer)
-    -- --------------------------------------------------------------------
-    local oldIndex
-    oldIndex = hookmetamethod(game, "__index", newcclosure(function(self, key)
-        if self == LocalPlayer and type(key) == "string" and string.lower(key) == "kick" and not checkcaller() then
-            local callingScript = getcallingscript() and getcallingscript():GetFullName() or "Index Lookup Trigger"
-            notifyKickAttempt(callingScript)
-            
-            -- Returns a dummy function that safely absorbs the execution without crashing the script environment
-            return newcclosure(function() return task.wait(9e9) end)
-        end
-        
-        return oldIndex(self, key)
-    end))
-end
-
-print("=========================================")
-print("  ANTI-KICK V3 STATUS: FULLY OPERATIONAL ")
-print("  Client-Side Protections Bypassed       ")
-print("=========================================")
-
