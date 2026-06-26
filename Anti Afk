@@ -2,52 +2,33 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
-
 local autoWalk = false
-local lockPosition = false
-local lockedCFrame = nil
 
 player.Chatted:Connect(function(msg)
 	msg = msg:lower()
 
 	if msg == "!walk on" then
 		autoWalk = true
-
-		local character = player.Character
-		local rootPart = character and character:FindFirstChild("HumanoidRootPart")
-
-		if rootPart then
-			lockedCFrame = rootPart.CFrame
-			lockPosition = true
-		end
-
 		print("Auto-walk enabled")
 
 	elseif msg == "!walk off" then
 		autoWalk = false
-		lockPosition = false
-		lockedCFrame = nil
-
 		print("Auto-walk disabled")
 	end
 end)
 
 RunService.RenderStepped:Connect(function()
-	local character = player.Character
-	if not character then return end
-
-	local humanoid = character:FindFirstChildOfClass("Humanoid")
-	local rootPart = character:FindFirstChild("HumanoidRootPart")
-
-	if not humanoid or not rootPart then
+	if not autoWalk then
 		return
 	end
 
-	if autoWalk then
-		humanoid:Move(Vector3.new(0, 0, -1), true)
+	local character = player.Character
+	if not character then
+		return
+	end
 
-		if lockPosition and lockedCFrame then
-			rootPart.CFrame = lockedCFrame
-		end
+	local humanoid = character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid:Move(Vector3.new(0, 0, -1), true)
 	end
 end)
