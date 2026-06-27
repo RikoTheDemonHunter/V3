@@ -4,6 +4,11 @@ local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local autoWalk = false
 
+-- CONFIGURATION (Adjust path length here)
+local CYCLE_DURATION = 4.0   
+local movementTimer = 0      
+local movingForward = true   
+
 player.Chatted:Connect(function(msg)
 	msg = msg:lower()
 
@@ -17,8 +22,10 @@ player.Chatted:Connect(function(msg)
 	end
 end)
 
-RunService.RenderStepped:Connect(function()
+RunService.RenderStepped:Connect(function(deltaTime)
 	if not autoWalk then
+		movementTimer = 0
+		movingForward = true
 		return
 	end
 
@@ -29,6 +36,18 @@ RunService.RenderStepped:Connect(function()
 
 	local humanoid = character:FindFirstChildOfClass("Humanoid")
 	if humanoid then
-		humanoid:Move(Vector3.new(0, 0, -1), true)
+		movementTimer = movementTimer + deltaTime
+		
+		if movementTimer >= CYCLE_DURATION then
+			movementTimer = 0
+			movingForward = not movingForward
+		end
+		
+		-- Loop logic: alternates back and forth relative to camera view
+		if movingForward then
+			humanoid:Move(Vector3.new(0, 0, -1), true)
+		else
+			humanoid:Move(Vector3.new(0, 0, 1), true)
+		end
 	end
 end)
