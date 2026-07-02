@@ -6,6 +6,37 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
 local player = Players.LocalPlayer
 
+-- 💾 CONFIGURATION / DATA SAVE SYSTEM
+local SETTINGS_FILE = "AveryHubConfig.json"
+local SavedSettings = {}
+
+-- Load settings from file safely
+local function LoadSettings()
+	if isfile and readfile and isfile(SETTINGS_FILE) then
+		local success, decoded = pcall(function()
+			return HttpService:JSONDecode(readfile(SETTINGS_FILE))
+		end)
+		if success and type(decoded) == "table" then
+			SavedSettings = decoded
+		end
+	end
+end
+
+-- Save settings to file safely
+local function SaveSettings()
+	if writefile then
+		local success, encoded = pcall(function()
+			return HttpService:JSONEncode(SavedSettings)
+		end)
+		if success then
+			writefile(SETTINGS_FILE, encoded)
+		end
+	end
+end
+
+-- Read any existing saves before creating elements
+LoadSettings()
+
 -- 🎨 THEME COLORS
 local Theme = {
 	Background = Color3.fromRGB(15, 15, 25),
@@ -52,7 +83,7 @@ frame.AnchorPoint = Vector2.new(0.5, 0.5)
 frame.BackgroundColor3 = Theme.Background
 frame.BackgroundTransparency = 0.15
 frame.BorderSizePixel = 0
-frame.Parent = gui -- FIXED: Parented directly to the ScreenGui element
+frame.Parent = gui 
 
 local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 14)
@@ -357,17 +388,33 @@ function ModernLib:CreateMain(hubTitle)
 			StatusIndicator.Position = UDim2.new(1, -55, 0, 7)
 			StatusIndicator.BackgroundColor3 = Theme.SideBar
 			StatusIndicator.Font = Enum.Font.GothamBold
-			StatusIndicator.Text = "OFF"
 			StatusIndicator.TextSize = 11
-			StatusIndicator.TextColor3 = Theme.Alert
 			StatusIndicator.Parent = ToggleFrame
 			Instance.new("UICorner").CornerRadius = UDim.new(0, 4)
 
+			-- Auto-load state if saved previously
 			local state = false
+			if SavedSettings[toggleName] ~= nil then
+				state = SavedSettings[toggleName]
+			end
+
+			StatusIndicator.Text = state and "ON" or "OFF"
+			StatusIndicator.TextColor3 = state and Theme.Success or Theme.Alert
+
+			-- Handle auto-trigger if saved as true on setup
+			if state then
+				task.spawn(callback, true)
+			end
+
 			StatusIndicator.MouseButton1Click:Connect(function()
 				state = not state
 				StatusIndicator.Text = state and "ON" or "OFF"
 				StatusIndicator.TextColor3 = state and Theme.Success or Theme.Alert
+				
+				-- Save to configurations
+				SavedSettings[toggleName] = state
+				SaveSettings()
+
 				task.spawn(callback, state)
 			end)
 		end
