@@ -158,7 +158,6 @@ end
 -- Clean up intro UI and proceed to Main Script
 gui:Destroy()
 
-
 local ModernLib = {}
 function ModernLib:CreateMain(hubTitle)
 	local ScreenGui = Instance.new("ScreenGui")
