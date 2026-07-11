@@ -641,10 +641,202 @@ end
 Teleport:Button("Safe Zone", function() tweenHRP(CFrame.new(-46, 48, -15)) end)
 Teleport:Button("Pet Shop", function() tweenHRP(CFrame.new(311, 52, 103)) end)
 Teleport:Button("Disco Island", function() tweenHRP(CFrame.new(63, 48, 636)) end)
+Teleport:Button("Cloud One", function()
+	local New_CFrame = CFrame.new(296, 566, 689)
 
--- Misc & Legacy Tab Placeholders
-Misc:Label("Additional modules can be configuration mapped here.")
-Scripts:Label("External source extensions available under runtime.")
+	local ts = game:GetService("TweenService")
+	local char = game.Players.LocalPlayer.Character
+
+	local part = char.HumanoidRootPart
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+	local tp = {CFrame = New_CFrame}
+	ts:Create(part, ti, tp):Play()
+end)
+
+Teleport:Button("Cloud Second", function()
+	local New_CFrame = CFrame.new(-1224, 557, -318)
+
+	local ts = game:GetService("TweenService")
+	local char = game.Players.LocalPlayer.Character
+
+	local part = char.HumanoidRootPart
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+	local tp = {CFrame = New_CFrame}
+	ts:Create(part, ti, tp):Play()
+end)
+
+Teleport:Button("Sky Island", function()
+	local New_CFrame = CFrame.new(2132, 1456, -1034)
+
+	local ts = game:GetService("TweenService")
+	local char = game.Players.LocalPlayer.Character
+
+	local part = char.HumanoidRootPart
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+	local tp = {CFrame = New_CFrame}
+	ts:Create(part, ti, tp):Play()
+end)
+
+Teleport:Button("SafePlace", function()
+	local New_CFrame = CFrame.new(167, 48.28, -5357)
+
+	local ts = game:GetService("TweenService")
+	local char = game.Players.LocalPlayer.Character
+
+	local part = char.HumanoidRootPart
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+	local tp = {CFrame = New_CFrame}
+	ts:Create(part, ti, tp):Play()
+end)
+
+Teleport:Button("SafePlace v2", function()
+	local New_CFrame = CFrame.new(0, 3605, 0)
+
+	local ts = game:GetService("TweenService")
+	local char = game.Players.LocalPlayer.Character
+
+	local part = char.HumanoidRootPart
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+	local tp = {CFrame = New_CFrame}
+	ts:Create(part, ti, tp):Play()
+end)
+
+Teleport:Button("FavSpot", function()
+        local New_CFrame = CFrame.new(60.12, 18.25, -72)
+
+	local ts = game:GetService("TweenService")
+	local char = game.Players.LocalPlayer.Character
+
+	local part = char.HumanoidRootPart
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+	local tp = {CFrame = New_CFrame}
+	ts:Create(part, ti, tp):Play()
+end)
+
+Teleport:Button("Water Spot", function()
+        local New_CFrame = CFrame.new(-564, 40, 605)
+
+	local ts = game:GetService("TweenService")
+	local char = game.Players.LocalPlayer.Character
+
+	local part = char.HumanoidRootPart
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+	local tp = {CFrame = New_CFrame}
+	ts:Create(part, ti, tp):Play()
+end)
+
+Teleport:Button("Hotel", function()
+	 local New_CFrame = CFrame.new(-1198.279052734375, 44.315752029418945, -5.583522319793701)
+
+	local ts = game:GetService("TweenService")
+	local char = game.Players.LocalPlayer.Character
+
+	local part = char.HumanoidRootPart
+	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
+	local tp = {CFrame = New_CFrame}
+	ts:Create(part, ti, tp):Play()
+end)
+
+Misc:Button("Bp Counter",function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Bp%20Counter.lua"))()
+end)
+
+Misc:Button("Infinity Yield", function() 
+loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+end)		
+
+Misc:Button("Anti Kick", function()
+	local mt = getrawmetatable(game)
+	local old = mt.__namecall
+	local protect = newcclosure or protect_function
+
+	setreadonly(mt, false)
+	mt.__namecall = protect(function(self, ...)
+		local method = getnamecallmethod()
+		if method == "Kick" then
+			wait(9e9)
+			return
+		end
+		return old(self, ...)
+	end)
+	hookfunction(game.Players.LocalPlayer.Kick,protect(function() wait(9e9) end))
+end)
+
+Misc:Button("Anti Afk", function() 
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
+end)	
+
+Misc:Button("Battery", function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Battery.lua"))()
+end)
+
+Misc:Button("SafePlace", function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace%20v1"))()
+end)
+
+Misc:Button("Plate", function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Plate.lua"))()
+end)
+
+Misc:Button("Castle", function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Castle.lua"))()
+end)
+
+Misc:Button("Animation-Hub", function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Animated/main/G"))()
+end)	
+
+Misc:Toggle("Walk On Water",  function(bool)
+				getgenv().walkonwater = bool
+				for i,v in pairs(workspace:GetChildren()) do
+					if v:IsA("Part") then
+						if v.Color == Color3.fromRGB(9, 137, 207) then
+							v.CanCollide = getgenv().walkonwater
+						end
+					end
+				end
+			end)
+
+
+Misc:Button("Spam Burp", function()
+	    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Burp%20anti%20counter.lua"))()
+	end)
+
+Misc:Button("FPS Gui", function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FPS.lua"))()
+	end)
+
+Misc:Button("Spectate Gui", function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Spectate.lua"))()
+	end)
+
+Scripts:Button("SimonHax", function()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/main/SimonHax"))()
+end)
+Scripts:Button("Orion V1", function()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Orion%20Lib.lua"))()
+end)
+Scripts:Button("V7", function()
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/V7"))()
+end)
+Scripts:Button("Emotes-Hub", function()
+           loadstring(game:HttpGet("https://pastebin.com/raw/eCpipCTH"))()
+end)
+Scripts:Button("Shift-Lock", function()
+	   loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-Permanent-Shiftlock-7513"))()
+end)		
+Scripts:Button("Slow-Drink", function()
+	   loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Slow.lua"))()
+end)		
+Scripts:Button("ZeroHub", function()
+           loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/a1bf0423e73a5293c014042960cf4767/raw/faaa622081cbf015f0f54efb256e2ba182b57bca/shit.lua"))()
+end)		
+Scripts:Button("Avery", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Zero.lua"))()
+end)
+Scripts:Button("FriendList", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FriendList.lua"))()
+end)
 
 -- Credits Layout
 Credits:Label("Developer: Avery & Riko")
