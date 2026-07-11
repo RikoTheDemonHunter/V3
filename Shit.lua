@@ -626,7 +626,7 @@ LocalPlayer:Button("TP Gui", function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Teleport.lua"))()
 end)
 
-LocalPlayer:Toggle("Cloud Stand", function(state)
+LocalPlayer:Button("Cloud Stand", function()
 	if state then
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Cloud.lua"))()
 	end
