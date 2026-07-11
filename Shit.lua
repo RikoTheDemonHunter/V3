@@ -745,7 +745,7 @@ Misc:Button("Infinity Yield", function()
 loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)		
 
-Misc:Toggle("Anti Kick", function()
+Misc:Toggle("Anti Kick", function(state)
 	local mt = getrawmetatable(game)
 	local old = mt.__namecall
 	local protect = newcclosure or protect_function
@@ -762,7 +762,7 @@ Misc:Toggle("Anti Kick", function()
 	hookfunction(game.Players.LocalPlayer.Kick,protect(function() wait(9e9) end))
 end)
 
-Misc:Toggle("Anti Afk", function() 
+Misc:Toggle("Anti Afk", function(state) 
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
 end)	
 
@@ -841,4 +841,4 @@ end)
 
 Credits:Label("Developer: Avery")
 Credits:Label("Build Architecture: Modern UI Premium")
-Credits:Label("Discord: 90averyxx"
+Credits:Label("Discord: 90averyxx")
