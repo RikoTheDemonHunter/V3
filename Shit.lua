@@ -590,7 +590,7 @@ LocalPlayer:Button("Reset", function()
 	if player.Character then player.Character:BreakJoints() end
 end)
 
-LocalPlayer:Toggle(" Auto Rejoin", function(state)
+LocalPlayer:Toggle("Rejoin", function(state)
 	local TeleportService = game:GetService("TeleportService")
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
