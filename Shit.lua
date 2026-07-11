@@ -590,12 +590,18 @@ LocalPlayer:Button("Reset", function()
 	if player.Character then player.Character:BreakJoints() end
 end)
 
-LocalPlayer:Button("Rejoin", function()
-	game:GetService("TeleportService"):Teleport(game.PlaceId, player)
-end)
+LocalPlayer:Toggle(" Auto Rejoin", function(state)
+	local TeleportService = game:GetService("TeleportService")
+local GuiService = game:GetService("GuiService")
+local Players = game:GetService("Players")
 
-LocalPLayer:Button("Auto Rejoin", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Rejoin.lua"))()
+GuiService.ErrorMessageChanged:Connect(function()
+   
+    if GuiService:GetErrorMessage() ~= "" then
+        
+        task.wait(0.5) 
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
+    end
 end)
 
 LocalPlayer:Toggle("Night", function(state)
