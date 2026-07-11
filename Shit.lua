@@ -6,11 +6,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
 local player = Players.LocalPlayer
 
--- 💾 CONFIGURATION / DATA SAVE SYSTEM
+
 local SETTINGS_FILE = "AveryHubConfig.json"
 local SavedSettings = {}
 
--- Load settings from file safely
+
 local function LoadSettings()
 	if isfile and readfile and isfile(SETTINGS_FILE) then
 		local success, decoded = pcall(function()
@@ -22,7 +22,7 @@ local function LoadSettings()
 	end
 end
 
--- Save settings to file safely
+
 local function SaveSettings()
 	if writefile then
 		local success, encoded = pcall(function()
@@ -34,10 +34,10 @@ local function SaveSettings()
 	end
 end
 
--- Read any existing saves before creating elements
+
 LoadSettings()
 
--- 🎨 THEME COLORS
+
 local Theme = {
 	Background = Color3.fromRGB(15, 15, 25),
 	SideBar = Color3.fromRGB(10, 10, 18),
@@ -48,11 +48,11 @@ local Theme = {
 	Highlight = Color3.fromRGB(255, 215, 0)
 }
 
--- 🌐 URLs
+
 local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
 local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
 
--- 🧩 Verification Functions
+
 local function isBanned(userId, banlist)
 	if not banlist then return false end
 	for _, id in ipairs(banlist) do if id == userId then return true end end
@@ -70,7 +70,7 @@ local function verifyUser(p, wl, bl)
 	return isWhitelisted(id, wl), isBanned(id, bl), name, id
 end
 
--- 🪟 Verification GUI Setup
+
 local gui = Instance.new("ScreenGui")
 gui.Name = "AveryHubIntro"
 gui.ResetOnSpawn = false
@@ -222,9 +222,7 @@ TweenService:Create(uiScale, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.Easi
 task.wait(0.5)
 gui:Destroy()
 
--- ==========================================
--- ⚡ MODERN NEW-UI LIBRARY DEFINITION ⚡
--- ==========================================
+
 local ModernLib = {}
 function ModernLib:CreateMain(hubTitle)
 	local ScreenGui = Instance.new("ScreenGui")
@@ -392,7 +390,7 @@ function ModernLib:CreateMain(hubTitle)
 			StatusIndicator.Parent = ToggleFrame
 			Instance.new("UICorner").CornerRadius = UDim.new(0, 4)
 
-			-- Auto-load state if saved previously
+			
 			local state = false
 			if SavedSettings[toggleName] ~= nil then
 				state = SavedSettings[toggleName]
@@ -401,7 +399,7 @@ function ModernLib:CreateMain(hubTitle)
 			StatusIndicator.Text = state and "ON" or "OFF"
 			StatusIndicator.TextColor3 = state and Theme.Success or Theme.Alert
 
-			-- Handle auto-trigger if saved as true on setup
+			
 			if state then
 				task.spawn(callback, true)
 			end
@@ -411,7 +409,7 @@ function ModernLib:CreateMain(hubTitle)
 				StatusIndicator.Text = state and "ON" or "OFF"
 				StatusIndicator.TextColor3 = state and Theme.Success or Theme.Alert
 				
-				-- Save to configurations
+				
 				SavedSettings[toggleName] = state
 				SaveSettings()
 
@@ -450,7 +448,7 @@ function ModernLib:CreateMain(hubTitle)
 	return Tabs
 end
 
--- Create the Dashboard Engine
+
 local Library = ModernLib:CreateMain("⚡ Avery Hub | Premium Dashboard ⚡")
 
 local AutoFarm = Library:Tab("AutoDrink")
@@ -460,9 +458,7 @@ local Misc = Library:Tab("Misc")
 local Scripts = Library:Tab("Scripts")
 local Credits = Library:Tab("Credits")
 
--- ==========================================
--- 🛠️ GAME SYSTEMS LOGIC LAYER
--- ==========================================
+
 local drinkTier = {
 	{req = 2000000, name = "Garlic Juice"}, {req = 1000000, name = "Thunder Fizz"},
 	{req = 500000, name = "Omega Burp Juice"}, {req = 230000, name = "Atomic Drink"},
@@ -491,7 +487,7 @@ local function RunAutoEquipEngine()
 	end
 end
 
--- Load external core assets safely
+
 pcall(function()
 	loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/78b69f79b7fa24fd0d20faa46c5cf85f/raw/2bc6ab144c95e2463d72060f2936befae2c5ccf1/Modern%2520Equip.lua"))()
 end)
@@ -562,7 +558,7 @@ AutoFarm:Toggle("Auto Mine Gems", function(state)
 	end
 end)
 
--- Local Player Implementations
+
 LocalPlayer:Button("Fps-Unlocker", function()
 	if setfpscap then setfpscap(100000) end
 end)
@@ -634,7 +630,7 @@ LocalPlayer:Button("VoidStand", function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/VoidStand.lua"))()
 end)
 
--- Teleport Layout Functions
+
 local function tweenHRP(targetCFrame)
 	local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
 	if hrp then
@@ -749,7 +745,7 @@ Misc:Button("Infinity Yield", function()
 loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)		
 
-Misc:Button("Anti Kick", function()
+Misc:Toggle("Anti Kick", function(state)
 	local mt = getrawmetatable(game)
 	local old = mt.__namecall
 	local protect = newcclosure or protect_function
@@ -766,7 +762,7 @@ Misc:Button("Anti Kick", function()
 	hookfunction(game.Players.LocalPlayer.Kick,protect(function() wait(9e9) end))
 end)
 
-Misc:Button("Anti Afk", function() 
+Misc:Toggle("Anti Afk", function(state) 
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
 end)	
 
@@ -842,6 +838,7 @@ Scripts:Button("FriendList", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FriendList.lua"))()
 end)
 
--- Credits Layout
-Credits:Label("Developer: Avery & Riko")
+
+Credits:Label("Developer: Avery")
 Credits:Label("Build Architecture: Modern UI Premium")
+Credits:Label("Discord: 90averyxx"
