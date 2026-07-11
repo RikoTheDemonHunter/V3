@@ -492,7 +492,7 @@ pcall(function()
 	loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/78b69f79b7fa24fd0d20faa46c5cf85f/raw/2bc6ab144c95e2463d72060f2936befae2c5ccf1/Modern%2520Equip.lua"))()
 end)
 
--- Auto Farm Implementations
+
 AutoFarm:Toggle("Auto Prestige", function(state)
 	getgenv().prestige = state
 	while getgenv().prestige do
@@ -595,7 +595,7 @@ LocalPlayer:Button("Rejoin", function()
 end)
 
 LocalPLayer:Toggle("Auto Rejoin", function(state)
- loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Rejoin.lua"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Rejoin.lua"))()
 end)
 
 LocalPlayer:Toggle("Night", function(state)
