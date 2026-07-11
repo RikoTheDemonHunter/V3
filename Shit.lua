@@ -38,12 +38,9 @@ end
 LoadSettings()
 
 
-local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
-local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
-
--- Theme Configuration
 local Theme = {
 	Background = Color3.fromRGB(15, 15, 25),
+	SideBar = Color3.fromRGB(10, 10, 18),
 	Accent = Color3.fromRGB(0, 200, 255),
 	TextColor = Color3.fromRGB(255, 255, 255),
 	Alert = Color3.fromRGB(255, 80, 80),
@@ -51,7 +48,29 @@ local Theme = {
 	Highlight = Color3.fromRGB(255, 215, 0)
 }
 
--- UI Setup
+
+local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
+local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
+
+
+local function isBanned(userId, banlist)
+	if not banlist then return false end
+	for _, id in ipairs(banlist) do if id == userId then return true end end
+	return false
+end
+
+local function isWhitelisted(userId, whitelist)
+	if not whitelist then return false end
+	for _, id in ipairs(whitelist) do if id == userId then return true end end
+	return false
+end
+
+local function verifyUser(p, wl, bl)
+	local id, name = p.UserId, p.Name or "Unknown"
+	return isWhitelisted(id, wl), isBanned(id, bl), name, id
+end
+
+
 local gui = Instance.new("ScreenGui")
 gui.Name = "AveryHubIntro"
 gui.ResetOnSpawn = false
@@ -66,6 +85,62 @@ frame.BackgroundTransparency = 0.15
 frame.BorderSizePixel = 0
 frame.Parent = gui 
 
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 14)
+corner.Parent = frame
+
+local dateLabel = Instance.new("TextLabel")
+dateLabel.AnchorPoint = Vector2.new(0.5, 0)
+dateLabel.Position = UDim2.new(0.5, 0, 0, -38)
+dateLabel.Size = UDim2.new(0.85, 0, 0, 26)
+dateLabel.BackgroundTransparency = 1
+dateLabel.Font = Enum.Font.GothamSemibold
+dateLabel.TextSize = 14
+dateLabel.TextColor3 = Theme.Highlight
+dateLabel.TextTransparency = 1
+dateLabel.Text = os.date("%A, %B %d %Y  |  %I:%M:%S %p")
+dateLabel.Parent = frame
+
+task.spawn(function()
+	while gui.Parent do
+		dateLabel.Text = os.date("%A, %B %d %Y  |  %I:%M:%S %p")
+		task.wait(1)
+	end
+end)
+
+TweenService:Create(dateLabel, TweenInfo.new(1.2), {TextTransparency = 0}):Play()
+
+local uiScale = Instance.new("UIScale")
+uiScale.Scale = UserInputService.TouchEnabled and 1.2 or 1
+uiScale.Parent = frame
+
+local glow = Instance.new("UIStroke")
+glow.Color = Theme.Accent
+glow.Thickness = 2
+glow.Transparency = 0.3
+glow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+glow.Parent = frame
+
+task.spawn(function()
+	while gui.Parent do
+		TweenService:Create(glow, TweenInfo.new(2, Enum.EasingStyle.Sine), {Transparency = 0.6}):Play()
+		task.wait(2)
+		TweenService:Create(glow, TweenInfo.new(2, Enum.EasingStyle.Sine), {Transparency = 0.25}):Play()
+		task.wait(2)
+	end
+end)
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -20, 0, 40)
+title.Position = UDim2.new(0, 15, 0, 10)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+title.TextColor3 = Theme.TextColor
+title.Text = "Avery Hub | Whitelist Verification"
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = frame
+
 local status = Instance.new("TextLabel")
 status.Size = UDim2.new(1, -20, 0, 35)
 status.Position = UDim2.new(0, 15, 0, 50)
@@ -74,89 +149,79 @@ status.Font = Enum.Font.Gotham
 status.TextSize = 16
 status.TextColor3 = Theme.Accent
 status.TextXAlignment = Enum.TextXAlignment.Left
-status.Text = "✨ Initializing Security..."
+status.Text = "✨ Initializing..."
 status.Parent = frame
 
+local scrollFrame = Instance.new("ScrollingFrame")
+scrollFrame.Size = UDim2.new(1, -30, 0.55, -40)
+scrollFrame.Position = UDim2.new(0, 15, 0.25, 0)
+scrollFrame.BackgroundTransparency = 1
+scrollFrame.ScrollBarThickness = 4
+scrollFrame.ScrollBarImageColor3 = Theme.Accent
+scrollFrame.Parent = frame
+
+local uiList = Instance.new("UIListLayout")
+uiList.SortOrder = Enum.SortOrder.LayoutOrder
+uiList.Padding = UDim.new(0, 6)
+uiList.Parent = scrollFrame
+
+local outro = Instance.new("TextLabel")
+outro.Size = UDim2.new(1, -20, 0, 30)
+outro.Position = UDim2.new(0, 10, 0.88, 0)
+outro.BackgroundTransparency = 1
+outro.Font = Enum.Font.GothamBold
+outro.TextSize = 14
+outro.TextColor3 = Color3.fromRGB(255, 100, 150)
+outro.TextTransparency = 1
+outro.Text = "💖 Show your support by following Avery on Discord!"
+outro.Parent = frame
+
 local function fadeText(newText, delayTime)
+	local out = TweenService:Create(status, TweenInfo.new(0.3), {TextTransparency = 1})
+	out:Play() out.Completed:Wait()
 	status.Text = newText
+	TweenService:Create(status, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
 	task.wait(delayTime or 1)
 end
 
--- Secure Verification Block (Scoped inside a function to prevent environment tampering)
-local function ExecuteVerification()
-	local userId = player.UserId
-	local rawSwitch, rawBanlist
-	
-	-- Anti-Hook Strategy: Alternate download methods using pcall fallbacks
-	local httpGet = game.HttpGet
-	
-	local successSwitch = pcall(function()
-		rawSwitch = httpGet(game, url)
-	end)
-	
-	local successBan = pcall(function()
-		rawBanlist = httpGet(game, banlistUrl)
-	end)
-	
-	if not successSwitch or not rawSwitch then
-		player:Kick("🔒 Security Verification Error [Code 0x1]")
-		return false
-	end
-	
-	-- Parse Data
-	local switchData = HttpService:JSONDecode(rawSwitch)
-	local banData = HttpService:JSONDecode(rawBanlist or "{}")
-	
-	local whitelist = switchData.whitelist or {}
-	local banned = banData.banned or banData or {}
-	
-	-- Structure Shift: Change "enabled" logic to a security hash or token check
-	-- Ensure your switcher.json contains: "status": "operational"
-	local systemStatus = switchData.status or "offline"
-	
-	-- Evaluation
-	local isWhitelisted = false
-	for _, id in ipairs(whitelist) do
-		if id == userId then isWhitelisted = true break end
-	end
-	
-	local isBanned = false
-	for _, id in ipairs(banned) do
-		if id == userId then isBanned = true break end
-	end
-	
-	-- Process Restrictions
-	if isBanned then
-		fadeText("🚫 Access Revoked.", 2)
-		player:Kick("🚫 You are permanently banned from Avery Hub.")
-		return false
-	end
-	
-	-- The Kill Switch logic: Requires explicit matching status string
-	if systemStatus ~= "operational" and not isWhitelisted then
-		fadeText("❌ Maintenance Mode Active.", 2)
-		player:Kick("❌ Avery Hub is currently offline or under maintenance.")
-		return false
-	end
-	
-	if not isWhitelisted then
-		fadeText("❌ Unauthorized Account.", 2)
-		player:Kick("❌ Access Denied: Your UserId is not whitelisted.")
-		return false
-	end
-	
-	fadeText("✅ Verification Passed!", 1)
-	return true
-end
+task.wait(0.5)
+fadeText("✨ Welcome to Avery Hub", 1)
+local banData, whitelist, enabled = {}, {}, true
 
--- Run Verification Check
-if not ExecuteVerification() then
-	gui:Destroy()
+pcall(function()
+	local raw = game:HttpGet(banlistUrl)
+	local decoded = HttpService:JSONDecode(raw)
+	banData = decoded.banned or decoded or {}
+end)
+pcall(function()
+	local raw = game:HttpGet(url)
+	local data = HttpService:JSONDecode(raw)
+	enabled = (data.enabled ~= false)
+	whitelist = data.whitelist or {}
+end)
+
+local whitelisted, banned, username, userId = verifyUser(player, whitelist, banData)
+
+if banned then
+	fadeText("🚫 You are BANNED!", 2)
+	player:Kick("🚫 You are banned from Avery Hub.")
+	return
+elseif not whitelisted and not enabled then
+	fadeText("❌ Verification Disabled via Killswitch.", 2)
+	player:Kick("❌ System Kill Switch Active.")
+	return
+elseif not whitelisted then
+	fadeText("❌ Access Denied: Not Whitelisted.", 2)
+	player:Kick("❌ You are not whitelisted!")
 	return
 end
 
--- Clean up intro UI and proceed to Main Script
+fadeText("✅ Verification Successful!", 1)
+TweenService:Create(frame, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+TweenService:Create(uiScale, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Scale = 0}):Play()
+task.wait(0.5)
 gui:Destroy()
+
 
 local ModernLib = {}
 function ModernLib:CreateMain(hubTitle)
