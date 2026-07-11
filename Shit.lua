@@ -598,6 +598,10 @@ LocalPlayer:Button("Rejoin", function()
 	game:GetService("TeleportService"):Teleport(game.PlaceId, player)
 end)
 
+LocalPLayer:Toggle("Auto Rejoin", function(state)
+ loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Rejoin.lua"))()
+end)
+
 LocalPlayer:Toggle("Night", function(state)
 	Lighting.ClockTime = state and 0 or 14
 end)
