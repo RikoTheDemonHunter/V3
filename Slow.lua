@@ -90,7 +90,6 @@ pcall(function()
             messageLabel.BackgroundTransparency = 1
             messageLabel.Parent = mainFrame
 
-            -- Position notifications dynamically
             local function updatePositions()
                 for idx, frame in ipairs(activeNotifications) do
                     local targetY = 40 + (idx - 1) * 85
@@ -107,7 +106,6 @@ pcall(function()
 
             task.wait(duration or 3)
 
-            -- Outro animations
             TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Position = UDim2.new(1, 10, 0, mainFrame.Position.Y.Offset), BackgroundTransparency = 1}):Play()
             task.wait(0.3)
             
@@ -198,7 +196,6 @@ pcall(function()
     uiStroke.Thickness = 1.5
     uiStroke.Parent = mainUI
 
-    -- Clean Dragging Engine
     local dragging, dragInput, dragStart, startPos
     mainUI.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -222,7 +219,6 @@ pcall(function()
         end
     end)
 
-    -- Header Title
     local headerTitle = Instance.new("TextLabel")
     headerTitle.Size = UDim2.new(1, 0, 0, 40)
     headerTitle.Font = Enum.Font.GothamBold
@@ -232,7 +228,6 @@ pcall(function()
     headerTitle.BackgroundTransparency = 1
     headerTitle.Parent = mainUI
 
-    -- Search Systems
     local searchBar = Instance.new("TextBox")
     searchBar.Size = UDim2.new(0.9, 0, 0, 35)
     searchBar.Position = UDim2.new(0.05, 0, 0, 45)
@@ -264,12 +259,13 @@ pcall(function()
     uiListLayout.Parent = scrollFrame
 
     ---------------------------------------------------------------------------
-    -- Dynamic Character Custom Runtime Swapper (Prevents Character Freeze)
+    -- Dynamic Character Custom Runtime Swapper & Persistent State Fix
     ---------------------------------------------------------------------------
+    local cachedAnimationPreferences = {}
+
     local function applyCustomAnimationValue(animType, idTable)
-        local char = LocalPlayer.Character
-        if not char then return end
-        local animateScript = char:FindFirstChild("Animate")
+        local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        local animateScript = char:WaitForChild("Animate", 5)
         if not animateScript then return end
 
         local targetNode = animateScript:FindFirstChild(animType:lower())
@@ -288,30 +284,31 @@ pcall(function()
                 animObj.AnimationId = "rbxassetid://" .. id
                 animObj.Parent = targetNode
             end
-
-            -- Safely refresh humanoid to prevent structural locking
-            local humanoid = char:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                local animTracks = humanoid:GetPlayingAnimationTracks()
-                for _, track in ipairs(animTracks) do
-                    track:Stop()
-                end
-            end
         end
     end
 
-    -- Event-driven setup execution cycle loop that adapts perfectly when your character respawns
-    local cachedAnimationPreferences = {}
+    -- Flawless Reload on Respawn via Toggle Restart
     local function monitorCharacterState(character)
         if not character then return end
         local humanoid = character:WaitForChild("Humanoid", 10)
-        if not humanoid then return end
+        local animateScript = character:WaitForChild("Animate", 10)
+        if not humanoid or not animateScript then return end
 
-        -- Reload previously assigned settings on spawn
-        task.wait(0.5)
+        -- Stop current tracks before modification
+        local animTracks = humanoid:GetPlayingAnimationTracks()
+        for _, track in ipairs(animTracks) do
+            track:Stop()
+        end
+
+        -- Re-apply all cached choices instantly
         for category, identity in pairs(cachedAnimationPreferences) do
             applyCustomAnimationValue(category, identity)
         end
+
+        -- Cycle the Animate script to force Roblox to rebuild tracks with new IDs
+        animateScript.Enabled = false
+        task.wait(0.1)
+        animateScript.Enabled = true
     end
 
     LocalPlayer.CharacterAdded:Connect(monitorCharacterState)
@@ -345,8 +342,19 @@ pcall(function()
                 btnCorner.Parent = elementButton
 
                 elementButton.MouseButton1Click:Connect(function()
+                    -- Instantly cache preferences globally so it saves on reset
                     cachedAnimationPreferences[category] = ids
+                    
                     applyCustomAnimationValue(category, ids)
+                    
+                    -- Quick-cycle Animate script on instant select click
+                    local char = LocalPlayer.Character
+                    if char and char:FindFirstChild("Animate") then
+                        char.Animate.Enabled = false
+                        task.wait(0.05)
+                        char.Animate.Enabled = true
+                    end
+                    
                     Notify("Synchronized", "Applied " .. name .. " config successfully!", 2.5)
                 end)
 
