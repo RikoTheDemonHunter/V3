@@ -259,7 +259,7 @@ pcall(function()
     uiListLayout.Parent = scrollFrame
 
     ---------------------------------------------------------------------------
-    -- Dynamic Character Custom Runtime Swapper & Persistent State Fix
+    -- Dynamic Character Custom Runtime Swapper & Safe State Reload
     ---------------------------------------------------------------------------
     local cachedAnimationPreferences = {}
 
@@ -287,28 +287,30 @@ pcall(function()
         end
     end
 
-    -- Flawless Reload on Respawn via Toggle Restart
+    -- Flawless Reload on Respawn without calling raw toggle closures
     local function monitorCharacterState(character)
         if not character then return end
         local humanoid = character:WaitForChild("Humanoid", 10)
         local animateScript = character:WaitForChild("Animate", 10)
         if not humanoid or not animateScript then return end
 
-        -- Stop current tracks before modification
+        -- Stop current tracks safely
         local animTracks = humanoid:GetPlayingAnimationTracks()
         for _, track in ipairs(animTracks) do
             track:Stop()
         end
 
-        -- Re-apply all cached choices instantly
+        -- Re-apply choices sequentially
         for category, identity in pairs(cachedAnimationPreferences) do
             applyCustomAnimationValue(category, identity)
         end
 
-        -- Cycle the Animate script to force Roblox to rebuild tracks with new IDs
-        animateScript.Enabled = false
-        task.wait(0.1)
-        animateScript.Enabled = true
+        -- Safely toggle the property switch to restart the script state tracking
+        if animateScript and typeof(animateScript) == "Instance" and animateScript:IsA("Script") or animateScript:IsA("LocalScript") then
+            animateScript.Enabled = false
+            task.wait(0.1)
+            animateScript.Enabled = true
+        end
     end
 
     LocalPlayer.CharacterAdded:Connect(monitorCharacterState)
@@ -342,17 +344,16 @@ pcall(function()
                 btnCorner.Parent = elementButton
 
                 elementButton.MouseButton1Click:Connect(function()
-                    -- Instantly cache preferences globally so it saves on reset
                     cachedAnimationPreferences[category] = ids
-                    
                     applyCustomAnimationValue(category, ids)
                     
-                    -- Quick-cycle Animate script on instant select click
+                    -- Cycle script securely on click selection
                     local char = LocalPlayer.Character
-                    if char and char:FindFirstChild("Animate") then
-                        char.Animate.Enabled = false
+                    local anim = char and char:FindFirstChild("Animate")
+                    if anim and (anim:IsA("Script") or anim:IsA("LocalScript")) then
+                        anim.Enabled = false
                         task.wait(0.05)
-                        char.Animate.Enabled = true
+                        anim.Enabled = true
                     end
                     
                     Notify("Synchronized", "Applied " .. name .. " config successfully!", 2.5)
