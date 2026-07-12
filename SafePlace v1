@@ -1,41 +1,43 @@
--- Avery's SafeZone Full Script (Optimized Color Cycling)
+-- Modernized SafeZone Script (Optimized & Enhanced)
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
 local player = Players.LocalPlayer
 
 local safeZoneFolder = nil
 local running = false
 local safeZoneParts = {}
-
--- RGB effect function for billboard text
-local function RGBEffect(label)
-	if not label then return end
-	task.spawn(function()
-		while label and label.Parent do
-			for hue=0,1,0.01 do
-				if label and label.Parent then
-					label.TextColor3 = Color3.fromHSV(hue,1,1)
-					task.wait(0.05)
-				end
-			end
-		end
-	end)
-end
-
--- Smooth color cycle for SafeZone walls and floor (Optimized)
+local renderConnection = nil
 local hueValue = 0
-local function cycleColorOptimized(delta)
-	if not running then return end
-	hueValue = (hueValue + delta * 0.1) % 1
-	local color = Color3.fromHSV(hueValue,0.7,1)
-	for _,part in pairs(safeZoneParts) do
-		if part and part.Parent then
-			part.Color = color
-		end
-	end
-end
+
+-- Modern UI Setup
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "SafeZoneGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local toggleButton = Instance.new("TextButton")
+toggleButton.Size = UDim2.new(0,180,0,50)
+toggleButton.Position = UDim2.new(0.05, 0, 0.2, 0)
+toggleButton.Text = "Enable SafeZone"
+toggleButton.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+toggleButton.TextColor3 = Color3.fromRGB(240, 240, 240)
+toggleButton.Font = Enum.Font.GothamBold
+toggleButton.TextSize = 16
+toggleButton.Active = true
+toggleButton.Draggable = true
+toggleButton.Parent = screenGui
+
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 8)
+uiCorner.Parent = toggleButton
+
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Color = Color3.fromRGB(60, 60, 80)
+uiStroke.Thickness = 1.5
+uiStroke.Parent = toggleButton
 
 -- Create SafeZone
 local function createSafeZone()
@@ -56,143 +58,156 @@ local function createSafeZone()
 
 	-- Floor
 	local floor = Instance.new("Part")
-	floor.Size = Vector3.new(cubeSize,10,cubeSize)
-	floor.Position = Vector3.new(0,yPos+5,0)
+	floor.Size = Vector3.new(cubeSize, 10, cubeSize)
+	floor.Position = Vector3.new(0, yPos + 5, 0)
 	floor.Anchored = true
-	floor.Material = Enum.Material.SmoothPlastic
+	floor.Material = Enum.Material.Glass
 	floor.Transparency = 0.5
-	floor.Reflectance = 0.2
+	floor.Reflectance = 0.4
 	floor.Name = "Floor"
-	floor.Color = Color3.fromRGB(0,0,255)
 	floor.Parent = safeZoneFolder
-	table.insert(safeZoneParts,floor)
+	table.insert(safeZoneParts, floor)
 
-	-- Walls
-	local function createWall(position,size,orientation)
+	-- Wall Helper with Neon Borders
+	local function createWall(position, size)
 		local wall = Instance.new("Part")
 		wall.Size = size
 		wall.Position = position
 		wall.Anchored = true
-		wall.Material = Enum.Material.SmoothPlastic
-		wall.Transparency = 0.4
-		wall.Color = Color3.fromRGB(0,0,255)
-		if orientation then wall.Orientation = orientation end
+		wall.Material = Enum.Material.Glass
+		wall.Transparency = 0.7
 		wall.Parent = safeZoneFolder
-		table.insert(safeZoneParts,wall)
-		return wall
+		table.insert(safeZoneParts, wall)
+
+		-- Futuristic Glow Trim
+		local trim = Instance.new("Part")
+		trim.Size = Vector3.new(size.X + 2, 4, size.Z + 2)
+		trim.Position = position + Vector3.new(0, (size.Y / 2) - 2, 0)
+		trim.Anchored = true
+		trim.Material = Enum.Material.Neon
+		trim.Parent = safeZoneFolder
+		table.insert(safeZoneParts, trim)
 	end
 
-	createWall(Vector3.new(-cubeSize/2,yPos+cubeHeight/2,0),Vector3.new(wallThickness,cubeHeight,cubeSize))
-	createWall(Vector3.new(cubeSize/2,yPos+cubeHeight/2,0),Vector3.new(wallThickness,cubeHeight,cubeSize))
-	createWall(Vector3.new(0,yPos+cubeHeight/2,cubeSize/2),Vector3.new(cubeSize,cubeHeight,wallThickness))
+	createWall(Vector3.new(-cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(wallThickness, cubeHeight, cubeSize))
+	createWall(Vector3.new(cubeSize/2, yPos + cubeHeight/2, 0), Vector3.new(wallThickness, cubeHeight, cubeSize))
+	createWall(Vector3.new(0, yPos + cubeHeight/2, cubeSize/2), Vector3.new(cubeSize, cubeHeight, wallThickness))
 
 	-- Front wall split for entrance
 	local frontLeft = Instance.new("Part")
-	frontLeft.Size = Vector3.new((cubeSize-entranceWidth)/2,cubeHeight,wallThickness)
-	frontLeft.Position = Vector3.new(-(cubeSize-entranceWidth)/4 - entranceWidth/2,yPos+cubeHeight/2,-cubeSize/2)
+	frontLeft.Size = Vector3.new((cubeSize - entranceWidth) / 2, cubeHeight, wallThickness)
+	frontLeft.Position = Vector3.new(-(cubeSize - entranceWidth) / 4 - entranceWidth / 2, yPos + cubeHeight / 2, -cubeSize / 2)
 	frontLeft.Anchored = true
-	frontLeft.Material = Enum.Material.SmoothPlastic
-	frontLeft.Transparency = 0.4
-	frontLeft.Color = Color3.fromRGB(0,0,255)
+	frontLeft.Material = Enum.Material.Glass
+	frontLeft.Transparency = 0.7
 	frontLeft.Parent = safeZoneFolder
-	table.insert(safeZoneParts,frontLeft)
+	table.insert(safeZoneParts, frontLeft)
 
 	local frontRight = Instance.new("Part")
-	frontRight.Size = Vector3.new((cubeSize-entranceWidth)/2,cubeHeight,wallThickness)
-	frontRight.Position = Vector3.new((cubeSize-entranceWidth)/4 + entranceWidth/2,yPos+cubeHeight/2,-cubeSize/2)
+	frontRight.Size = Vector3.new((cubeSize - entranceWidth) / 2, cubeHeight, wallThickness)
+	frontRight.Position = Vector3.new((cubeSize - entranceWidth) / 4 + entranceWidth / 2, yPos + cubeHeight / 2, -cubeSize / 2)
 	frontRight.Anchored = true
-	frontRight.Material = Enum.Material.SmoothPlastic
-	frontRight.Transparency = 0.4
-	frontRight.Color = Color3.fromRGB(0,0,255)
+	frontRight.Material = Enum.Material.Glass
+	frontRight.Transparency = 0.7
 	frontRight.Parent = safeZoneFolder
-	table.insert(safeZoneParts,frontRight)
+	table.insert(safeZoneParts, frontRight)
 
-	-- Path
+	-- Access Path
 	local path = Instance.new("Part")
-	path.Size = Vector3.new(pathWidth,10,pathLength)
-	path.Position = Vector3.new(0,yPos+5,-cubeSize/2 - pathLength/2)
+	path.Size = Vector3.new(pathWidth, 10, pathLength)
+	path.Position = Vector3.new(0, yPos + 5, -cubeSize / 2 - pathLength / 2)
 	path.Anchored = true
-	path.Material = Enum.Material.Concrete
-	path.Color = Color3.fromRGB(128,128,128)
+	path.Material = Enum.Material.SmoothPlastic
+	path.Color = Color3.fromRGB(40, 40, 45)
 	path.Parent = safeZoneFolder
 
-	-- Wide Baseplate
+	-- Baseplate
 	local baseplate = Instance.new("Part")
-	baseplate.Size = Vector3.new(baseplateWidth,10,baseplateDepth)
-	baseplate.Position = Vector3.new(0,yPos-5,-cubeSize/2 - pathLength - baseplateDepth/2)
+	baseplate.Size = Vector3.new(baseplateWidth, 10, baseplateDepth)
+	baseplate.Position = Vector3.new(0, yPos - 5, -cubeSize / 2 - pathLength - baseplateDepth / 2)
 	baseplate.Anchored = true
 	baseplate.Material = Enum.Material.Grass
-	baseplate.Color = Color3.fromRGB(0,255,0)
+	baseplate.Color = Color3.fromRGB(34, 139, 34)
 	baseplate.Parent = safeZoneFolder
 
-	-- Floating "Made by Avery" billboard with RGB text
+	-- Sign Board with Hover Tween
 	local signPart = Instance.new("Part")
-	signPart.Size = Vector3.new(200,50,5)
-	signPart.Position = Vector3.new(0,yPos+60,-cubeSize/2 - pathLength - baseplateDepth/2)
+	signPart.Size = Vector3.new(120, 30, 2)
+	signPart.Position = Vector3.new(0, yPos + 60, -cubeSize / 2 - pathLength - baseplateDepth / 2)
 	signPart.Anchored = true
-	signPart.Material = Enum.Material.SmoothPlastic
-	signPart.Color = Color3.fromRGB(255,0,255)
-	signPart.Transparency = 0.7
+	signPart.Material = Enum.Material.Neon
+	signPart.Transparency = 0.2
 	signPart.Parent = safeZoneFolder
+	table.insert(safeZoneParts, signPart)
 
 	local billboard = Instance.new("BillboardGui")
-	billboard.Size = UDim2.new(0,200,0,50)
+	billboard.Size = UDim2.new(0, 300, 0, 100)
 	billboard.AlwaysOnTop = true
 	billboard.Adornee = signPart
 	billboard.Parent = signPart
 
 	local label = Instance.new("TextLabel")
-	label.Size = UDim2.new(1,0,1,0)
+	label.Size = UDim2.new(1, 0, 1, 0)
 	label.BackgroundTransparency = 1
 	label.Text = "Made by Avery"
 	label.TextScaled = true
 	label.Font = Enum.Font.GothamBold
-	label.TextTransparency = 0
 	label.Parent = billboard
 
-	-- Start RGB text effect
-	RGBEffect(label)
+	-- Clean Float Animation
+	local tweenInfo = TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+	local hoverTween = TweenService:Create(signPart, tweenInfo, {Position = signPart.Position + Vector3.new(0, 8, 0)})
+	hoverTween:Play()
+
+	-- Centered Unified Render Loop
+	renderConnection = RunService.RenderStepped:Connect(function(deltaTime)
+		hueValue = (hueValue + deltaTime * 0.1) % 1
+		local mainColor = Color3.fromHSV(hueValue, 0.7, 1)
+		
+		-- Update Text Color
+		if label and label.Parent then
+			label.TextColor3 = mainColor
+		end
+		
+		-- Update Structure Colors
+		for i = #safeZoneParts, 1, -1 do
+			local part = safeZoneParts[i]
+			if part and part.Parent then
+				part.Color = mainColor
+			else
+				table.remove(safeZoneParts, i)
+			end
+		end
+	end)
 end
 
--- Remove SafeZone
+-- Clear SafeZone Safely
 local function removeSafeZone()
-	if safeZoneFolder and safeZoneFolder.Parent then
+	if renderConnection then
+		renderConnection:Disconnect()
+		renderConnection = nil
+	end
+	if safeZoneFolder then
 		safeZoneFolder:Destroy()
 		safeZoneFolder = nil
-		safeZoneParts = {}
 	end
+	table.clear(safeZoneParts)
 end
 
--- GUI Toggle
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "SafeZoneGui"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = player:WaitForChild("PlayerGui")
-
-local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0,160,0,50)
-toggleButton.Position = UDim2.new(0.05,0,0.2,0)
-toggleButton.Text = "Toggle SafeZone"
-toggleButton.BackgroundColor3 = Color3.fromRGB(30,30,30)
-toggleButton.TextColor3 = Color3.fromRGB(255,255,255)
-toggleButton.Font = Enum.Font.SourceSansBold
-toggleButton.TextSize = 20
-toggleButton.Draggable = true
-toggleButton.Active = true
-toggleButton.Parent = screenGui
-
+-- Button Logic & Visual Feedback
 toggleButton.MouseButton1Click:Connect(function()
-	if running then
-		removeSafeZone()
-	else
-		createSafeZone()
-	end
 	running = not running
-end)
-
--- Connect optimized color cycle to RenderStepped (runs once per frame)
-RunService.RenderStepped:Connect(function(deltaTime)
+	
+	-- Instant Button Feedback
 	if running then
-		cycleColorOptimized(deltaTime)
+		createSafeZone()
+		toggleButton.Text = "Disable SafeZone"
+		TweenService:Create(toggleButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(180, 40, 40)}):Play()
+		TweenService:Create(uiStroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(220, 60, 60)}):Play()
+	else
+		removeSafeZone()
+		toggleButton.Text = "Enable SafeZone"
+		TweenService:Create(toggleButton, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(25, 25, 35)}):Play()
+		TweenService:Create(uiStroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(60, 60, 80)}):Play()
 	end
 end)
