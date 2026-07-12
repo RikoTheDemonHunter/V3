@@ -449,7 +449,7 @@ function ModernLib:CreateMain(hubTitle)
 end
 
 
-local Library = ModernLib:CreateMain("⚡ Avery Hub | Premium Dashboard ⚡")
+local Library = ModernLib:CreateMain("⚡ Avery Hub V3 | Premium Dashboard ⚡")
 
 local AutoFarm = Library:Tab("AutoDrink")
 local LocalPlayer = Library:Tab("LocalPlayer")
@@ -805,8 +805,11 @@ Misc:Toggle("Walk On Water",  function(bool)
 
 
 Misc:Button("Spam Burp", function()
-	    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Burp%20anti%20counter.lua"))()
-	end)
+	     while true do
+                        task.wait()
+                        game:GetService("ReplicatedStorage").RemoteEvents.BurpEvent:FireServer()
+                    end
+                end)
 
 Misc:Button("FPS Gui", function()
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FPS.lua"))()
@@ -848,4 +851,5 @@ end)
 Credits:Label("Developer: Avery")
 Credits:Label("Build Architecture: Modern UI Premium")
 Credits:Label("Discord: 90averyxx")
+Credits:Label("WhiteList System")
 end)
