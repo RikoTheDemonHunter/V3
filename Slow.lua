@@ -259,13 +259,14 @@ pcall(function()
     uiListLayout.Parent = scrollFrame
 
     ---------------------------------------------------------------------------
-    -- Dynamic Character Custom Runtime Swapper & Safe State Reload
+    -- Dynamic Character Custom Runtime Swapper & Persistent State Fix
     ---------------------------------------------------------------------------
     local cachedAnimationPreferences = {}
 
     local function applyCustomAnimationValue(animType, idTable)
-        local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-        local animateScript = char:WaitForChild("Animate", 5)
+        local char = LocalPlayer.Character
+        if not char then return end
+        local animateScript = char:FindFirstChild("Animate")
         if not animateScript then return end
 
         local targetNode = animateScript:FindFirstChild(animType:lower())
@@ -287,30 +288,32 @@ pcall(function()
         end
     end
 
-    -- Flawless Reload on Respawn without calling raw toggle closures
+    -- Flawless Safe Reload on Respawn
     local function monitorCharacterState(character)
         if not character then return end
         local humanoid = character:WaitForChild("Humanoid", 10)
         local animateScript = character:WaitForChild("Animate", 10)
         if not humanoid or not animateScript then return end
 
-        -- Stop current tracks safely
+        -- Stop current tracks before modification
         local animTracks = humanoid:GetPlayingAnimationTracks()
         for _, track in ipairs(animTracks) do
             track:Stop()
         end
 
-        -- Re-apply choices sequentially
+        -- Re-apply all cached choices instantly
         for category, identity in pairs(cachedAnimationPreferences) do
             applyCustomAnimationValue(category, identity)
         end
 
-        -- Safely toggle the property switch to restart the script state tracking
-        if animateScript and typeof(animateScript) == "Instance" and animateScript:IsA("Script") or animateScript:IsA("LocalScript") then
-            animateScript.Enabled = false
-            task.wait(0.1)
-            animateScript.Enabled = true
-        end
+        -- Absolute Nil-Safe Property Toggle (Fixes line 535 area error)
+        pcall(function()
+            if animateScript and (animateScript:IsA("Script") or animateScript:IsA("LocalScript")) then
+                animateScript.Enabled = false
+                task.wait(0.1)
+                animateScript.Enabled = true
+            end
+        end)
     end
 
     LocalPlayer.CharacterAdded:Connect(monitorCharacterState)
@@ -347,14 +350,16 @@ pcall(function()
                     cachedAnimationPreferences[category] = ids
                     applyCustomAnimationValue(category, ids)
                     
-                    -- Cycle script securely on click selection
-                    local char = LocalPlayer.Character
-                    local anim = char and char:FindFirstChild("Animate")
-                    if anim and (anim:IsA("Script") or anim:IsA("LocalScript")) then
-                        anim.Enabled = false
-                        task.wait(0.05)
-                        anim.Enabled = true
-                    end
+                    -- Absolute Nil-Safe Property Toggle (Fixes line 721 area error)
+                    pcall(function()
+                        local char = LocalPlayer.Character
+                        local anim = char and char:FindFirstChild("Animate")
+                        if anim and (anim:IsA("Script") or anim:IsA("LocalScript")) then
+                            anim.Enabled = false
+                            task.wait(0.05)
+                            anim.Enabled = true
+                        end
+                     pcall(function()
                     
                     Notify("Synchronized", "Applied " .. name .. " config successfully!", 2.5)
                 end)
