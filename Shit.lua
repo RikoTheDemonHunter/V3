@@ -636,6 +636,9 @@ LocalPlayer:Button("VoidStand", function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/VoidStand.lua"))()
 end)
 
+LocalPlayer:Toggle("Burp Counter", function(state)
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Burp%20anti%20counter.lua"))()
+end)
 
 local function tweenHRP(targetCFrame)
 	local hrp = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
