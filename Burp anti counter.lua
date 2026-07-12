@@ -1,40 +1,58 @@
--- Burping Simulator Real Counter-Bot (Put in Executor)
--- Detects who burped you via network events and instantly fires back on the server.
+-- Burping Simulator Blind Network Hook (Put in Executor)
+-- Listens to EVERY remote event simultaneously to find the attacker
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
-
 local player = Players.LocalPlayer
 if not player then return end
 
--- Locate the real events from Burping Simulator
-local BurpEvent = ReplicatedStorage:FindFirstChild("BurpEvent")
-local BurpAction = ReplicatedStorage:FindFirstChild("BurpAction")
+print("Omni-Hook Active. Monitoring all game traffic... Stand still and let someone burp you!")
 
-if not (BurpEvent and BurpAction) then
-    warn("Revenge Bot: Missing game remotes. The game may have updated.")
-    return
+-- Keep track of every event we hook onto so we don't duplicate them
+local hookedRemotes = {}
+
+local function hookRemote(remote)
+    if not remote:IsA("RemoteEvent") or hookedRemotes[remote] then return end
+    hookedRemotes[remote] = true
+    
+    -- Listen to data coming from this remote
+    remote.OnClientEvent:Connect(function(...)
+        local args = {...}
+        
+        -- Look inside the game data packet for any Player User IDs
+        for _, arg in ipairs(args) do
+            local potentialTargetId = nil
+            
+            if type(arg) == "table" then
+                -- Check common dictionary keys developers use for attackers
+                potentialTargetId = arg.sourceUserId or arg.attacker or arg.UserId or arg.Sender
+            elseif type(arg) == "number" and arg > 1000 then
+                -- If the game just sends a raw User ID number
+                potentialTargetId = arg
+            end
+            
+            -- If we found an ID and it's NOT you, it's the attacker!
+            if potentialTargetId and potentialTargetId ~= player.UserId then
+                -- Verify it's a real player in your server
+                if Players:GetPlayerByUserId(potentialTargetId) then
+                    print("Intercepted attacker ID (" .. tostring(potentialTargetId) .. ") on Remote: " .. remote.Name)
+                    
+                    -- Fire back immediately on the same channel!
+                    pcall(function()
+                        remote:FireServer(potentialTargetId)
+                    end)
+                    return
+                end
+            end
+        end
+    end)
 end
 
-print("Anti-Burp Revenge System Online. Waiting for attackers...")
+-- Scan existing game remotes
+for _, obj in ipairs(game:GetDescendants()) do
+    pcall(hookRemote, obj)
+end
 
--- Listen to incoming game data sent to your client
-BurpAction.OnClientEvent:Connect(function(payload)
-    -- Check if the game is telling us someone burped us
-    if type(payload) == "table" and payload.type == "burped" then
-        local attackerId = payload.sourceUserId
-        
-        if attackerId and attackerId ~= player.UserId then
-            local attacker = Players:GetPlayerByUserId(attackerId)
-            local attackerName = attacker and attacker.Name or "Unknown Player"
-            
-            print("You were burped by " .. attackerName .. "! Launching counter-attack...")
-            
-            -- Instantly retaliate through the server
-            pcall(function()
-                -- Fires your burp event directly back at the offender's ID
-                BurpEvent:FireServer(attackerId) 
-            end)
-        end
-    end
+-- Watch for any new remotes the game creates while you play
+game.DescendantAdded:Connect(function(obj)
+    pcall(hookRemote, obj)
 end)
