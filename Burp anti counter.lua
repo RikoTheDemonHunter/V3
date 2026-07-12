@@ -1,5 +1,5 @@
--- Burping Simulator Confirmed Auto-Aim Bot (Put in Executor)
--- Spams anyone who enters your personal space using your exact folder path.
+-- Burping Simulator Long-Range Teleport Bot (Put in Executor)
+-- Detects targets from far away, instantly teleports to them, and burps them.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
@@ -15,22 +15,26 @@ if not BurpEvent then
 end
 
 -- Config
-local REVENGE_DISTANCE = 12 -- How close someone must get to trigger your defense loop
-local DETECT_SPEED = 0.05    -- Rapid scanning speed (instantly catches them)
+local REVENGE_DISTANCE = 60 -- INCREASED RANGE: Tracks and jumps targets from far away
+local DETECT_SPEED = 0.05   -- Rapid scanning speed
 
--- Helper to turn your character directly toward the target
-local function faceTarget(targetCharacter)
+-- Teleport and face the target
+local function teleportAndFace(targetCharacter)
     if not player.Character or not targetCharacter then return end
     local myHRP = player.Character:FindFirstChild("HumanoidRootPart")
     local targetHRP = targetCharacter:FindFirstChild("HumanoidRootPart")
     
     if myHRP and targetHRP then
-        -- Snaps your body's orientation right at them
-        myHRP.CFrame = CFrame.new(myHRP.Position, Vector3.new(targetHRP.Position.X, myHRP.Position.Y, targetHRP.Position.Z))
+        -- Offsets your teleport slightly (2 studs in front of them) so you face them perfectly
+        local offset = targetHRP.CFrame.LookVector * 2
+        local teleportPosition = targetHRP.Position + offset
+        
+        -- Teleports you and instantly locks your orientation to face them
+        myHRP.CFrame = CFrame.new(teleportPosition, Vector3.new(targetHRP.Position.X, teleportPosition.Y, targetHRP.Position.Z))
     end
 end
 
-print("Auto-Aim Personal Defense Bot Activated!")
+print("Long-Range Teleport Defense System Activated! Range: " .. tostring(REVENGE_DISTANCE) .. " studs.")
 
 task.spawn(function()
     while true do
@@ -38,20 +42,23 @@ task.spawn(function()
             local myHRP = player.Character.HumanoidRootPart
             
             for _, p in ipairs(Players:GetPlayers()) do
-                -- Don't target yourself, check if they have a spawned body
                 if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
                     local targetHRP = p.Character.HumanoidRootPart
                     local distance = (targetHRP.Position - myHRP.Position).Magnitude
                     
-                    -- The moment they step into your bubble to attack you
+                    -- Triggered when they enter your long-range tracking zone
                     if distance <= REVENGE_DISTANCE then
-                        -- Snap around and face them
-                        faceTarget(p.Character)
+                        -- 1. Teleport directly into their face
+                        teleportAndFace(p.Character)
+                        task.wait(0.02) -- Split-second delay for physics to register
                         
-                        -- Fire your working spam event right at them!
+                        -- 2. Unleash the burp
                         pcall(function()
                             BurpEvent:FireServer() 
                         end)
+                        
+                        -- Break loop turn so it handles one person at a time per scan tick
+                        break 
                     end
                 end
             end
