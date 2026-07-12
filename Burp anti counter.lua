@@ -1,58 +1,61 @@
--- Burping Simulator Blind Network Hook (Put in Executor)
--- Listens to EVERY remote event simultaneously to find the attacker
+-- Burping Simulator Confirmed Auto-Aim Bot (Put in Executor)
+-- Spams anyone who enters your personal space using your exact folder path.
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-if not player then return end
 
-print("Omni-Hook Active. Monitoring all game traffic... Stand still and let someone burp you!")
+-- Using your exact verified path
+local RemoteFolder = ReplicatedStorage:WaitForChild("RemoteEvents", 5)
+local BurpEvent = RemoteFolder and RemoteFolder:FindFirstChild("BurpEvent")
 
--- Keep track of every event we hook onto so we don't duplicate them
-local hookedRemotes = {}
+if not BurpEvent then
+    warn("Revenge Bot: Could not find BurpEvent inside RemoteEvents!")
+    return
+end
 
-local function hookRemote(remote)
-    if not remote:IsA("RemoteEvent") or hookedRemotes[remote] then return end
-    hookedRemotes[remote] = true
+-- Config
+local REVENGE_DISTANCE = 12 -- How close someone must get to trigger your defense loop
+local DETECT_SPEED = 0.05    -- Rapid scanning speed (instantly catches them)
+
+-- Helper to turn your character directly toward the target
+local function faceTarget(targetCharacter)
+    if not player.Character or not targetCharacter then return end
+    local myHRP = player.Character:FindFirstChild("HumanoidRootPart")
+    local targetHRP = targetCharacter:FindFirstChild("HumanoidRootPart")
     
-    -- Listen to data coming from this remote
-    remote.OnClientEvent:Connect(function(...)
-        local args = {...}
-        
-        -- Look inside the game data packet for any Player User IDs
-        for _, arg in ipairs(args) do
-            local potentialTargetId = nil
+    if myHRP and targetHRP then
+        -- Snaps your body's orientation right at them
+        myHRP.CFrame = CFrame.new(myHRP.Position, Vector3.new(targetHRP.Position.X, myHRP.Position.Y, targetHRP.Position.Z))
+    end
+end
+
+print("Auto-Aim Personal Defense Bot Activated!")
+
+task.spawn(function()
+    while true do
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local myHRP = player.Character.HumanoidRootPart
             
-            if type(arg) == "table" then
-                -- Check common dictionary keys developers use for attackers
-                potentialTargetId = arg.sourceUserId or arg.attacker or arg.UserId or arg.Sender
-            elseif type(arg) == "number" and arg > 1000 then
-                -- If the game just sends a raw User ID number
-                potentialTargetId = arg
-            end
-            
-            -- If we found an ID and it's NOT you, it's the attacker!
-            if potentialTargetId and potentialTargetId ~= player.UserId then
-                -- Verify it's a real player in your server
-                if Players:GetPlayerByUserId(potentialTargetId) then
-                    print("Intercepted attacker ID (" .. tostring(potentialTargetId) .. ") on Remote: " .. remote.Name)
+            for _, p in ipairs(Players:GetPlayers()) do
+                -- Don't target yourself, check if they have a spawned body
+                if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                    local targetHRP = p.Character.HumanoidRootPart
+                    local distance = (targetHRP.Position - myHRP.Position).Magnitude
                     
-                    -- Fire back immediately on the same channel!
-                    pcall(function()
-                        remote:FireServer(potentialTargetId)
-                    end)
-                    return
+                    -- The moment they step into your bubble to attack you
+                    if distance <= REVENGE_DISTANCE then
+                        -- Snap around and face them
+                        faceTarget(p.Character)
+                        
+                        -- Fire your working spam event right at them!
+                        pcall(function()
+                            BurpEvent:FireServer() 
+                        end)
+                    end
                 end
             end
         end
-    end)
-end
-
--- Scan existing game remotes
-for _, obj in ipairs(game:GetDescendants()) do
-    pcall(hookRemote, obj)
-end
-
--- Watch for any new remotes the game creates while you play
-game.DescendantAdded:Connect(function(obj)
-    pcall(hookRemote, obj)
+        task.wait(DETECT_SPEED)
+    end
 end)
