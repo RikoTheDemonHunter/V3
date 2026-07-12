@@ -1,1071 +1,372 @@
+-- Modern Responsive Animation Modifier (R15 Required)
+-- Completely refactored UI, modernized layouts, and absolute fix for character respawn freezes.
 
-local Players = game:GetService("Players")
-local HttpService = game:GetService("HttpService")
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
+pcall(function()
+    local Players = game:GetService("Players")
+    local LocalPlayer = Players.LocalPlayer
+    
+    -- Ensure user is running R15 Rig configuration
+    local function checkRig()
+        local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+        local hum = char:WaitForChild("Humanoid", 5)
+        if hum and hum.RigType ~= Enum.HumanoidRigType.R15 then 
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "Rig Error", 
+                Text = "You are on R6. Please swap to R15 to execute Gaze UI!", 
+                Duration = 10
+            })
+            return false
+        end
+        return true
+    end
 
-local LocalPlayer = Players.LocalPlayer
+    if not checkRig() then return end
 
--- THEME
-local Theme = {
-    Background = Color3.fromRGB(20,20,30),
-    Accent = Color3.fromRGB(0,170,255),
-    Success = Color3.fromRGB(0,220,100),
-    Warning = Color3.fromRGB(255,180,0),
-    Error = Color3.fromRGB(255,80,80),
-    Text = Color3.fromRGB(255,255,255)
-}
+    local TweenService = game:GetService("TweenService")
+    local HttpService = game:GetService("HttpService")
+    local UserInputService = game:GetService("UserInputService")
+    local CoreGui = game:GetService("CoreGui")
 
--- URLs (JSON)
-local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
-local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
+    local cloneref = cloneref or function(o) return o end
+    local TargetGui = cloneref(CoreGui) or LocalPlayer:WaitForChild("PlayerGui")
 
--- UTILITIES
-local function fetchJSON(targetUrl)
-    local success, result = pcall(function()
-        return HttpService:JSONDecode(game:HttpGet(targetUrl,true))
+    -- Anti-duplicate execution gate
+    if TargetGui:FindFirstChild("GazeVerificator") or TargetGui:FindFirstChild("DraggableGui") then
+        return
+    end
+
+    local trackerTag = Instance.new("Folder")
+    trackerTag.Name = "GazeVerificator"
+    trackerTag.Parent = TargetGui
+
+    ---------------------------------------------------------------------------
+    -- Notification Manager (Modern Sleek Layout)
+    ---------------------------------------------------------------------------
+    local activeNotifications = {}
+    
+    local function Notify(titleText, msgText, duration)
+        coroutine.wrap(function()
+            local screenGui = Instance.new("ScreenGui")
+            screenGui.Name = "GazeNotification"
+            screenGui.Parent = TargetGui
+
+            local mainFrame = Instance.new("Frame")
+            mainFrame.Size = UDim2.new(0, 260, 0, 75)
+            mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+            mainFrame.BackgroundTransparency = 0.1
+            mainFrame.BorderSizePixel = 0
+            mainFrame.Parent = screenGui
+
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(0, 8)
+            corner.Parent = mainFrame
+
+            local stroke = Instance.new("UIStroke")
+            stroke.Color = Color3.fromRGB(60, 60, 60)
+            stroke.Thickness = 1
+            stroke.Parent = mainFrame
+
+            local titleLabel = Instance.new("TextLabel")
+            titleLabel.Size = UDim2.new(1, -20, 0, 25)
+            titleLabel.Position = UDim2.new(0, 10, 0, 8)
+            titleLabel.Font = Enum.Font.GothamBold
+            titleLabel.Text = titleText
+            titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            titleLabel.TextSize = 14
+            titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+            titleLabel.BackgroundTransparency = 1
+            titleLabel.Parent = mainFrame
+
+            local messageLabel = Instance.new("TextLabel")
+            messageLabel.Size = UDim2.new(1, -20, 0, 35)
+            messageLabel.Position = UDim2.new(0, 10, 0, 30)
+            messageLabel.Font = Enum.Font.Gotham
+            messageLabel.Text = msgText
+            messageLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+            messageLabel.TextSize = 12
+            messageLabel.TextWrapped = true
+            messageLabel.TextXAlignment = Enum.TextXAlignment.Left
+            messageLabel.TextYAlignment = Enum.TextYAlignment.Top
+            messageLabel.BackgroundTransparency = 1
+            messageLabel.Parent = mainFrame
+
+            -- Position notifications dynamically
+            local function updatePositions()
+                for idx, frame in ipairs(activeNotifications) do
+                    local targetY = 40 + (idx - 1) * 85
+                    TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = UDim2.new(1, -280, 0, targetY)}):Play()
+                end
+            end
+
+            mainFrame.Position = UDim2.new(1, 10, 0, 40 + (#activeNotifications * 85))
+            table.insert(activeNotifications, mainFrame)
+            updatePositions()
+
+            task.wait(0.1)
+            TweenService:Create(mainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(1, -280, 0, mainFrame.Position.Y.Offset)}):Play()
+
+            task.wait(duration or 3)
+
+            -- Outro animations
+            TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Position = UDim2.new(1, 10, 0, mainFrame.Position.Y.Offset), BackgroundTransparency = 1}):Play()
+            task.wait(0.3)
+            
+            for idx, frame in ipairs(activeNotifications) do
+                if frame == mainFrame then
+                    table.remove(activeNotifications, idx)
+                    break
+                end
+            end
+            updatePositions()
+            screenGui:Destroy()
+        end)()
+    end
+
+    ---------------------------------------------------------------------------
+    -- Core System / Animation Data Mapping
+    ---------------------------------------------------------------------------
+    local OriginalAnimations = {
+        ["Idle"] = {
+            ["2016 Animation (mm2)"] = {"387947158", "387947464"},
+            ["Astronaut"] = {"891621366", "891633237"},
+            ["Bubbly"] = {"910004836", "910009958"},
+            ["Cartoony"] = {"742637544", "742638445"},
+            ["Ninja"] = {"656117400", "656118341"},
+            ["OldSchool"] = {"10921230744", "10921232093"},
+            ["Vampire"] = {"1083445855", "1083450166"},
+            ["Zombie"] = {"616158929", "616160636"}
+        },
+        ["Walk"] = {
+            ["Patrol"] = "1151231493",
+            ["Zombie"] = "616168032",
+            ["Cartoony"] = "742640026",
+            ["Ninja"] = "656121766",
+            ["OldSchool"] = "10921244891"
+        },
+        ["Run"] = {
+            ["Robot"] = "10921250460",
+            ["Zombie"] = "616163682",
+            ["Cartoony"] = "10921076136",
+            ["Ninja"] = "656118852"
+        },
+        ["Jump"] = {
+            ["Robot"] = "616090535",
+            ["Cartoony"] = "742637942",
+            ["Ninja"] = "656117878"
+        },
+        ["Fall"] = {
+            ["Robot"] = "616087089",
+            ["Cartoony"] = "742637151",
+            ["Ninja"] = "656115606"
+        },
+        ["SwimIdle"] = {["Levitation"] = "10921139478"},
+        ["Swim"] = {["Levitation"] = "10921138209"},
+        ["Climb"] = {["Ninja"] = "656114359"}
+    }
+
+    local Animations = OriginalAnimations
+    if isfile and readfile and isfile("GreyLikesToSmellUrFeet.json") then
+        pcall(function()
+            Animations = HttpService:JSONDecode(readfile("GreyLikesToSmellUrFeet.json"))
+        end)
+    elseif writefile then
+        writefile("GreyLikesToSmellUrFeet.json", HttpService:JSONEncode(OriginalAnimations))
+    end
+
+    ---------------------------------------------------------------------------
+    -- Modern UI Initialization
+    ---------------------------------------------------------------------------
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "DraggableGui"
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = TargetGui
+
+    local mainUI = Instance.new("Frame")
+    mainUI.Name = "GazeMainUI"
+    mainUI.Size = UDim2.new(0, 360, 0, 420)
+    mainUI.Position = UDim2.new(0.5, -180, 0.5, -210)
+    mainUI.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    mainUI.BorderSizePixel = 0
+    mainUI.Parent = screenGui
+
+    local uiCorner = Instance.new("UICorner")
+    uiCorner.CornerRadius = UDim.new(0, 10)
+    uiCorner.Parent = mainUI
+
+    local uiStroke = Instance.new("UIStroke")
+    uiStroke.Color = Color3.fromRGB(55, 55, 55)
+    uiStroke.Thickness = 1.5
+    uiStroke.Parent = mainUI
+
+    -- Clean Dragging Engine
+    local dragging, dragInput, dragStart, startPos
+    mainUI.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = mainUI.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then dragging = false end
+            end)
+        end
     end)
-    if success then return result end
-    return nil
-end
+    mainUI.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            local delta = input.Position - dragStart
+            mainUI.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
 
-local function isBanned(userId, banlist)
-    for _, id in ipairs(banlist or {}) do
-        if id == userId then return true end
-    end
-    return false
-end
+    -- Header Title
+    local headerTitle = Instance.new("TextLabel")
+    headerTitle.Size = UDim2.new(1, 0, 0, 40)
+    headerTitle.Font = Enum.Font.GothamBold
+    headerTitle.Text = "GAZE ANIMATOR"
+    headerTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    headerTitle.TextSize = 16
+    headerTitle.BackgroundTransparency = 1
+    headerTitle.Parent = mainUI
 
-local function isWhitelisted(userId, whitelist)
-    for _, id in ipairs(whitelist or {}) do
-        if id == userId then return true end
-    end
-    return false
-end
+    -- Search Systems
+    local searchBar = Instance.new("TextBox")
+    searchBar.Size = UDim2.new(0.9, 0, 0, 35)
+    searchBar.Position = UDim2.new(0.05, 0, 0, 45)
+    searchBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    searchBar.Font = Enum.Font.Gotham
+    searchBar.PlaceholderText = "Search active track animations..."
+    searchBar.Text = ""
+    searchBar.TextColor3 = Color3.fromRGB(255, 255, 255)
+    searchBar.PlaceholderColor3 = Color3.fromRGB(130, 130, 130)
+    searchBar.TextSize = 13
+    searchBar.Parent = mainUI
 
--- GUI
-local gui = Instance.new("ScreenGui")
-gui.Name = "ModernKillSwitch"
-gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    local sbCorner = Instance.new("UICorner")
+    sbCorner.CornerRadius = UDim.new(0, 6)
+    sbCorner.Parent = searchBar
 
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0.45,0,0.55,0)
-frame.Position = UDim2.new(0.5,0,0.5,0)
-frame.AnchorPoint = Vector2.new(0.5,0.5)
-frame.BackgroundColor3 = Theme.Background
-frame.BorderSizePixel = 0
-frame.Parent = gui
+    local scrollFrame = Instance.new("ScrollingFrame")
+    scrollFrame.Size = UDim2.new(0.9, 0, 0, 310)
+    scrollFrame.Position = UDim2.new(0.05, 0, 0, 95)
+    scrollFrame.BackgroundTransparency = 1
+    scrollFrame.BorderSizePixel = 0
+    scrollFrame.ScrollBarThickness = 3
+    scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(80, 80, 80)
+    scrollFrame.Parent = mainUI
 
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0,20)
-corner.Parent = frame
+    local uiListLayout = Instance.new("UIListLayout")
+    uiListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    uiListLayout.Padding = UDim.new(0, 6)
+    uiListLayout.Parent = scrollFrame
 
-local uiScale = Instance.new("UIScale")
-uiScale.Parent = frame
-uiScale.Scale = UserInputService.TouchEnabled and 1.3 or 1
+    ---------------------------------------------------------------------------
+    -- Dynamic Character Custom Runtime Swapper (Prevents Character Freeze)
+    ---------------------------------------------------------------------------
+    local function applyCustomAnimationValue(animType, idTable)
+        local char = LocalPlayer.Character
+        if not char then return end
+        local animateScript = char:FindFirstChild("Animate")
+        if not animateScript then return end
 
--- STATUS LABEL
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(1,-20,0,40)
-statusLabel.Position = UDim2.new(0,10,0,10)
-statusLabel.BackgroundTransparency = 1
-statusLabel.Font = Enum.Font.GothamBold
-statusLabel.TextSize = 22
-statusLabel.TextColor3 = Theme.Text
-statusLabel.TextXAlignment = Enum.TextXAlignment.Left
-statusLabel.TextYAlignment = Enum.TextYAlignment.Top
-statusLabel.Text = "✨ Initializing..."
-statusLabel.Parent = frame
+        local targetNode = animateScript:FindFirstChild(animType:lower())
+        if targetNode then
+            targetNode:ClearAllChildren()
+            if typeof(idTable) == "table" then
+                for i, id in ipairs(idTable) do
+                    local animObj = Instance.new("Animation")
+                    animObj.Name = animType:lower() .. i
+                    animObj.AnimationId = "rbxassetid://" .. id
+                    animObj.Parent = targetNode
+                end
+            else
+                local animObj = Instance.new("Animation")
+                animObj.Name = animType:lower() .. "1"
+                animObj.AnimationId = "rbxassetid://" .. id
+                animObj.Parent = targetNode
+            end
 
--- UIStroke for accent
-local stroke = Instance.new("UIStroke")
-stroke.Thickness = 1.5
-stroke.Color = Theme.Accent
-stroke.Transparency = 0.5
-stroke.Parent = statusLabel
-
--- SCROLL FRAME
-local scrollFrame = Instance.new("ScrollingFrame")
-scrollFrame.Size = UDim2.new(1,-20,0.6,0)
-scrollFrame.Position = UDim2.new(0,10,0,60)
-scrollFrame.BackgroundTransparency = 1
-scrollFrame.ScrollBarThickness = 6
-scrollFrame.Parent = frame
-
-local uiList = Instance.new("UIListLayout")
-uiList.SortOrder = Enum.SortOrder.LayoutOrder
-uiList.Padding = UDim.new(0,4)
-uiList.Parent = scrollFrame
-
--- FADE TEXT FUNCTION
-local function fadeText(text, color, duration)
-    local fadeOut = TweenService:Create(statusLabel, TweenInfo.new(0.4), {TextTransparency = 1})
-    fadeOut:Play()
-    fadeOut.Completed:Wait()
-    statusLabel.Text = text
-    statusLabel.TextColor3 = color or Theme.Text
-    local fadeIn = TweenService:Create(statusLabel, TweenInfo.new(0.4), {TextTransparency = 0})
-    fadeIn:Play()
-    task.wait(duration or 1.5)
-end
-
--- SECURE DATA FETCH
-local function secureFetch()
-    fadeText("🔍 Fetching Banlist...", Theme.Warning)
-    local banData = fetchJSON(banlistUrl) or {}
-    local bans = banData.banned or {}
-
-    fadeText("🛡️ Fetching Kill Switch...", Theme.Warning)
-    local switchData = fetchJSON(url) or {}
-    local enabled = switchData.enabled
-    local whitelist = switchData.whitelist or {}
-
-    return bans, whitelist, enabled
-end
-
--- VERIFY PLAYER
-local function verifyPlayer()
-    local bans, whitelist, enabled = secureFetch()
-    if isBanned(LocalPlayer.UserId, bans) then
-        fadeText("🚫 You are BANNED!", Theme.Error)
-        task.wait(1.5)
-        LocalPlayer:Kick("🚫 You are banned from using this script.")
-    elseif not enabled and not isWhitelisted(LocalPlayer.UserId, whitelist) then
-        fadeText("❌ Kill Switch ACTIVE, You are NOT whitelisted!", Theme.Error)
-        task.wait(1.5)
-        LocalPlayer:Kick("❌ Kill switch active, not whitelisted.")
-    else
-        fadeText("✅ You are authorized!", Theme.Success)
-    end
-
-    -- DISPLAY WHITELIST & BANS
-    scrollFrame:ClearAllChildren()
-    for _, id in ipairs(whitelist) do
-        local name = "Unknown"
-        pcall(function() name = Players:GetNameFromUserIdAsync(id) end)
-        local lbl = Instance.new("TextLabel")
-        lbl.Size = UDim2.new(1,-10,0,24)
-        lbl.BackgroundTransparency = 1
-        lbl.Font = Enum.Font.Gotham
-        lbl.TextSize = 16
-        lbl.TextXAlignment = Enum.TextXAlignment.Left
-        lbl.TextColor3 = (id==LocalPlayer.UserId) and Theme.Accent or Theme.Success
-        lbl.Text = (id==LocalPlayer.UserId) and ("⭐ %s (YOU)"):format(name) or ("✅ %s"):format(name)
-        lbl.Parent = scrollFrame
-    end
-    for _, id in ipairs(bans) do
-        if not isWhitelisted(id, whitelist) then
-            local name = "Unknown"
-            pcall(function() name = Players:GetNameFromUserIdAsync(id) end)
-            local lbl = Instance.new("TextLabel")
-            lbl.Size = UDim2.new(1,-10,0,24)
-            lbl.BackgroundTransparency = 1
-            lbl.Font = Enum.Font.Gotham
-            lbl.TextSize = 16
-            lbl.TextXAlignment = Enum.TextXAlignment.Left
-            lbl.TextColor3 = Theme.Error
-            lbl.Text = ("🚫 %s"):format(name)
-            lbl.Parent = scrollFrame
+            -- Safely refresh humanoid to prevent structural locking
+            local humanoid = char:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                local animTracks = humanoid:GetPlayingAnimationTracks()
+                for _, track in ipairs(animTracks) do
+                    track:Stop()
+                end
+            end
         end
     end
-    scrollFrame.CanvasSize = UDim2.new(0,0,0,uiList.AbsoluteContentSize.Y+10)
-end
 
--- RUN VERIFICATION
-task.spawn(verifyPlayer)
-
--- CLOSING ANIMATION
-task.delay(5, function()
-    local shrink = TweenService:Create(uiScale, TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Scale=0})
-    local fadeOutGui = TweenService:Create(frame, TweenInfo.new(0.6), {BackgroundTransparency=1})
-    shrink:Play()
-    fadeOutGui:Play()
-    task.wait(0.7)
-    gui:Destroy()
-end)
--- ENABLES THE SCRIPT AND LOADS THE GUI performs safety checks first
-local lib = {}
-		
-function lib:Gui(title)
-	
-	local DarkLib = Instance.new("ScreenGui")
-	local Main = Instance.new("Frame")
-	local TabSide = Instance.new("ScrollingFrame")
-	local UICorner = Instance.new("UICorner")
-	local UIListLayout_1 = Instance.new("UIListLayout")
-	local UICorner_3 = Instance.new("UICorner")
-	local UICorner_5 = Instance.new("UICorner")
-	local SectionSide = Instance.new("Frame")
-	local close = Instance.new("ImageButton")
-	local SectionCorner = Instance.new("UICorner")
-	local Title = Instance.new("TextLabel")
-
-	DarkLib.Name = "DarkLib"
-	DarkLib.Parent = game.CoreGui
-	DarkLib.ResetOnSpawn = false
-	
-	game:GetService("UserInputService").InputBegan:Connect(function(key, gameProcessedEvent)
-		if key.KeyCode == Enum.KeyCode.LeftAlt then
-			if DarkLib.Enabled then
-			DarkLib.Enabled = false
-		else
-			DarkLib.Enabled = true
-			end
-		end
-	end)
-
-	Main.Name = "Main"
-	Main.Parent = DarkLib
-	Main.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-	Main.Position = UDim2.new(0.367263854, 0, 0.263959408, 0)
-	Main.Size = UDim2.new(0, 382, 0, 219)
-	
-	local Drag = Main
-	local CoreGui = game:GetService("CoreGui")
-	local Tween = game:GetService("TweenService")
-	local UserInputService = game:GetService("UserInputService")
-	local dragging
-	local dragInput
-	local dragStart
-	local startPos
-	local function update(input)
-		local delta = input.Position - dragStart
-		local dragTime = 0.06
-		local SmoothDrag = {}
-		SmoothDrag.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-		local dragSmoothFunction = Tween:Create(Drag, TweenInfo.new(dragTime, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), SmoothDrag)
-		dragSmoothFunction:Play()
-	end
-	Drag.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			dragStart = input.Position
-			startPos = Drag.Position
-			input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then
-					dragging = false
-				end
-			end)
-		end
-	end)
-	Drag.InputChanged:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-			dragInput = input
-		end
-	end)
-	UserInputService.InputChanged:Connect(function(input)
-		if input == dragInput and dragging and Drag.Size then
-			update(input)
-		end
-	end)
-
-	TabSide.Name = "TabSide"
-	TabSide.Parent = Main
-	TabSide.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-	TabSide.BorderSizePixel = 0
-	TabSide.Position = UDim2.new(0.021, 0,0.038, 0)
-	TabSide.Size = UDim2.new(0, 92,0, 203)
-	TabSide.ScrollingDirection = Enum.ScrollingDirection.Y
-	TabSide.ScrollBarThickness = 5
-	TabSide.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
-	TabSide.ClipsDescendants = true
-
-	UICorner.Parent = TabSide
-	UICorner.CornerRadius = UDim.new(0, 8)
-
-	UIListLayout_1.Parent = TabSide
-	UIListLayout_1.SortOrder = Enum.SortOrder.LayoutOrder
-	UIListLayout_1.Padding = UDim.new(0, 10)
-	UIListLayout_1.VerticalAlignment = Enum.VerticalAlignment.Center
-	UIListLayout_1.Changed:Connect(function()
-		TabSide.CanvasSize = UDim2.new(0, 0, 0, UIListLayout_1.AbsoluteContentSize.Y)
-	end)
-
-	SectionSide.Name = "SectionSide"
-	SectionSide.Parent = Main
-	SectionSide.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-	SectionSide.Position = UDim2.new(0.29842931, 0, 0.146118715, 0)
-	SectionSide.Size = UDim2.new(0, 255, 0, 173)
-	SectionSide.ClipsDescendants = true
-	SectionSide.Visible = true
-	
-	SectionCorner.Parent = SectionSide
-	SectionCorner.CornerRadius = UDim.new(0, 8)
-
-	UICorner_5.Parent = Main
-	
-	close.Name = "close"
-	close.Parent = Main
-	close.BackgroundTransparency = 1.000
-	close.Position = UDim2.new(0.934554935, 0, -0.00228309631, 0)
-	close.Size = UDim2.new(0, 25, 0, 25)
-	close.ZIndex = 2
-	close.Image = "rbxassetid://3926305904"
-	close.ImageRectOffset = Vector2.new(284, 4)
-	close.ImageRectSize = Vector2.new(24, 24)
-	close.MouseButton1Click:Connect(function()
-		DarkLib:Destroy()
-	end)
-	
-	Title.Name = "Title"
-	Title.Parent = Main
-	Title.BackgroundColor3 = Color3.fromRGB(123, 180, 0)
-	Title.BackgroundTransparency = 1.000
-	Title.BorderSizePixel = 0
-	Title.Position = UDim2.new(0, 90, 0, 0)
-	Title.Size = UDim2.new(0, 200, 0, 46)
-	Title.Font = Enum.Font.FredokaOne
-	Title.TextColor3 = Color3.fromRGB(255, 0, 0)
-	Title.TextScaled = false
-	Title.TextSize = 30.000
-	Title.TextWrapped = true
-	Title.Text = title
-
-	local Tabs = {}
-
-	function Tabs:Tab(name)
-		local TextButton = Instance.new("TextButton")
-		local UICorner_2 = Instance.new("UICorner")
-
-		TextButton.Parent = TabSide
-		TextButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-		TextButton.Position = UDim2.new(0, 0, 0.0821917802, 0)
-		TextButton.Size = UDim2.new(0, 70, 0, 30)
-		TextButton.Font = Enum.Font.Highway
-		TextButton.TextColor3 = Color3.fromRGB(0, 0, 255)
-		TextButton.TextScaled = true
-		TextButton.TextSize = 14.000
-		TextButton.TextWrapped = true
-		TextButton.Text = name
-		TextButton.Name = name
-
-		UICorner_2.Parent = TextButton
-		UICorner_2.CornerRadius = UDim.new(0, 8)
-
-		local Sections = {}
-
-		function Sections:Section(name)
-			local Page = Instance.new("ScrollingFrame")
-			local UIListLayout = Instance.new("UIListLayout")
-
-			Page.Name = name
-			Page.Parent = SectionSide
-			Page.Active = true
-			Page.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-			Page.BorderSizePixel = 0
-			Page.Position = UDim2.new(0.0470588244, 0, 0.10404624, 0)
-			Page.Size = UDim2.new(0, 237, 0, 145)
-			Page.ScrollingDirection = Enum.ScrollingDirection.Y
-			Page.ScrollBarThickness = 5
-			Page.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
-
-			UIListLayout.Parent = Page
-			UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-			UIListLayout.Padding = UDim.new(0, 10)
-			UIListLayout.Changed:Connect(function()
-				Page.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y)
-			end)
-
-			TextButton.MouseButton1Click:Connect(function()
-				for i,v in next, SectionSide:GetChildren() do
-					if v:IsA("ScrollingFrame") then
-						v.Visible = false
-					end
-				end
-				Page.Visible = true
-			end)
-
-			local Elements = {}
-			
-			function Elements:Toggle(name, callback)
-				local ToggleElement = Instance.new("Frame")
-				local UICorner = Instance.new("UICorner")
-				local ToggleState = Instance.new("TextLabel")
-				local Click = Instance.new("TextButton")
-				
-				ToggleElement.Name = name
-				ToggleElement.Parent = Page
-				ToggleElement.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-				ToggleElement.Size = UDim2.new(0, 220, 0, 30)
-
-				UICorner.Parent = ToggleElement
-
-				ToggleState.Name = "ToggleState"
-				ToggleState.Parent = ToggleElement
-				ToggleState.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				ToggleState.BackgroundTransparency = 1.000
-				ToggleState.BorderSizePixel = 0
-				ToggleState.Size = UDim2.new(0, 46, 0, 30)
-				ToggleState.Font = Enum.Font.FredokaOne
-				ToggleState.Text = ""
-				ToggleState.TextColor3 = Color3.fromRGB(255, 255, 255)
-				ToggleState.TextScaled = true
-				ToggleState.TextSize = 14.000
-				ToggleState.TextWrapped = true
-
-				Click.Name = "Click"
-				Click.Parent = ToggleElement
-				Click.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				Click.BackgroundTransparency = 1.000
-				Click.BorderSizePixel = 0
-				Click.Size = UDim2.new(0, 220, 0, 30)
-				Click.Font = Enum.Font.Highway
-				Click.Text = name
-				Click.TextColor3 = Color3.fromRGB(0, 255, 0)
-				Click.TextScaled = true
-				Click.TextSize = 14.000
-				Click.TextWrapped = true
-				local toggle = false
-				local debounce = false
-				Click.MouseButton1Click:Connect(function()
-					if debounce == false then
-						if toggle == false then
-						debounce = true
-							ToggleState.Text = "X"
-							wait(0.25)
-							debounce = false
-							toggle = true
-							pcall(callback, toggle)
-						elseif toggle == true then
-							debounce = true
-							ToggleState.Text = ""
-							wait(0.25)
-							debounce = false
-							toggle = false
-							pcall(callback, toggle)
-						end
-					end
-				end)
-			end
-			
-			function Elements:Label(name)
-				local TextLabel = Instance.new("TextLabel")
-
-				TextLabel.Parent = Page
-				TextLabel.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-				TextLabel.BackgroundTransparency = 1
-				TextLabel.Position = UDim2.new(0, 0, 0.0821917802, 0)
-				TextLabel.Size = UDim2.new(0, 220, 0, 30)
-				TextLabel.Font = Enum.Font.Highway
-				TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-				TextLabel.TextScaled = true
-				TextLabel.TextSize = 14.000
-				TextLabel.TextWrapped = true
-				TextLabel.Text = name
-				TextLabel.Name = name
-				
-			end
-			function Elements:Button(name, callback)
-				local TextButton_2 = Instance.new("TextButton")
-				local UICorner_4 = Instance.new("UICorner")
-
-				callback = callback or function() end
-
-				TextButton_2.Parent = Page
-				TextButton_2.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-				TextButton_2.Position = UDim2.new(0, 0, 0.0821917802, 0)
-				TextButton_2.Size = UDim2.new(0, 220, 0, 30)
-				TextButton_2.Font = Enum.Font.Highway
-				TextButton_2.TextColor3 = Color3.fromRGB(0, 255, 0)
-				TextButton_2.TextScaled = true
-				TextButton_2.TextSize = 14.000
-				TextButton_2.TextWrapped = true
-				TextButton_2.Text = name
-				TextButton_2.Name = name
-				TextButton_2.MouseButton1Click:Connect(function()
-					callback()
-				end)
-
-				UICorner_4.Parent = TextButton_2
-			end
-			return Elements
-		end
-		return Sections
-	end
-	return Tabs
-end
-
-local Library = lib:Gui("Avery-Hub V1.0")
-
-local AutoFarmTab = Library:Tab("AutoDrink")
-
-local AutoFarm = AutoFarmTab:Section("AutoDrink")
-
-local LocalPlayerTab = Library:Tab("LocalPlayer")
-
-local LocalPlayer = LocalPlayerTab:Section("LocalPlayer")
-
-local TeleportTab = Library:Tab("Teleports")
-
-local Teleport = TeleportTab:Section("Teleport")
-
-local MiscTab = Library:Tab("Misc")
-
-local Misc = MiscTab:Section("Misc")
-
-local ScriptsTab = Library:Tab("Scripts")
-
-local Scripts = ScriptsTab:Section("Scripts")
-
-local CreditsTab =
-Library:Tab("Credits")
-
-local Credits =
-CreditsTab:Section("Credits")
-
-function AutoEquip()spawn(function(v)
-		while getgenv().equip == true do
-			wait(0.8)
-
-			if not game.Players.LocalPlayer.Backpack:FindFirstChild("Starter Drink") then
-				if not game.Players.LocalPlayer.Character:FindFirstChild("Starter Drink") then
-					game.Players.LocalPlayer.Character:BreakJoints()
-				end
-			end
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value == 0 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Starter Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 0 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Starter Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 150 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Second Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 600 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Third Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 1600 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Fourth Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 3500 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Fifth Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 10000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Sixth Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 25000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Seventh Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 60000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Eighth Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 150000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Ninth Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 230000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Atomic Drink")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 500000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Omega Burp Juice")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 1000000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Thunder Fizz")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-			
-			if game.Players.LocalPlayer.leaderstats["Burp points"].Value >= 2000000 then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Garlic Juice")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-			
-			if game.Players.LocalPlayer.Backpack:FindFirstChild("Garlic Juice") then
-				local Players = game:GetService("Players")
-
-				local player = Players:FindFirstChildOfClass("Player")
-				if player and player.Character then
-					local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
-					if humanoid then
-						local tool = Players.LocalPlayer.Backpack:FindFirstChild("Garlic Juice")
-						if tool then
-							humanoid:EquipTool(tool)
-						end
-					end
-				end
-			end
-		end
-	end)
-end
-
-AutoFarm:Toggle("Auto Prestige", function(v)
-	while wait(0.8) do
-		game.ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
-	end
-end)
-
-AutoFarm:Toggle("Auto Equip", function(v)
-				getgenv().equipdrink = v
-				while getgenv().equipdrink do wait(0.8)
-					AutoEquipDrink()
-				end
-			end)
-
-loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua"))()
-
-AutoFarm:Toggle("Auto Collect Gem", function(v)
-	while wait(0.6) do
-		local gem = game.Workspace.Diamonds:WaitForChild("Diamond")
-		local Char = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-		gem.CFrame = Char.CFrame
-	end
-end)
-
-AutoFarm:Toggle("Auto Drink", function(v)
-	while wait(2.4) do 
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
-
-	end
-end)
-
-AutoFarm:Toggle("Fast Drink", function(v)
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/v2.lua"))()
-end)
-
-LocalPlayer:Button("Fps-Unlocker", function(v)
-	if setfpscap and type(setfpscap) == "function" then
-		local num = 100000 or 1e6
-		if num == 'none' then
-			return setfpscap(1e6)
-		elseif num > 0 then
-			return setfpscap(num)
-		end
-	end
-end)
-
-LocalPlayer:Toggle("WalkSpeed", function(v)
-	while wait() do
-		game.Players.LocalPlayer.Character:WaitForChild("Humanoid").WalkSpeed = 459
-	end
-end)
-
-LocalPlayer:Toggle("Inf Jump", function(v)
-	game:GetService("UserInputService").JumpRequest:connect(function()
-		game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
-	end)
-end)
-
-LocalPlayer:Button("Reset", function(v)
-				game.Players.LocalPlayer.Character:BreakJoints()
-			end)
-LocalPlayer:Button("Rejoin", function(v)
-				game:GetService("TeleportService"):Teleport(game.PlaceId)
-			end)
- 
-LocalPlayer:Toggle("Night",  function(v)
-				if v then
-					game.Lighting.ClockTime = 0
-				elseif not v then
-					game.Lighting.ClockTime = 14
-				end
-			end)
-
-LocalPlayer:Toggle("Sit", function(v)
-				getgenv().sit = v
-				game.Players.LocalPlayer.Character.Humanoid.Sit = getgenv().sit
-			end)
-
-
-LocalPlayer:Button("List", function(v)
-	       loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/User's.lua"))()
-	end)
-
-LocalPlayer:Button("TP Gui", function(v) 
-	       loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Teleport.lua"))()
-	end)
-
-Teleport:Button("Safe Zone", function()
-	local New_CFrame = CFrame.new(-46, 48, -15)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("Pet Shop", function()
-	local New_CFrame = CFrame.new(311, 52, 103)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("Disco Island", function()
-	local New_CFrame = CFrame.new(63, 48, 636)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("Cloud One", function()
-	local New_CFrame = CFrame.new(296, 566, 689)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("Cloud Second", function()
-	local New_CFrame = CFrame.new(-1224, 557, -318)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("Sky Island", function()
-	local New_CFrame = CFrame.new(2132, 1456, -1034)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("SafePlace", function()
-	local New_CFrame = CFrame.new(167, 48.28, -5357)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("FavSpot", function()
-        local New_CFrame = CFrame.new(60.12, 18.25, -72)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("Water Spot", function()
-        local New_CFrame = CFrame.new(-564, 40, 605)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Teleport:Button("Hotel", function()
-	 local New_CFrame = CFrame.new(-1198.279052734375, 44.315752029418945, -5.583522319793701)
-
-	local ts = game:GetService("TweenService")
-	local char = game.Players.LocalPlayer.Character
-
-	local part = char.HumanoidRootPart
-	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
-	local tp = {CFrame = New_CFrame}
-	ts:Create(part, ti, tp):Play()
-end)
-
-Misc:Button("Bp Counter",function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Bp%20Counter.lua"))()
-end)
-
-Misc:Button("Infinity Yield", function() 
-loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-end)		
-
-Misc:Button("Anti Kick", function()
-	local mt = getrawmetatable(game)
-	local old = mt.__namecall
-	local protect = newcclosure or protect_function
-
-	setreadonly(mt, false)
-	mt.__namecall = protect(function(self, ...)
-		local method = getnamecallmethod()
-		if method == "Kick" then
-			wait(9e9)
-			return
-		end
-		return old(self, ...)
-	end)
-	hookfunction(game.Players.LocalPlayer.Kick,protect(function() wait(9e9) end))
-end)
-
-Misc:Button("Anti Afk", function() 
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
-end)	
-
-Misc:Button("SafePlace", function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace%20v1"))()
-end)
-
-Misc:Button("Plate", function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Plate.lua"))()
-end)
-
-Misc:Button("Animation-Hub", function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Animated/main/G"))()
-end)	
-
-Misc:Toggle("Walk On Water",  function(bool)
-				getgenv().walkonwater = bool
-				for i,v in pairs(workspace:GetChildren()) do
-					if v:IsA("Part") then
-						if v.Color == Color3.fromRGB(9, 137, 207) then
-							v.CanCollide = getgenv().walkonwater
-						end
-					end
-				end
-			end)
-
-
-Misc:Button("Spam Burp", function()
-	   while true do
-                        task.wait()
-                        game:GetService("ReplicatedStorage").RemoteEvents.BurpEvent:FireServer()
-                    end
-                    end)
-
-Misc:Button("FPS Gui", function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FPS.lua"))()
-	end)
-
-Misc:Button("Spectate Gui", function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Spectate.lua"))()
-	end)
-
-Credits:Button("Made By Avery")
-
-Credits:Button("Discord: 90averyxx")
-Credits:Button("Note: Auto Drink is 2.4")
-Credits:Button("Note: Copy Stealers Fuck Off")
-Credits:Button("Update: Added WhiteList System")
-Credits:Button("Games: Games Tab Soon")
-Scripts:Button("SimonHub", function()
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SimonHub"))()
-end)
-Scripts:Button("SimonHax", function()
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/main/SimonHax"))()
-end)
-Scripts:Button("Orion V1", function()
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Orion%20Lib.lua"))()
-end)
-Scripts:Button("V7", function()
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/V7"))()
-end)
-Scripts:Button("Emotes-Hub", function()
-           loadstring(game:HttpGet("https://pastebin.com/raw/eCpipCTH"))()
-end)
-Scripts:Button("Shift-Lock", function()
-	   loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-Permanent-Shiftlock-7513"))()
-end)		
-Scripts:Button("Slow-Drink", function()
-	   loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Slow.lua"))()
-end)		
-Scripts:Button("ZeroHub", function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Zero.lua"))()
-end)		
-Scripts:Button("Avery", function()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Avery%20Gui.lua"))()
+    -- Event-driven setup execution cycle loop that adapts perfectly when your character respawns
+    local cachedAnimationPreferences = {}
+    local function monitorCharacterState(character)
+        if not character then return end
+        local humanoid = character:WaitForChild("Humanoid", 10)
+        if not humanoid then return end
+
+        -- Reload previously assigned settings on spawn
+        task.wait(0.5)
+        for category, identity in pairs(cachedAnimationPreferences) do
+            applyCustomAnimationValue(category, identity)
+        end
+    end
+
+    LocalPlayer.CharacterAdded:Connect(monitorCharacterState)
+    if LocalPlayer.Character then task.spawn(monitorCharacterState, LocalPlayer.Character) end
+
+    ---------------------------------------------------------------------------
+    -- Render & Control Interfaces
+    ---------------------------------------------------------------------------
+    local itemButtons = {}
+    
+    local function updateScrollList()
+        for _, btn in ipairs(itemButtons) do btn:Destroy() end
+        table.clear(itemButtons)
+
+        for category, list in pairs(Animations) do
+            for name, ids in pairs(list) do
+                local displayTitle = name .. " (" .. category .. ")"
+                
+                local elementButton = Instance.new("TextButton")
+                elementButton.Size = UDim2.new(1, 0, 0, 38)
+                elementButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+                elementButton.Font = Enum.Font.GothamMedium
+                elementButton.Text = "   " .. displayTitle
+                elementButton.TextColor3 = Color3.fromRGB(230, 230, 230)
+                elementButton.TextSize = 13
+                elementButton.TextXAlignment = Enum.TextXAlignment.Left
+                elementButton.Parent = scrollFrame
+
+                local btnCorner = Instance.new("UICorner")
+                btnCorner.CornerRadius = UDim.new(0, 6)
+                btnCorner.Parent = elementButton
+
+                elementButton.MouseButton1Click:Connect(function()
+                    cachedAnimationPreferences[category] = ids
+                    applyCustomAnimationValue(category, ids)
+                    Notify("Synchronized", "Applied " .. name .. " config successfully!", 2.5)
+                end)
+
+                table.insert(itemButtons, elementButton)
+            end
+        end
+        scrollFrame.CanvasSize = UDim2.new(0, 0, 0, uiListLayout.AbsoluteContentSize.Y)
+    end
+
+    searchBar:GetPropertyChangedSignal("Text"):Connect(function()
+        local textFilter = searchBar.Text:lower()
+        for _, btn in ipairs(itemButtons) do
+            if textFilter == "" or btn.Text:lower():find(textFilter) then
+                btn.Visible = true
+            else
+                btn.Visible = false
+            end
+        end
+    end)
+
+    updateScrollList()
+    Notify("Gaze Engine Activated", "Modern Layout Loaded System Secure.", 3)
 end)
