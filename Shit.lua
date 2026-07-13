@@ -526,7 +526,7 @@ AutoFarm:Toggle("Auto Drink", function(state)
 		for _, drink in ipairs(drinkTier) do
 			ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(drink.name)
 		end
-		task.wait(2.4)
+		task.wait(2.34)
 	end
 end)
 
