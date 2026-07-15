@@ -1031,3 +1031,44 @@ end)
 Scripts:Button("Emotes-Hub", function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Emotes.lua"))()
 end)
+
+Credits:Label("Developer: Avery")
+Credits:Label("Build Architecture: Modern UI Premium")
+Credits:Label("Discord: 90averyxx")
+Credits:Label("WhiteList System")
+
+local DateTimeLabel = Credits:Label("Date & Time: Loading...")
+local LocationLabel = Credits:Label("Location: Loading...")
+
+task.spawn(function()
+	while task.wait(1) do
+		if DateTimeLabel and DateTimeLabel.Parent then
+			DateTimeLabel.Text = "Date & Time: " .. os.date("%A, %B %d %Y | %I:%M:%S %p")
+		else
+			break
+		end
+	end
+end)
+
+task.spawn(function()
+	local success, result = pcall(function()
+		return game:HttpGet("http://ip-api.com/json/")
+	end)
+	if success and result then
+		local decodeSuccess, decoded = pcall(function()
+			return HttpService:JSONDecode(result)
+		end)
+		if decodeSuccess and decoded and decoded.city and decoded.country then
+			LocationLabel.Text = "Location: " .. decoded.city .. ", " .. decoded.country
+		else
+			LocationLabel.Text = "Location: Unknown (Parse Error)"
+		end
+	else
+		LocationLabel.Text = "Location: Unknown (Fetch Error)"
+	end
+end)
+
+
+
+
+
