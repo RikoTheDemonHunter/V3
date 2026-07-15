@@ -222,12 +222,6 @@ function ModernLib:CreateMain(hubTitle)
 	ScreenGui.Parent = game.CoreGui
 	ScreenGui.ResetOnSpawn = false
 
-	UserInputService.InputBegan:Connect(function(key, gp)
-		if not gp and key.KeyCode == Enum.KeyCode.LeftAlt then
-			ScreenGui.Enabled = not ScreenGui.Enabled
-		end
-	end)
-
 	local MainFrame = Instance.new("Frame")
 	MainFrame.Name = "Main"
 	MainFrame.Size = UDim2.new(0, 540, 0, 360)
@@ -269,7 +263,7 @@ function ModernLib:CreateMain(hubTitle)
 	MinStroke.Thickness = 2
 	MinStroke.Parent = MinimizeBtn
 
-	
+
 	local minDragging, minDragInput, minDragStart, minStartPos
 	MinimizeBtn.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -298,6 +292,13 @@ function ModernLib:CreateMain(hubTitle)
 	MinimizeBtn.MouseButton1Click:Connect(function()
 		MinimizeBtn.Visible = false
 		MainFrame.Visible = true
+	end)
+
+	
+	UserInputService.InputBegan:Connect(function(key, gp)
+		if not gp and key.KeyCode == Enum.KeyCode.LeftAlt then
+			ScreenGui.Enabled = not ScreenGui.Enabled
+		end
 	end)
 
 	
@@ -337,7 +338,6 @@ function ModernLib:CreateMain(hubTitle)
 	TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 	TitleLabel.Parent = MainFrame
 
-	
 	local CloseBtn = Instance.new("ImageButton")
 	CloseBtn.Size = UDim2.new(0, 22, 0, 22)
 	CloseBtn.Position = UDim2.new(1, -32, 0, 9)
@@ -352,7 +352,6 @@ function ModernLib:CreateMain(hubTitle)
 		MinimizeBtn.Visible = true
 	end)
 
-	
 	player.Chatted:Connect(function(msg)
 		local lowered = msg:lower()
 		if lowered == "!terminate" or lowered == "!kill" then
@@ -661,17 +660,26 @@ LocalPlayer:Button("Reset", function()
 	if player.Character then player.Character:BreakJoints() end
 end)
 
+
+local rejoinConn
 LocalPlayer:Toggle("Rejoin", function(state)
 	local TeleportService = game:GetService("TeleportService")
 	local GuiService = game:GetService("GuiService")
 	local Players = game:GetService("Players")
 
-	GuiService.ErrorMessageChanged:Connect(function()
-		if GuiService:GetErrorMessage() ~= "" then
-			task.wait(0.5) 
-			TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
+	if state then
+		rejoinConn = GuiService.ErrorMessageChanged:Connect(function()
+			if GuiService:GetErrorMessage() ~= "" then
+				task.wait(0.5) 
+				TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
+			end
+		end)
+	else
+		if rejoinConn then
+			rejoinConn:Disconnect()
+			rejoinConn = nil
 		end
-	end)
+	end
 end)
 
 LocalPlayer:Toggle("Night", function(state)
@@ -874,11 +882,12 @@ Misc:Toggle("Walk On Water",  function(bool)
 	end
 end)
 
-
-Misc:Button("Spam Burp", function()
-	while true do
-		task.wait()
-		game:GetService("ReplicatedStorage").RemoteEvents.BurpEvent:FireServer()
+-- FIXED: Spam Burp is now a clean Toggle instead of an infinite button crash-loop
+Misc:Toggle("Spam Burp", function(state)
+	getgenv().spamBurp = state
+	while getgenv().spamBurp do
+		ReplicatedStorage.RemoteEvents.BurpEvent:FireServer()
+		task.wait(0.05)
 	end
 end)
 
