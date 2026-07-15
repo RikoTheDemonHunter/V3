@@ -602,6 +602,37 @@ function ModernLib:CreateMain(hubTitle)
 		end
 	end
 
+	
+	function Tabs:SetStyle(styleName)
+		SavedSettings["ActiveStyle"] = styleName
+		SaveSettings()
+
+		if styleName == "Transparent" then
+			MainFrame.BackgroundTransparency = 0.5
+			MainFrame.BackgroundColor3 = Theme.Background
+			SideBar.BackgroundTransparency = 0.6
+			SideBar.BackgroundColor3 = Theme.SideBar
+			MainStroke.Thickness = 1.5
+		elseif styleName == "Glossy" then
+			MainFrame.BackgroundTransparency = 0.25
+			MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 45) -- Sleek reflective tint
+			SideBar.BackgroundTransparency = 0.4
+			SideBar.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+			MainStroke.Thickness = 2.5 
+		else 
+			MainFrame.BackgroundTransparency = 0
+			MainFrame.BackgroundColor3 = Theme.Background
+			SideBar.BackgroundTransparency = 0
+			SideBar.BackgroundColor3 = Theme.SideBar
+			MainStroke.Thickness = 1.5
+		end
+	end
+
+	task.spawn(function()
+		local activeStyle = SavedSettings["ActiveStyle"] or "Default"
+		Tabs:SetStyle(activeStyle)
+	end)
+
 	return Tabs
 end
 
@@ -617,7 +648,8 @@ local Scripts = Library:Tab("Scripts")
 local Credits = Library:Tab("Credits")
 
 
-
+-- ACCENT SELECTION BUTTONS
+Themes:Label("--- UI Accents ---")
 Themes:Button("Ethereal Blue Accent", function() Library:SetTheme("Ethereal Blue") end)
 Themes:Button("Light Blue Accent", function() Library:SetTheme("Light Blue") end)
 Themes:Button("Lime Accent", function() Library:SetTheme("Lime") end)
@@ -626,6 +658,12 @@ Themes:Button("Red Accent", function() Library:SetTheme("Red") end)
 Themes:Button("Orange Accent", function() Library:SetTheme("Orange") end)
 Themes:Button("✨ Ethereal Breathing Cycle", function() Library:SetTheme("Ethereal Cycle") end)
 Themes:Button("🌈 Active Rainbow Cycle", function() Library:SetTheme("Rainbow") end)
+
+
+Themes:Label("--- UI Style & Transparency ---")
+Themes:Button("Default Opaque Style", function() Library:SetStyle("Default") end)
+Themes:Button("Transparent Style", function() Library:SetStyle("Transparent") end)
+Themes:Button("Glossy Glass Style", function() Library:SetStyle("Glossy") end)
 
 
 local drinkTier = {
@@ -991,56 +1029,5 @@ Scripts:Button("V7", function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/V7"))()
 end)
 Scripts:Button("Emotes-Hub", function()
-	loadstring(game:HttpGet("https://pastebin.com/raw/eCpipCTH"))()
-end)
-Scripts:Button("Shift-Lock", function()
-	loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-Permanent-Shiftlock-7513"))()
-end)		
-Scripts:Button("Slow-Drink", function()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Slow.lua"))()
-end)		
-Scripts:Button("ZeroHub", function()
-	loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/a1bf0423e73a5293c014042960cf4767/raw/faaa622081cbf015f0f54efb256e2ba182b57bca/shit.lua"))()
-end)		
-Scripts:Button("Avery", function()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Zero.lua"))()
-end)
-Scripts:Button("FriendList", function()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FriendList.lua"))()
-end)
-
-Credits:Label("Developer: Avery")
-Credits:Label("Build Architecture: Modern UI Premium")
-Credits:Label("Discord: 90averyxx")
-Credits:Label("WhiteList System")
-
-local DateTimeLabel = Credits:Label("Date & Time: Loading...")
-local LocationLabel = Credits:Label("Location: Loading...")
-
-task.spawn(function()
-	while task.wait(1) do
-		if DateTimeLabel and DateTimeLabel.Parent then
-			DateTimeLabel.Text = "Date & Time: " .. os.date("%A, %B %d %Y | %I:%M:%S %p")
-		else
-			break
-		end
-	end
-end)
-
-task.spawn(function()
-	local success, result = pcall(function()
-		return game:HttpGet("http://ip-api.com/json/")
-	end)
-	if success and result then
-		local decodeSuccess, decoded = pcall(function()
-			return HttpService:JSONDecode(result)
-		end)
-		if decodeSuccess and decoded and decoded.city and decoded.country then
-			LocationLabel.Text = "Location: " .. decoded.city .. ", " .. decoded.country
-		else
-			LocationLabel.Text = "Location: Unknown (Parse Error)"
-		end
-	else
-		LocationLabel.Text = "Location: Unknown (Fetch Error)"
-	end
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Emotes.lua"))()
 end)
