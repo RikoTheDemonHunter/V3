@@ -4,6 +4,7 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
+local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
 local SETTINGS_FILE = "AveryHubConfig.json"
@@ -36,7 +37,7 @@ LoadSettings()
 local Theme = {
 	Background = Color3.fromRGB(15, 15, 25),
 	SideBar = Color3.fromRGB(10, 10, 18),
-	Accent = Color3.fromRGB(0, 200, 255),
+	Accent = Color3.fromRGB(0, 200, 255), -- Will update dynamically
 	TextColor = Color3.fromRGB(255, 255, 255),
 	Alert = Color3.fromRGB(255, 80, 80),
 	Success = Color3.fromRGB(0, 220, 130),
@@ -381,6 +382,59 @@ function ModernLib:CreateMain(hubTitle)
 	Container.BackgroundTransparency = 1
 	Container.Parent = MainFrame
 
+	
+	local accentObjects = {}
+	local activeConnection = nil
+
+	local function RegisterAccentObject(instance, property)
+		table.insert(accentObjects, {Obj = instance, Prop = property})
+		instance[property] = Theme.Accent
+	end
+
+	RegisterAccentObject(MainStroke, "Color")
+	RegisterAccentObject(MinStroke, "Color")
+	RegisterAccentObject(MinimizeBtn, "TextColor3")
+	RegisterAccentObject(TitleLabel, "TextColor3")
+	RegisterAccentObject(SideBar, "ScrollBarImageColor3")
+
+	local function ApplySolidAccent(color)
+		if activeConnection then
+			activeConnection:Disconnect()
+			activeConnection = nil
+		end
+		Theme.Accent = color
+		for _, data in ipairs(accentObjects) do
+			if data.Obj and data.Obj.Parent then
+				data.Obj[data.Prop] = color
+			end
+		end
+	end
+
+	local function StartCycleAccent(mode)
+		if activeConnection then
+			activeConnection:Disconnect()
+			activeConnection = nil
+		end
+
+		activeConnection = RunService.RenderStepped:Connect(function()
+			local color
+			if mode == "Rainbow" then
+				local hue = (tick() % 4) / 4
+				color = Color3.fromHSV(hue, 1, 1)
+			elseif mode == "Ethereal" then
+				local sine = (math.sin(tick() * 1.2) + 1) / 2
+				color = Color3.fromRGB(0, 170, 255):Lerp(Color3.fromRGB(255, 100, 200), sine)
+			end
+
+			Theme.Accent = color
+			for _, data in ipairs(accentObjects) do
+				if data.Obj and data.Obj.Parent then
+					data.Obj[data.Prop] = color
+				end
+			end
+		end)
+	end
+
 	local Tabs = { ActivePage = nil }
 	function Tabs:Tab(tabName)
 		local TabBtn = Instance.new("TextButton")
@@ -403,6 +457,8 @@ function ModernLib:CreateMain(hubTitle)
 		local PageList = Instance.new("UIListLayout")
 		PageList.Padding = UDim.new(0, 8)
 		PageList.Parent = Page
+
+		RegisterAccentObject(Page, "ScrollBarImageColor3")
 
 		TabBtn.MouseButton1Click:Connect(function()
 			for _, child in ipairs(Container:GetChildren()) do
@@ -485,6 +541,8 @@ function ModernLib:CreateMain(hubTitle)
 			Btn.Parent = Page
 			c.CornerRadius = UDim.new(0, 6)
 			Btn.MouseButton1Click:Connect(callback)
+
+			RegisterAccentObject(Btn, "TextColor3")
 		end
 
 		function Elements:Label(textString)
@@ -502,6 +560,48 @@ function ModernLib:CreateMain(hubTitle)
 
 		return Elements
 	end
+
+
+	task.spawn(function()
+		local activeTheme = SavedSettings["ActiveTheme"] or "Ethereal Blue"
+		if activeTheme == "Rainbow" then
+			StartCycleAccent("Rainbow")
+		elseif activeTheme == "Ethereal Cycle" then
+			StartCycleAccent("Ethereal")
+		else
+			local map = {
+				["Ethereal Blue"] = Color3.fromRGB(0, 200, 255),
+				["Light Blue"] = Color3.fromRGB(130, 215, 255),
+				["Lime"] = Color3.fromRGB(110, 240, 95),
+				["Pink"] = Color3.fromRGB(255, 110, 200),
+				["Red"] = Color3.fromRGB(255, 75, 75),
+				["Orange"] = Color3.fromRGB(255, 140, 50)
+			}
+			ApplySolidAccent(map[activeTheme] or Color3.fromRGB(0, 200, 255))
+		end
+	end)
+
+	function Tabs:SetTheme(themeName)
+		SavedSettings["ActiveTheme"] = themeName
+		SaveSettings()
+
+		if themeName == "Rainbow" then
+			StartCycleAccent("Rainbow")
+		elseif themeName == "Ethereal Cycle" then
+			StartCycleAccent("Ethereal")
+		else
+			local map = {
+				["Ethereal Blue"] = Color3.fromRGB(0, 200, 255),
+				["Light Blue"] = Color3.fromRGB(130, 215, 255),
+				["Lime"] = Color3.fromRGB(110, 240, 95),
+				["Pink"] = Color3.fromRGB(255, 110, 200),
+				["Red"] = Color3.fromRGB(255, 75, 75),
+				["Orange"] = Color3.fromRGB(255, 140, 50)
+			}
+			ApplySolidAccent(map[themeName] or Color3.fromRGB(0, 200, 255))
+		end
+	end
+
 	return Tabs
 end
 
@@ -511,9 +611,21 @@ local Library = ModernLib:CreateMain("⚡ Avery Hub V3 | Premium Dashboard ⚡")
 local AutoFarm = Library:Tab("AutoDrink")
 local LocalPlayer = Library:Tab("LocalPlayer")
 local Teleport = Library:Tab("Teleports")
+local Themes = Library:Tab("Themes")
 local Misc = Library:Tab("Misc")
 local Scripts = Library:Tab("Scripts")
 local Credits = Library:Tab("Credits")
+
+
+
+Themes:Button("Ethereal Blue Accent", function() Library:SetTheme("Ethereal Blue") end)
+Themes:Button("Light Blue Accent", function() Library:SetTheme("Light Blue") end)
+Themes:Button("Lime Accent", function() Library:SetTheme("Lime") end)
+Themes:Button("Pink Accent", function() Library:SetTheme("Pink") end)
+Themes:Button("Red Accent", function() Library:SetTheme("Red") end)
+Themes:Button("Orange Accent", function() Library:SetTheme("Orange") end)
+Themes:Button("✨ Ethereal Breathing Cycle", function() Library:SetTheme("Ethereal Cycle") end)
+Themes:Button("🌈 Active Rainbow Cycle", function() Library:SetTheme("Rainbow") end)
 
 
 local drinkTier = {
@@ -587,25 +699,18 @@ AutoFarm:Toggle("Auto Drink", function(state)
 	end
 end)
 
+
 AutoFarm:Toggle("Fast Drink", function(state)
 	getgenv().fastdrink = state
-	while getgenv().fastdrink do wait()
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
-		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
+	while getgenv().fastdrink do
+		for _, drink in ipairs(drinkTier) do
+			ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(drink.name)
+		end
+		task.wait(2.34) 
 	end
 end)
-	
+
+
 AutoFarm:Toggle("Auto Equip Pickaxe", function(state)
 	getgenv().equippickaxe = state
 	while getgenv().equippickaxe do
@@ -728,10 +833,8 @@ Teleport:Button("Pet Shop", function() tweenHRP(CFrame.new(311, 52, 103)) end)
 Teleport:Button("Disco Island", function() tweenHRP(CFrame.new(63, 48, 636)) end)
 Teleport:Button("Cloud One", function()
 	local New_CFrame = CFrame.new(296, 566, 689)
-
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
-
 	local part = char.HumanoidRootPart
 	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
@@ -740,10 +843,8 @@ end)
 
 Teleport:Button("Cloud Second", function()
 	local New_CFrame = CFrame.new(-1224, 557, -318)
-
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
-
 	local part = char.HumanoidRootPart
 	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
@@ -752,10 +853,8 @@ end)
 
 Teleport:Button("Sky Island", function()
 	local New_CFrame = CFrame.new(2132, 1456, -1034)
-
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
-
 	local part = char.HumanoidRootPart
 	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
@@ -764,10 +863,8 @@ end)
 
 Teleport:Button("SafePlace", function()
 	local New_CFrame = CFrame.new(167, 48.28, -5357)
-
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
-
 	local part = char.HumanoidRootPart
 	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
@@ -776,10 +873,8 @@ end)
 
 Teleport:Button("SafePlace v2", function()
 	local New_CFrame = CFrame.new(0, 3605, 0)
-
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
-
 	local part = char.HumanoidRootPart
 	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
@@ -788,10 +883,8 @@ end)
 
 Teleport:Button("FavSpot", function()
 	local New_CFrame = CFrame.new(60.12, 18.25, -72)
-
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
-
 	local part = char.HumanoidRootPart
 	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
@@ -800,10 +893,8 @@ end)
 
 Teleport:Button("Water Spot", function()
 	local New_CFrame = CFrame.new(-564, 40, 605)
-
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
-
 	local part = char.HumanoidRootPart
 	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
@@ -812,10 +903,8 @@ end)
 
 Teleport:Button("Hotel", function()
 	local New_CFrame = CFrame.new(-1198.279052734375, 44.315752029418945, -5.583522319793701)
-
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
-
 	local part = char.HumanoidRootPart
 	local ti = TweenInfo.new(0.2, Enum.EasingStyle.Linear)
 	local tp = {CFrame = New_CFrame}
@@ -882,7 +971,6 @@ Misc:Toggle("Walk On Water",  function(bool)
 	end
 end)
 
--- FIXED: Spam Burp is now a clean Toggle instead of an infinite button crash-loop
 Misc:Toggle("Spam Burp", function(state)
 	getgenv().spamBurp = state
 	while getgenv().spamBurp do
