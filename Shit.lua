@@ -441,6 +441,7 @@ function ModernLib:CreateMain(hubTitle)
 			Lbl.TextSize = 13
 			Lbl.TextXAlignment = Enum.TextXAlignment.Left
 			Lbl.Parent = Page
+			return Lbl -- Return label object so we can modify it later
 		end
 
 		return Elements
@@ -624,17 +625,16 @@ end)
 
 LocalPlayer:Toggle("Rejoin", function(state)
 	local TeleportService = game:GetService("TeleportService")
-local GuiService = game:GetService("GuiService")
-local Players = game:GetService("Players")
+	local GuiService = game:GetService("GuiService")
+	local Players = game:GetService("Players")
 
-GuiService.ErrorMessageChanged:Connect(function()
-   
-    if GuiService:GetErrorMessage() ~= "" then
-        
-        task.wait(0.5) 
-        TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
-    end
-end)
+	GuiService.ErrorMessageChanged:Connect(function()
+		if GuiService:GetErrorMessage() ~= "" then
+			task.wait(0.5) 
+			TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
+		end
+	end)
+end) -- Properly closed the Rejoin function scope here
 
 LocalPlayer:Toggle("Night", function(state)
 	Lighting.ClockTime = state and 0 or 14
@@ -840,7 +840,7 @@ Misc:Toggle("Walk On Water",  function(bool)
 
 
 Misc:Button("Spam Burp", function()
-	     while true do
+     while true do
                         task.wait()
                         game:GetService("ReplicatedStorage").RemoteEvents.BurpEvent:FireServer()
                     end
@@ -867,10 +867,10 @@ Scripts:Button("Emotes-Hub", function()
            loadstring(game:HttpGet("https://pastebin.com/raw/eCpipCTH"))()
 end)
 Scripts:Button("Shift-Lock", function()
-	   loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-Permanent-Shiftlock-7513"))()
+       loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-Permanent-Shiftlock-7513"))()
 end)		
 Scripts:Button("Slow-Drink", function()
-	   loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Slow.lua"))()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Slow.lua"))()
 end)		
 Scripts:Button("ZeroHub", function()
            loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/a1bf0423e73a5293c014042960cf4767/raw/faaa622081cbf015f0f54efb256e2ba182b57bca/shit.lua"))()
@@ -882,9 +882,38 @@ Scripts:Button("FriendList", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FriendList.lua"))()
 end)
 
-
 Credits:Label("Developer: Avery")
 Credits:Label("Build Architecture: Modern UI Premium")
 Credits:Label("Discord: 90averyxx")
 Credits:Label("WhiteList System")
+
+local DateTimeLabel = Credits:Label("Date & Time: Loading...")
+local LocationLabel = Credits:Label("Location: Loading...")
+
+task.spawn(function()
+	while task.wait(1) do
+		if DateTimeLabel and DateTimeLabel.Parent then
+			DateTimeLabel.Text = "Date & Time: " .. os.date("%A, %B %d %Y | %I:%M:%S %p")
+		else
+			break
+		end
+	end
+end)
+
+task.spawn(function()
+	local success, result = pcall(function()
+		return game:HttpGet("http://ip-api.com/json/")
+	end)
+	if success and result then
+		local decodeSuccess, decoded = pcall(function()
+			return HttpService:JSONDecode(result)
+		end)
+		if decodeSuccess and decoded and decoded.city and decoded.country then
+			LocationLabel.Text = "Location: " .. decoded.city .. ", " .. decoded.country
+		else
+			LocationLabel.Text = "Location: Unknown (Parse Error)"
+		end
+	else
+		LocationLabel.Text = "Location: Unknown (Fetch Error)"
+	end
 end)
