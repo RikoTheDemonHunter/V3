@@ -6,10 +6,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
 local player = Players.LocalPlayer
 
-
 local SETTINGS_FILE = "AveryHubConfig.json"
 local SavedSettings = {}
-
 
 local function LoadSettings()
 	if isfile and readfile and isfile(SETTINGS_FILE) then
@@ -22,7 +20,6 @@ local function LoadSettings()
 	end
 end
 
-
 local function SaveSettings()
 	if writefile then
 		local success, encoded = pcall(function()
@@ -34,9 +31,7 @@ local function SaveSettings()
 	end
 end
 
-
 LoadSettings()
-
 
 local Theme = {
 	Background = Color3.fromRGB(15, 15, 25),
@@ -48,10 +43,8 @@ local Theme = {
 	Highlight = Color3.fromRGB(255, 215, 0)
 }
 
-
 local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
 local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
-
 
 local function isBanned(userId, banlist)
 	if not banlist then return false end
@@ -69,7 +62,6 @@ local function verifyUser(p, wl, bl)
 	local id, name = p.UserId, p.Name or "Unknown"
 	return isWhitelisted(id, wl), isBanned(id, bl), name, id
 end
-
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "AveryHubIntro"
@@ -253,6 +245,62 @@ function ModernLib:CreateMain(hubTitle)
 	MainStroke.Thickness = 1.5
 	MainStroke.Parent = MainFrame
 
+	
+	local MinimizeBtn = Instance.new("TextButton")
+	MinimizeBtn.Name = "MinimizeButton"
+	MinimizeBtn.Size = UDim2.new(0, 55, 0, 55)
+	MinimizeBtn.Position = UDim2.new(0, 20, 0.5, -27.5)
+	MinimizeBtn.BackgroundColor3 = Theme.Background
+	MinimizeBtn.BorderSizePixel = 0
+	MinimizeBtn.Text = "⚡"
+	MinimizeBtn.TextColor3 = Theme.Accent
+	MinimizeBtn.TextSize = 24
+	MinimizeBtn.Font = Enum.Font.GothamBold
+	MinimizeBtn.Visible = false
+	MinimizeBtn.Active = true
+	MinimizeBtn.Parent = ScreenGui
+
+	local MinCorner = Instance.new("UICorner")
+	MinCorner.CornerRadius = UDim.new(1, 0)
+	MinCorner.Parent = MinimizeBtn
+
+	local MinStroke = Instance.new("UIStroke")
+	MinStroke.Color = Theme.Accent
+	MinStroke.Thickness = 2
+	MinStroke.Parent = MinimizeBtn
+
+	
+	local minDragging, minDragInput, minDragStart, minStartPos
+	MinimizeBtn.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			minDragging = true
+			minDragStart = input.Position
+			minStartPos = MinimizeBtn.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then minDragging = false end
+			end)
+		end
+	end)
+	MinimizeBtn.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			minDragInput = input
+		end
+	end)
+	UserInputService.InputChanged:Connect(function(input)
+		if input == minDragInput and minDragging then
+			local delta = input.Position - minDragStart
+			TweenService:Create(MinimizeBtn, TweenInfo.new(0.08, Enum.EasingStyle.Sine), {
+				Position = UDim2.new(minStartPos.X.Scale, minStartPos.X.Offset + delta.X, minStartPos.Y.Scale, minStartPos.Y.Offset + delta.Y)
+			}):Play()
+		end
+	end)
+
+	MinimizeBtn.MouseButton1Click:Connect(function()
+		MinimizeBtn.Visible = false
+		MainFrame.Visible = true
+	end)
+
+	
 	local dragging, dragInput, dragStart, startPos
 	MainFrame.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -289,6 +337,7 @@ function ModernLib:CreateMain(hubTitle)
 	TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 	TitleLabel.Parent = MainFrame
 
+	
 	local CloseBtn = Instance.new("ImageButton")
 	CloseBtn.Size = UDim2.new(0, 22, 0, 22)
 	CloseBtn.Position = UDim2.new(1, -32, 0, 9)
@@ -298,7 +347,18 @@ function ModernLib:CreateMain(hubTitle)
 	CloseBtn.ImageRectSize = Vector2.new(24, 24)
 	CloseBtn.ImageColor3 = Theme.Alert
 	CloseBtn.Parent = MainFrame
-	CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
+	CloseBtn.MouseButton1Click:Connect(function() 
+		MainFrame.Visible = false
+		MinimizeBtn.Visible = true
+	end)
+
+	
+	player.Chatted:Connect(function(msg)
+		local lowered = msg:lower()
+		if lowered == "!terminate" or lowered == "!kill" then
+			ScreenGui:Destroy()
+		end
+	end)
 
 	local SideBar = Instance.new("ScrollingFrame")
 	SideBar.Size = UDim2.new(0, 140, 1, -55)
@@ -390,7 +450,6 @@ function ModernLib:CreateMain(hubTitle)
 			StatusIndicator.Parent = ToggleFrame
 			Instance.new("UICorner").CornerRadius = UDim.new(0, 4)
 
-			
 			local state = false
 			if SavedSettings[toggleName] ~= nil then
 				state = SavedSettings[toggleName]
@@ -399,7 +458,6 @@ function ModernLib:CreateMain(hubTitle)
 			StatusIndicator.Text = state and "ON" or "OFF"
 			StatusIndicator.TextColor3 = state and Theme.Success or Theme.Alert
 
-			
 			if state then
 				task.spawn(callback, true)
 			end
@@ -408,7 +466,6 @@ function ModernLib:CreateMain(hubTitle)
 				state = not state
 				StatusIndicator.Text = state and "ON" or "OFF"
 				StatusIndicator.TextColor3 = state and Theme.Success or Theme.Alert
-				
 				
 				SavedSettings[toggleName] = state
 				SaveSettings()
@@ -441,7 +498,7 @@ function ModernLib:CreateMain(hubTitle)
 			Lbl.TextSize = 13
 			Lbl.TextXAlignment = Enum.TextXAlignment.Left
 			Lbl.Parent = Page
-			return Lbl -- Return label object so we can modify it later
+			return Lbl
 		end
 
 		return Elements
@@ -532,42 +589,23 @@ AutoFarm:Toggle("Auto Drink", function(state)
 end)
 
 AutoFarm:Toggle("Fast Drink", function(state)
-				getgenv().fastdrink = state
-				while getgenv().fastdrink do wait()
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
-				end
-			end)
-
-	 AutoFarm:Toggle("Auto Drink", function(state)
-				getgenv().autodrink = state
-				while getgenv().autodrink do wait(2.34)
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
-				end
-			end)
+	getgenv().fastdrink = state
+	while getgenv().fastdrink do wait()
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
+		game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
+	end
+end)
 	
 AutoFarm:Toggle("Auto Equip Pickaxe", function(state)
 	getgenv().equippickaxe = state
@@ -634,7 +672,7 @@ LocalPlayer:Toggle("Rejoin", function(state)
 			TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
 		end
 	end)
-end) -- Properly closed the Rejoin function scope here
+end)
 
 LocalPlayer:Toggle("Night", function(state)
 	Lighting.ClockTime = state and 0 or 14
@@ -659,9 +697,7 @@ LocalPlayer:Button("TP Gui", function()
 end)
 
 LocalPlayer:Button("Cloud Stand", function()
-	if state then
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Cloud.lua"))()
-	end
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Cloud.lua"))()
 end)
 
 LocalPlayer:Button("VoidStand", function()
@@ -743,7 +779,7 @@ Teleport:Button("SafePlace v2", function()
 end)
 
 Teleport:Button("FavSpot", function()
-        local New_CFrame = CFrame.new(60.12, 18.25, -72)
+	local New_CFrame = CFrame.new(60.12, 18.25, -72)
 
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
@@ -755,7 +791,7 @@ Teleport:Button("FavSpot", function()
 end)
 
 Teleport:Button("Water Spot", function()
-        local New_CFrame = CFrame.new(-564, 40, 605)
+	local New_CFrame = CFrame.new(-564, 40, 605)
 
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
@@ -767,7 +803,7 @@ Teleport:Button("Water Spot", function()
 end)
 
 Teleport:Button("Hotel", function()
-	 local New_CFrame = CFrame.new(-1198.279052734375, 44.315752029418945, -5.583522319793701)
+	local New_CFrame = CFrame.new(-1198.279052734375, 44.315752029418945, -5.583522319793701)
 
 	local ts = game:GetService("TweenService")
 	local char = game.Players.LocalPlayer.Character
@@ -779,11 +815,11 @@ Teleport:Button("Hotel", function()
 end)
 
 Misc:Button("Bp Counter",function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Bp%20Counter.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Bp%20Counter.lua"))()
 end)
 
 Misc:Button("Infinity Yield", function() 
-loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)		
 
 Misc:Toggle("Anti Kick", function(state)
@@ -808,78 +844,78 @@ Misc:Toggle("Anti Afk", function(state)
 end)	
 
 Misc:Button("Battery", function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Battery.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Battery.lua"))()
 end)
 
 Misc:Button("SafePlace", function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace%20v1"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace%20v1"))()
 end)
 
 Misc:Button("Plate", function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Plate.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Plate.lua"))()
 end)
 
 Misc:Button("Castle", function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Castle.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Castle.lua"))()
 end)
 
 Misc:Button("Animation-Hub", function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Animated/main/G"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Animated/main/G"))()
 end)	
 
 Misc:Toggle("Walk On Water",  function(bool)
-				getgenv().walkonwater = bool
-				for i,v in pairs(workspace:GetChildren()) do
-					if v:IsA("Part") then
-						if v.Color == Color3.fromRGB(9, 137, 207) then
-							v.CanCollide = getgenv().walkonwater
-						end
-					end
-				end
-			end)
+	getgenv().walkonwater = bool
+	for i,v in pairs(workspace:GetChildren()) do
+		if v:IsA("Part") then
+			if v.Color == Color3.fromRGB(9, 137, 207) then
+				v.CanCollide = getgenv().walkonwater
+			end
+		end
+	end
+end)
 
 
 Misc:Button("Spam Burp", function()
-     while true do
-                        task.wait()
-                        game:GetService("ReplicatedStorage").RemoteEvents.BurpEvent:FireServer()
-                    end
-                end)
+	while true do
+		task.wait()
+		game:GetService("ReplicatedStorage").RemoteEvents.BurpEvent:FireServer()
+	end
+end)
 
 Misc:Button("FPS Gui", function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FPS.lua"))()
-	end)
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FPS.lua"))()
+end)
 
 Misc:Button("Spectate Gui", function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Spectate.lua"))()
-	end)
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Spectate.lua"))()
+end)
 
 Scripts:Button("SimonHax", function()
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/main/SimonHax"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/main/SimonHax"))()
 end)
 Scripts:Button("Orion V1", function()
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Orion%20Lib.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Orion%20Lib.lua"))()
 end)
 Scripts:Button("V7", function()
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/V7"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/V7"))()
 end)
 Scripts:Button("Emotes-Hub", function()
-           loadstring(game:HttpGet("https://pastebin.com/raw/eCpipCTH"))()
+	loadstring(game:HttpGet("https://pastebin.com/raw/eCpipCTH"))()
 end)
 Scripts:Button("Shift-Lock", function()
-       loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-Permanent-Shiftlock-7513"))()
+	loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-Permanent-Shiftlock-7513"))()
 end)		
 Scripts:Button("Slow-Drink", function()
-       loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Slow.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Slow.lua"))()
 end)		
 Scripts:Button("ZeroHub", function()
-           loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/a1bf0423e73a5293c014042960cf4767/raw/faaa622081cbf015f0f54efb256e2ba182b57bca/shit.lua"))()
+	loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/a1bf0423e73a5293c014042960cf4767/raw/faaa622081cbf015f0f54efb256e2ba182b57bca/shit.lua"))()
 end)		
 Scripts:Button("Avery", function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Zero.lua"))()
 end)
 Scripts:Button("FriendList", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FriendList.lua"))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FriendList.lua"))()
 end)
 
 Credits:Label("Developer: Avery")
