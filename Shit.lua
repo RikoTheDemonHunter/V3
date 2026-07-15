@@ -1032,6 +1032,25 @@ Scripts:Button("Emotes-Hub", function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Emotes.lua"))()
 end)
 
+Scripts:Button("Shift-Lock", function()
+       loadstring(game:HttpGet("https://scriptblox.com/raw/Universal-Script-Permanent-Shiftlock-7513"))()
+end)		
+
+Scripts:Button("Slow-Drink", function()
+       loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Slow.lua"))()
+end)		
+
+Scripts:Button("ZeroHub", function()
+           loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/a1bf0423e73a5293c014042960cf4767/raw/faaa622081cbf015f0f54efb256e2ba182b57bca/shit.lua"))()
+end)		
+Scripts:Button("Avery", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Zero.lua"))()
+end)
+
+Scripts:Button("FriendList", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/FriendList.lua"))()
+end)
+
 Credits:Label("Developer: Avery")
 Credits:Label("Build Architecture: Modern UI Premium")
 Credits:Label("Discord: 90averyxx")
