@@ -691,22 +691,19 @@ end)
 
 AutoFarm:Toggle("Auto Drink", function(state)
 	getgenv().autodrink = state
-				while getgenv().autodrink do wait(2.34)
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Starter Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Second Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Third Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fourth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Fifth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Sixth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Seventh Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Eighth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Ninth Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Atomic Drink")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Omega Burp Juice")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Thunder Fizz")
-					game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer("Garlic Juice")
-				end
-			end)
+	while getgenv().autodrink do
+		for _, drink in ipairs(drinkTier) do
+			ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(drink.name)
+		end
+		task.wait(2.4)
+	end
+end)
+
+AutoFarm:Toggle("Fast Drink", function(state)
+	if state then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/v2.lua"))()
+	end
+end)
 
 AutoFarm:Toggle("Auto Equip Pickaxe", function(state)
 	getgenv().equippickaxe = state
