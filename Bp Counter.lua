@@ -8,6 +8,7 @@ local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
+local TextChatService = game:GetService("TextChatService")
 local LocalPlayer = Players.LocalPlayer
 
 local SETTINGS_FILE = "GainUI_Settings.json"
@@ -79,7 +80,7 @@ PrestigeGain.Font = Enum.Font.GothamBold
 PrestigeGain.TextSize = 18
 PrestigeGain.TextColor3 = Color3.fromRGB(255, 255, 255)
 PrestigeGain.TextXAlignment = Enum.TextXAlignment.Left
-PrestigeGain.Text = "Prestige: 0"
+PrestigeGain.Text = "Prestige: Loading..."
 
 local PrestigeStroke = Instance.new("UIStroke")
 PrestigeStroke.Thickness = 1.5
@@ -95,27 +96,12 @@ BpGain.Font = Enum.Font.GothamBold
 BpGain.TextSize = 18
 BpGain.TextColor3 = Color3.fromRGB(255, 255, 255)
 BpGain.TextXAlignment = Enum.TextXAlignment.Left
-BpGain.Text = "BP Gain: +0"
+BpGain.Text = "BP Gain: Loading..."
 
 local BpStroke = Instance.new("UIStroke")
 BpStroke.Thickness = 1.5
 BpStroke.JoinMode = Enum.LineJoinMode.Round
 BpStroke.Parent = BpGain
-
-local leaderstats = LocalPlayer:WaitForChild("leaderstats", 10)
-if not leaderstats then
-	warn("[Gain Tracker] leaderstats not found.")
-	return
-end
-
-local bp = leaderstats:WaitForChild("Burp points", 10)
-local prestige = leaderstats:WaitForChild("Prestige", 10)
-if not bp or not prestige then
-	warn("[Gain Tracker] Missing Stats.")
-	return
-end
-
-local lastBP = bp.Value
 
 local dragToggle, dragStart, startPos
 local function updateInput(input)
@@ -146,6 +132,18 @@ end)
 
 task.spawn(function()
 	local hue = 0
+	local leaderstats = LocalPlayer:WaitForChild("leaderstats", 30)
+	local bp = leaderstats and leaderstats:WaitForChild("Burp points", 30)
+	local prestige = leaderstats and leaderstats:WaitForChild("Prestige", 30)
+	
+	local lastBP = bp and bp.Value or 0
+	
+	if not bp or not prestige then
+		PrestigeGain.Text = "Prestige: N/A"
+		BpGain.Text = "BP Gain: N/A"
+		warn("[Gain Tracker] Stats failed to load.")
+	end
+
 	while task.wait(0.03) do
 		hue = (hue + 0.006) % 1
 		local rainbowColor = Color3.fromHSV(hue, 0.85, 1)
@@ -180,18 +178,23 @@ task.spawn(function()
 			BpStroke.Color = Color3.fromRGB(0, 0, 0)
 		end
 
-		PrestigeGain.Text = "Prestige: " .. tostring(prestige.Value)
-		if bp.Value ~= lastBP then
-			local gain = bp.Value - lastBP
-			if gain > 0 then
-				BpGain.Text = string.format("BP Gain: +%d", gain)
+		if prestige then
+			PrestigeGain.Text = "Prestige: " .. tostring(prestige.Value)
+		end
+		
+		if bp then
+			if bp.Value ~= lastBP then
+				local gain = bp.Value - lastBP
+				if gain > 0 then
+					BpGain.Text = string.format("BP Gain: +%d", gain)
+				end
+				lastBP = bp.Value
 			end
-			lastBP = bp.Value
 		end
 	end
 end)
 
-LocalPlayer.Chatted:Connect(function(message)
+local function handleChat(message)
 	local args = string.split(string.lower(message), " ")
 	local command = args[1]
 
@@ -216,4 +219,12 @@ LocalPlayer.Chatted:Connect(function(message)
 		userSettings.Visible = true
 		saveSettings()
 	end
-end)
+end
+
+LocalPlayer.Chatted:Connect(handleChat)
+
+if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+	TextChatService.SendingMessage:Connect(function(textChannelObject)
+		handleChat(textChannelObject.Text)
+	end)
+end
