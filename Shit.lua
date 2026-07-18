@@ -1056,8 +1056,6 @@ Credits:Label("Build Architecture: Modern UI Premium")
 Credits:Label("Discord: 90averyxx")
 Credits:Label("WhiteList System")
 
-print("---"..GameName.." Detected---")
-
 local DateTimeLabel = Credits:Label("Date & Time: Loading...")
 local LocationLabel = Credits:Label("Location: Loading...")
 
