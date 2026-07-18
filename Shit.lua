@@ -615,7 +615,7 @@ function ModernLib:CreateMain(hubTitle)
 			MainStroke.Thickness = 1.5
 		elseif styleName == "Glossy" then
 			MainFrame.BackgroundTransparency = 0.25
-			MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 45) -- Sleek reflective tint
+			MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 45) 
 			SideBar.BackgroundTransparency = 0.4
 			SideBar.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 			MainStroke.Thickness = 2.5 
@@ -648,7 +648,7 @@ local Scripts = Library:Tab("Scripts")
 local Credits = Library:Tab("Credits")
 
 
--- ACCENT SELECTION BUTTONS
+
 Themes:Label("--- UI Accents ---")
 Themes:Button("Ethereal Blue Accent", function() Library:SetTheme("Ethereal Blue") end)
 Themes:Button("Light Blue Accent", function() Library:SetTheme("Light Blue") end)
@@ -1055,6 +1055,8 @@ Credits:Label("Developer: Avery")
 Credits:Label("Build Architecture: Modern UI Premium")
 Credits:Label("Discord: 90averyxx")
 Credits:Label("WhiteList System")
+
+print("---"..GameName.." Detected---")
 
 local DateTimeLabel = Credits:Label("Date & Time: Loading...")
 local LocationLabel = Credits:Label("Location: Loading...")
