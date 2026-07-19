@@ -327,7 +327,6 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 	autoEquipActive = true
 	AutoDrinkSwitcher.Text = "Equipping..."
 	
-	
 	task.spawn(function()
 		local player = game:GetService("Players").LocalPlayer
 		while autoEquipActive do
