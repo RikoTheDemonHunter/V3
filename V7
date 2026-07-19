@@ -1,66 +1,17 @@
---Drinkhaxx v7.3.5 Fixed
+--Drinkhaxx v7.3.0
 --By WryTheDev
 --Original Drinkhaxx by 2_2Epik4u (Credit)
---Auto Equip: Full Riko's Modern Equip logic (Fixed progression math)
+--Update: Auto Drink Switch has been upgraded, thanks to Thatdamngranny!
+--⚠️: Do not share Drinkhaxx with anyone without my permission!
 
 local ScreenGui = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame") 
-local Title = Instance.new("TextLabel") 
-local Menu = Instance.new("Frame")
-local Close = Instance.new("TextButton")
-local Minimize = Instance.new("TextButton")
+ScreenGui.Name = "DrinkhaxxGui"
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ResetOnSpawn = false
 
---Sub-menu container to align items perfectly inside the main frame
-local SubMenuContainer = Instance.new("Frame")
-
---Speed Drink Characters
-local AutoDrink = Instance.new("TextButton")
-local SpeedDrink = Instance.new("TextButton")
-
---Auto Prestige Characters
-local AutoPrestige = Instance.new("TextButton")
-local AutoPrestige2 = Instance.new("TextButton")
-
---Spam Burp Characters
-local SpamBurp = Instance.new("TextButton")
-local SpamBurp2 = Instance.new("TextButton")
-
---Drink Settings Characters
-local DrinkSettings = Instance.new("TextButton")
-local AutoDrinkSwitcher = Instance.new("TextButton")
-
---OP Scripts Characters
-local OPScripts = Instance.new("TextButton")
-local InfiniteYield = Instance.new("TextButton")
-local OwlHub = Instance.new("TextButton")
-
---Misc Characters
-local Misc = Instance.new("TextButton")
-local AntiAfk = Instance.new("TextButton")
-local AntiAfk2 = Instance.new("TextButton")
-local GiveDrink = Instance.new("TextButton")
-local DiamondAutoFarm = Instance.new("TextButton")
-
---Helper function to clear the sub-menu frame layout
-local function clearSubMenus()
-	AutoDrink.Visible = false
-	AutoPrestige2.Visible = false
-	SpamBurp2.Visible = false
-	AutoDrinkSwitcher.Visible = false
-	AntiAfk.Visible = false
-	AntiAfk2.Visible = false
-	GiveDrink.Visible = false
-	DiamondAutoFarm.Visible = false
-	InfiniteYield.Visible = false
-	OwlHub.Visible = false
-end
-
---User Interface Properties
-ScreenGui.Name = "ScreenGui"
-local success, err = pcall(function() ScreenGui.Parent = game.CoreGui end)
-if not success then ScreenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui") end
-
-Frame.Name = "Frame"
+-- Main Container Frame
+local Frame = Instance.new("Frame")
+Frame.Name = "MainFrame"
 Frame.Parent = ScreenGui
 Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 Frame.BorderSizePixel = 1
@@ -68,34 +19,41 @@ Frame.BorderColor3 = Color3.fromRGB(255, 0, 0)
 Frame.Position = UDim2.new(0.3, 0, 0.3, 0)
 Frame.Size = UDim2.new(0, 470, 0, 283)
 Frame.Active = true
-Frame.Draggable = true 
+Frame.Draggable = true -- Allows the GUI to be moved around smoothly
 
+-- Title Bar
+local Title = Instance.new("TextLabel")
 Title.Name = "Title"
 Title.Parent = Frame
 Title.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
-Title.BorderSizePixel = 1
-Title.BorderColor3 = Color3.fromRGB(255, 0, 0)
+Title.BorderSizePixel = 0
 Title.Position = UDim2.new(0, 0, 0, 0)
-Title.Size = UDim2.new(1, 0, 0, 28)
+Title.Size = UDim2.new(1, 0, 0, 30)
 Title.Font = Enum.Font.GothamBlack
-Title.Text = "Drinkhaxx v.7.3.5"
+Title.Text = "  Drinkhaxx v.7.3.0"
 Title.TextColor3 = Color3.fromRGB(255, 0, 0)
 Title.TextSize = 14
-Title.TextXAlignment = Enum.TextXAlignment.Center
+Title.TextXAlignment = Enum.TextXAlignment.Left
 
-Menu.Name = "Menu"
+-- Sidebar Menu Background
+local Menu = Instance.new("Frame")
+Menu.Name = "Sidebar"
 Menu.Parent = Frame
 Menu.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 Menu.BorderSizePixel = 0
-Menu.Position = UDim2.new(0, 5, 0, 33)
-Menu.Size = UDim2.new(0, 100, 0, 245)
+Menu.Position = UDim2.new(0, 0, 0, 30)
+Menu.Size = UDim2.new(0, 110, 1, -30)
 
-SubMenuContainer.Name = "SubMenuContainer"
-SubMenuContainer.Parent = Frame
-SubMenuContainer.BackgroundTransparency = 1
-SubMenuContainer.Position = UDim2.new(0, 115, 0, 33)
-SubMenuContainer.Size = UDim2.new(0, 350, 0, 245)
+-- Content Area (Where sub-buttons will display inside borders)
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Parent = Frame
+ContentFrame.BackgroundTransparency = 1
+ContentFrame.Position = UDim2.new(0, 115, 0, 35)
+ContentFrame.Size = UDim2.new(1, -120, 1, -40)
 
+-- Close Button
+local Close = Instance.new("TextButton")
 Close.Name = "Close"
 Close.Parent = Frame
 Close.BackgroundTransparency = 1
@@ -105,248 +63,164 @@ Close.Font = Enum.Font.GothamBlack
 Close.Text = "X"
 Close.TextColor3 = Color3.fromRGB(255, 0, 0)
 Close.TextSize = 14
-Close.TextXAlignment = Enum.TextXAlignment.Center
 Close.MouseButton1Down:Connect(function()
 	ScreenGui:Destroy()
 end)
 
--- Sidebar layout (Properly aligned within boundaries)
-SpeedDrink.Name = "SpeedDrink"
-SpeedDrink.Parent = Menu
-SpeedDrink.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-SpeedDrink.Position = UDim2.new(0, 5, 0, 10)
-SpeedDrink.Size = UDim2.new(0, 90, 0, 25)
-SpeedDrink.Font = Enum.Font.GothamBlack
-SpeedDrink.Text = "Speed Drink"
-SpeedDrink.TextColor3 = Color3.fromRGB(255, 0, 0)
-SpeedDrink.TextSize = 11
-SpeedDrink.TextXAlignment = Enum.TextXAlignment.Center
-SpeedDrink.MouseButton1Down:Connect(function()
-	clearSubMenus()
+-- Minimize Button
+local Minimize = Instance.new("TextButton")
+Minimize.Name = "Minimize"
+Minimize.Parent = Frame
+Minimize.BackgroundTransparency = 1
+Minimize.Position = UDim2.new(1, -45, 0, 5)
+Minimize.Size = UDim2.new(0, 20, 0, 20)
+Minimize.Font = Enum.Font.GothamBlack
+Minimize.Text = "-"
+Minimize.TextColor3 = Color3.fromRGB(255, 0, 0)
+Minimize.TextSize = 14
+
+-- Sub-Menu Action Button Initializations (All Parented to ContentFrame now)
+local AutoDrink = Instance.new("TextButton")
+local AutoPrestige2 = Instance.new("TextButton")
+local SpamBurp2 = Instance.new("TextButton")
+local AutoDrinkSwitcher = Instance.new("TextButton")
+local InfiniteYield = Instance.new("TextButton")
+local OwlHub = Instance.new("TextButton")
+local AntiAfk = Instance.new("TextButton")
+local AntiAfk2 = Instance.new("TextButton")
+local GiveDrink = Instance.new("TextButton")
+local DiamondAutoFarm = Instance.new("TextButton")
+
+local function hideAllSubMenus()
+	AutoDrink.Visible = false
+	AutoPrestige2.Visible = false
+	SpamBurp2.Visible = false
+	AutoDrinkSwitcher.Visible = false
+	InfiniteYield.Visible = false
+	OwlHub.Visible = false
+	AntiAfk.Visible = false
+	AntiAfk2.Visible = false
+	GiveDrink.Visible = false
+	DiamondAutoFarm.Visible = false
+end
+
+-- Helper function to style Sidebar Category Tabs
+local function createCategoryTab(name, posIndex, callback)
+	local btn = Instance.new("TextButton")
+	btn.Parent = Menu
+	btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+	btn.BorderColor3 = Color3.fromRGB(255, 0, 0)
+	btn.Position = UDim2.new(0, 5, 0, (posIndex * 30) - 25)
+	btn.Size = UDim2.new(1, -10, 0, 25)
+	btn.Font = Enum.Font.GothamBlack
+	btn.Text = name
+	btn.TextColor3 = Color3.fromRGB(255, 0, 0)
+	btn.TextSize = 10
+	btn.MouseButton1Down:Connect(callback)
+	return btn
+end
+
+-- Helper function to style Action Buttons inside the Content Area
+local function styleActionButton(btn, name, xPos, yPos, textSz)
+	btn.Parent = ContentFrame
+	btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+	btn.BorderColor3 = Color3.fromRGB(255, 0, 0)
+	btn.Position = UDim2.new(0, xPos, 0, yPos)
+	btn.Size = UDim2.new(0, 105, 0, 30)
+	btn.Font = Enum.Font.GothamBlack
+	btn.Text = name
+	btn.TextColor3 = Color3.fromRGB(255, 0, 0)
+	btn.TextSize = textSz or 11
+	btn.Visible = false
+end
+
+-- Category 1: Speed Drink
+local SpeedDrink = createCategoryTab("Speed Drink", 1, function()
+	hideAllSubMenus()
 	AutoDrink.Visible = true
 end)
 
-AutoPrestige.Name = "AutoPrestige"
-AutoPrestige.Parent = Menu
-AutoPrestige.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-AutoPrestige.Position = UDim2.new(0, 5, 0, 45)
-AutoPrestige.Size = UDim2.new(0, 90, 0, 25)
-AutoPrestige.Font = Enum.Font.GothamBlack
-AutoPrestige.Text = "Auto Prestige"
-AutoPrestige.TextColor3 = Color3.fromRGB(255, 0, 0)
-AutoPrestige.TextSize = 11
-AutoPrestige.TextXAlignment = Enum.TextXAlignment.Center
-AutoPrestige.MouseButton1Down:Connect(function()
-	clearSubMenus()
+styleActionButton(AutoDrink, "Start Speed Drink", 0, 0, 11)
+AutoDrink.MouseButton1Down:Connect(function()
+	AutoDrink.Text = "Executed"
+	while task.wait(2.34) do
+		local drinkEvent = game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("DrinkEvent")
+		local drinks = {"Starter Drink", "Second Drink", "Third Drink", "Fourth Drink", "Fifth Drink", "Sixth Drink", "Seventh Drink", "Eighth Drink", "Ninth Drink", "Atomic Drink", "Omega Burp Juice", "Thunder Fizz", "Garlic Juice"}
+		for _, drink in ipairs(drinks) do
+			drinkEvent:FireServer(drink)
+		end
+	end
+end)
+
+-- Category 2: Auto Prestige
+local AutoPrestige = createCategoryTab("Auto Prestige", 2, function()
+	hideAllSubMenus()
 	AutoPrestige2.Visible = true
 end)
 
-SpamBurp.Name = "SpamBurp"
-SpamBurp.Parent = Menu
-SpamBurp.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-SpamBurp.Position = UDim2.new(0, 5, 0, 80)
-SpamBurp.Size = UDim2.new(0, 90, 0, 25)
-SpamBurp.Font = Enum.Font.GothamBlack
-SpamBurp.Text = "Spam Burp"
-SpamBurp.TextColor3 = Color3.fromRGB(255, 0, 0)
-SpamBurp.TextSize = 11
-SpamBurp.TextXAlignment = Enum.TextXAlignment.Center
-SpamBurp.MouseButton1Down:Connect(function()
-	clearSubMenus()
+styleActionButton(AutoPrestige2, "Auto Prestige", 0, 0, 11)
+AutoPrestige2.MouseButton1Down:Connect(function()
+	while task.wait(1) do
+		game:GetService("ReplicatedStorage").RemoteEvents['PrestigeEvent']:FireServer(30)
+	end
+end)
+
+-- Category 3: Spam Burp
+local SpamBurp = createCategoryTab("Spam Burp", 3, function()
+	hideAllSubMenus()
 	SpamBurp2.Visible = true
 end)
 
-DrinkSettings.Name = "DrinkSettings"
-DrinkSettings.Parent = Menu
-DrinkSettings.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-DrinkSettings.Position = UDim2.new(0, 5, 0, 115)
-DrinkSettings.Size = UDim2.new(0, 90, 0, 25)
-DrinkSettings.Font = Enum.Font.GothamBlack
-DrinkSettings.Text = "Settings"
-DrinkSettings.TextColor3 = Color3.fromRGB(255, 0, 0)
-DrinkSettings.TextSize = 11
-DrinkSettings.TextXAlignment = Enum.TextXAlignment.Center
-DrinkSettings.MouseButton1Down:Connect(function()
-	clearSubMenus()
+styleActionButton(SpamBurp2, "Spam Burp", 0, 0, 11)
+SpamBurp2.MouseButton1Down:Connect(function()
+	while task.wait(1) do
+		game:GetService("ReplicatedStorage").RemoteEvents['BurpEvent']:FireServer(9999)
+	end
+end)
+
+-- Category 4: Drink Settings
+local DrinkSettings = createCategoryTab("Drink Settings", 4, function()
+	hideAllSubMenus()
 	AutoDrinkSwitcher.Visible = true
 end)
 
-OPScripts.Name = "OPScripts"
-OPScripts.Parent = Menu
-OPScripts.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-OPScripts.Position = UDim2.new(0, 5, 0, 150)
-OPScripts.Size = UDim2.new(0, 90, 0, 25)
-OPScripts.Font = Enum.Font.GothamBlack
-OPScripts.Text = "OP Scripts"
-OPScripts.TextColor3 = Color3.fromRGB(255, 0, 0)
-OPScripts.TextSize = 11
-OPScripts.TextXAlignment = Enum.TextXAlignment.Center
-OPScripts.MouseButton1Down:Connect(function()
-	clearSubMenus()
+styleActionButton(AutoDrinkSwitcher, "Auto Drink Switcher", 0, 0, 9)
+AutoDrinkSwitcher.MouseButton1Down:Connect(function()
+	loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/78b69f79b7fa24fd0d20faa46c5cf85f/raw/2bc6ab144c95e2463d72060f2936befae2c5ccf1/Modern%20Equip.lua"))()
+end)
+
+-- Category 5: OP Scripts
+local OPScripts = createCategoryTab("OP Scripts", 5, function()
+	hideAllSubMenus()
 	InfiniteYield.Visible = true
 	OwlHub.Visible = true
 end)
 
-Misc.Name = "Misc"
-Misc.Parent = Menu
-Misc.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-Misc.Position = UDim2.new(0, 5, 0, 185)
-Misc.Size = UDim2.new(0, 90, 0, 25)
-Misc.Font = Enum.Font.GothamBlack
-Misc.Text = "Misc"
-Misc.TextColor3 = Color3.fromRGB(255, 0, 0)
-Misc.TextSize = 11
-Misc.TextXAlignment = Enum.TextXAlignment.Center
-Misc.MouseButton1Down:Connect(function()
-	clearSubMenus()
+styleActionButton(InfiniteYield, "Infinite Yield", 0, 0, 11)
+InfiniteYield.MouseButton1Down:Connect(function()
+	loadstring(game:HttpGet(('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'), true))()
+end)
+
+styleActionButton(OwlHub, "Reviz Admin", 115, 0, 11)
+OwlHub.MouseButton1Down:Connect(function()
+	loadstring(game:HttpGet('https://pastebin.com/VhE8hS8H/raw'))()
+end)
+
+-- Category 6: Misc
+local Misc = createCategoryTab("Misc", 6, function()
+	hideAllSubMenus()
 	AntiAfk.Visible = true
 	AntiAfk2.Visible = true
 	GiveDrink.Visible = true
 	DiamondAutoFarm.Visible = true
 end)
 
--- Submenus contained perfectly inside the layout frame bounds
-AutoDrink.Name = "AutoDrink"
-AutoDrink.Parent = SubMenuContainer
-AutoDrink.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-AutoDrink.Position = UDim2.new(0, 10, 0, 10)
-AutoDrink.Size = UDim2.new(0, 140, 0, 30)
-AutoDrink.Font = Enum.Font.GothamBlack
-AutoDrink.Text = "Execute Drink Loop"
-AutoDrink.TextColor3 = Color3.fromRGB(255, 0, 0)
-AutoDrink.TextSize = 12
-AutoDrink.TextXAlignment = Enum.TextXAlignment.Center
-AutoDrink.Visible = false
-
-local autoDrinking = false
-AutoDrink.MouseButton1Down:Connect(function()
-	if autoDrinking then return end
-	autoDrinking = true
-	AutoDrink.Text = "Loop Active"
-	task.spawn(function()
-		local drinks = {
-			"Starter Drink", "Second Drink", "Third Drink", "Fourth Drink", "Fifth Drink",
-			"Sixth Drink", "Seventh Drink", "Eighth Drink", "Ninth Drink", "Atomic Drink",
-			"Omega Burp Juice", "Thunder Fizz", "Garlic Juice"
-		}
-		while autoDrinking do
-			for _, drink in ipairs(drinks) do
-				game.ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(drink)
-			end
-			task.wait(2.34)
-		end
-	end)
-end)
-
-AutoPrestige2.Name = "AutoPrestige2"
-AutoPrestige2.Parent = SubMenuContainer
-AutoPrestige2.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-AutoPrestige2.Position = UDim2.new(0, 10, 0, 45)
-AutoPrestige2.Size = UDim2.new(0, 140, 0, 30)
-AutoPrestige2.Font = Enum.Font.GothamBlack
-AutoPrestige2.Text = "Run Auto Prestige"
-AutoPrestige2.TextColor3 = Color3.fromRGB(255, 0, 0)
-AutoPrestige2.TextSize = 11
-AutoPrestige2.TextXAlignment = Enum.TextXAlignment.Center
-AutoPrestige2.Visible = false
-
-local prestigeActive = false
-AutoPrestige2.MouseButton1Down:Connect(function()
-	if prestigeActive then return end
-	prestigeActive = true
-	AutoPrestige2.Text = "Prestige Active"
-	task.spawn(function()
-		while prestigeActive do
-			game.ReplicatedStorage.RemoteEvents['PrestigeEvent']:FireServer(30)
-			task.wait(1)
-		end
-	end)
-end)
-
-SpamBurp2.Name = "SpamBurp2"
-SpamBurp2.Parent = SubMenuContainer
-SpamBurp2.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-SpamBurp2.Position = UDim2.new(0, 10, 0, 80)
-SpamBurp2.Size = UDim2.new(0, 140, 0, 30)
-SpamBurp2.Font = Enum.Font.GothamBlack
-SpamBurp2.Text = "Run Spam Burp"
-SpamBurp2.TextColor3 = Color3.fromRGB(255, 0, 0)
-SpamBurp2.TextSize = 11
-SpamBurp2.TextXAlignment = Enum.TextXAlignment.Center
-SpamBurp2.Visible = false
-
-local burpActive = false
-SpamBurp2.MouseButton1Down:Connect(function()
-	if burpActive then return end
-	burpActive = true
-	SpamBurp2.Text = "Burping Active"
-	task.spawn(function()
-		while burpActive do
-			game.ReplicatedStorage.RemoteEvents['BurpEvent']:FireServer(9999)
-			task.wait(1)
-		end
-	end)
-end)
-
-AutoDrinkSwitcher.Name = "AutoDrinkSwitcher"
-AutoDrinkSwitcher.Parent = SubMenuContainer
-AutoDrinkSwitcher.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-AutoDrinkSwitcher.Position = UDim2.new(0, 10, 0, 115)
-AutoDrinkSwitcher.Size = UDim2.new(0, 140, 0, 30)
-AutoDrinkSwitcher.Font = Enum.Font.GothamBlack
-AutoDrinkSwitcher.Text = "Auto Equip"
-AutoDrinkSwitcher.TextColor3 = Color3.fromRGB(255, 0, 0)
-AutoDrinkSwitcher.TextSize = 11
-AutoDrinkSwitcher.TextXAlignment = Enum.TextXAlignment.Center
-AutoDrinkSwitcher.Visible = false
-loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/78b69f79b7fa24fd0d20faa46c5cf85f/raw/2bc6ab144c95e2463d72060f2936befae2c5ccf1/Modern%20Equip.lua"))()
-end)
-	
-InfiniteYield.Name = "InfiniteYield"
-InfiniteYield.Parent = SubMenuContainer
-InfiniteYield.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-InfiniteYield.Position = UDim2.new(0, 10, 0, 150)
-InfiniteYield.Size = UDim2.new(0, 110, 0, 30)
-InfiniteYield.Font = Enum.Font.GothamBlack
-InfiniteYield.Text = "Infinite Yield"
-InfiniteYield.TextColor3 = Color3.fromRGB(255, 0, 0)
-InfiniteYield.TextSize = 11
-InfiniteYield.TextXAlignment = Enum.TextXAlignment.Center
-InfiniteYield.Visible = false
-InfiniteYield.MouseButton1Down:Connect(function()
-	loadstring(game:HttpGet(('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'), true))()
-end)
-
-OwlHub.Name = "OwlHub"
-OwlHub.Parent = SubMenuContainer
-OwlHub.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-OwlHub.Position = UDim2.new(0, 130, 0, 150)
-OwlHub.Size = UDim2.new(0, 110, 0, 30)
-OwlHub.Font = Enum.Font.GothamBlack
-OwlHub.Text = "Reviz Admin"
-OwlHub.TextColor3 = Color3.fromRGB(255, 0, 0)
-OwlHub.TextSize = 11
-OwlHub.TextXAlignment = Enum.TextXAlignment.Center
-OwlHub.Visible = false
-OwlHub.MouseButton1Down:Connect(function()
-	loadstring(game:HttpGet('https://pastebin.com/VhE8hS8H/raw'))()
-end)
-
-AntiAfk.Name = "AntiAfk"
-AntiAfk.Parent = SubMenuContainer
-AntiAfk.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-AntiAfk.Position = UDim2.new(0, 10, 0, 185)
-AntiAfk.Size = UDim2.new(0, 110, 0, 25)
-AntiAfk.Font = Enum.Font.GothamBlack
-AntiAfk.Text = "Anti Afk 1"
-AntiAfk.TextColor3 = Color3.fromRGB(255, 0, 0)
-AntiAfk.TextSize = 11
-AntiAfk.TextXAlignment = Enum.TextXAlignment.Center
-AntiAfk.Visible = false
+styleActionButton(AntiAfk, "Anti Afk 1", 0, 0, 11)
 AntiAfk.MouseButton1Down:Connect(function()
 	local mt = getrawmetatable(game)
 	local old = mt.__namecall
 	local protect = newcclosure or function(f) return f end
+
 	setreadonly(mt, false)
 	mt.__namecall = protect(function(self, ...)
 		local method = getnamecallmethod()
@@ -356,64 +230,27 @@ AntiAfk.MouseButton1Down:Connect(function()
 		end
 		return old(self, ...)
 	end)
+	hookfunction(game.Players.LocalPlayer.Kick, protect(function() task.wait(9e9) end))
 end)
 
-AntiAfk2.Name = "AntiAfk2"
-AntiAfk2.Parent = SubMenuContainer
-AntiAfk2.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-AntiAfk2.Position = UDim2.new(0, 130, 0, 185)
-AntiAfk2.Size = UDim2.new(0, 110, 0, 25)
-AntiAfk2.Font = Enum.Font.GothamBlack
-AntiAfk2.Text = "Anti Afk 2"
-AntiAfk2.TextColor3 = Color3.fromRGB(255, 0, 0)
-AntiAfk2.TextSize = 11
-AntiAfk2.TextXAlignment = Enum.TextXAlignment.Center
-AntiAfk2.Visible = false
+styleActionButton(AntiAfk2, "Anti Afk 2", 115, 0, 11)
 AntiAfk2.MouseButton1Down:Connect(function()
 	loadstring(game:HttpGet("https://pastebin.com/raw/KHZ8pYx9", true))()
 end)
 
-GiveDrink.Name = "GiveDrink"
-GiveDrink.Parent = SubMenuContainer
-GiveDrink.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-GiveDrink.Position = UDim2.new(0, 10, 0, 215)
-GiveDrink.Size = UDim2.new(0, 110, 0, 25)
-GiveDrink.Font = Enum.Font.GothamBlack
-GiveDrink.Text = "BP Counter"
-GiveDrink.TextColor3 = Color3.fromRGB(255, 0, 0)
-GiveDrink.TextSize = 11
-GiveDrink.TextXAlignment = Enum.TextXAlignment.Center
-GiveDrink.Visible = false
+styleActionButton(GiveDrink, "BP Counter", 230, 0, 11)
 GiveDrink.MouseButton1Down:Connect(function()
 	loadstring(game:HttpGet("https://pastebin.com/raw/CCj0zCeD"))()
 end)
 
-DiamondAutoFarm.Name = "DiamondAutoFarm"
-DiamondAutoFarm.Parent = SubMenuContainer
-DiamondAutoFarm.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-DiamondAutoFarm.Position = UDim2.new(0, 130, 0, 215)
-DiamondAutoFarm.Size = UDim2.new(0, 110, 0, 25)
-DiamondAutoFarm.Font = Enum.Font.GothamBlack
-DiamondAutoFarm.Text = "Diamond Farm"
-DiamondAutoFarm.TextColor3 = Color3.fromRGB(255, 0, 0)
-DiamondAutoFarm.TextSize = 11
-DiamondAutoFarm.TextXAlignment = Enum.TextXAlignment.Center
-DiamondAutoFarm.Visible = false
-
-local farmActive = false
+styleActionButton(DiamondAutoFarm, "Diamond Farm", 0, 40, 10)
 DiamondAutoFarm.MouseButton1Down:Connect(function()
-	if farmActive then return end
-	farmActive = true
-	DiamondAutoFarm.Text = "Farming..."
-	task.spawn(function()
-		while farmActive do
-			local gem = game:GetService("Workspace").Diamonds:FindFirstChild("Diamond")
-			local char = game:GetService("Players").LocalPlayer.Character
-			local root = char and char:FindFirstChild("HumanoidRootPart")
-			if gem and root then
-				gem.CFrame = root.CFrame
-			end
-			task.wait()
+	while task.wait() do
+		local gem = game:GetService("Workspace").Diamonds:WaitForChild("Diamond", 2)
+		local char = game:GetService("Players").LocalPlayer.Character
+		local hrp = char and char:WaitForChild("HumanoidRootPart", 2)
+		if gem and hrp then
+			gem.CFrame = hrp.CFrame
 		end
-	end)
+	end
 end)
