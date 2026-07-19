@@ -178,7 +178,7 @@ SpamBurp2.MouseButton1Down:Connect(function()
 	end
 end)
 
--- Category 4: Drink Settings (INTEGRATED AUTO-FARM CODE)
+-- Category 4: Drink Settings (FIXED INVENTORY-BASED AUTO FARM)
 local DrinkSettings = createCategoryTab("Drink Settings", 4, function()
 	hideAllSubMenus()
 	AutoDrinkSwitcher.Visible = true
@@ -191,70 +191,55 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 	local Players = game:GetService("Players")
 	local localPlayer = Players.LocalPlayer
 
-	local DRINK_TIERS = {
-		{ max = 150,        name = "Starter Drink" },
-		{ max = 500,        name = "Second Drink" },
-		{ max = 1600,       name = "Third Drink" },
-		{ max = 3500,       name = "Fourth Drink" },
-		{ max = 10000,      name = "Fifth Drink" },
-		{ max = 25000,      name = "Sixth Drink" },
-		{ max = 60000,      name = "Seventh Drink" },
-		{ max = 150000,     name = "Eighth Drink" },
-		{ max = 230000,     name = "Ninth Drink" },
-		{ max = 500000,     name = "Tenth Drink" },
-		{ max = 1000000,    name = "Eleventh Drink" },
-		{ max = 2000000,    name = "Twelfth Drink" },
-		{ max = 5000000,    name = "Third Drink" }, 
-		{ max = 10000000,   name = "Fourth Drink" },
-		{ max = 20000000,   name = "Fifth Drink" },
-		{ max = 50000000,   name = "Sixth Drink" },
-		{ max = 100000000,  name = "Ninth Drink" },
-		{ max = 250000000,  name = "Atomic Drink" },
-		{ max = 500000000,  name = "Omega Burp Juice" },
-		{ max = 1000000000, name = "Thunder Fizz" },
-		{ max = math.huge,  name = "Garlic Juice" } 
+	-- List sorted from absolute best down to starter tier
+	local DRINK_ORDER = {
+		"Garlic Juice", "Thunder Fizz", "Omega Burp Juice", "Atomic Drink", 
+		"Ninth Drink", "Sixth Drink", "Fifth Drink", "Fourth Drink", "Third Drink",
+		"Twelfth Drink", "Eleventh Drink", "Tenth Drink", "Eighth Drink", 
+		"Seventh Drink", "Second Drink", "Starter Drink"
 	}
 
-	local function getTargetDrinkName(currentDrinks)
-		for _, tier in ipairs(DRINK_TIERS) do
-			if currentDrinks <= tier.max then
-				return tier.name
+	-- Automatically finds the best drink matching the order list
+	local function getBestOwnedDrink()
+		local character = localPlayer.Character
+		local backpack = localPlayer:FindFirstChild("Backpack")
+		
+		for _, drinkName in ipairs(DRINK_ORDER) do
+			if (backpack and backpack:FindFirstChild(drinkName)) or (character and character:FindFirstChild(drinkName)) then
+				return drinkName
 			end
 		end
-		return "Starter Drink"
+		return nil
 	end
 
-	local function startStableAutoFarmer()
+	local function startInventoryAutoFarmer()
 		while true do
 			local character = localPlayer.Character
 			local backpack = localPlayer:FindFirstChild("Backpack")
-			local leaderstats = localPlayer:FindFirstChild("leaderstats")
-			
 			local dynamicWait = 2.5 
 			
-			if character and backpack and leaderstats then
+			if character and backpack then
 				local humanoid = character:FindFirstChildOfClass("Humanoid")
-				local drinksStat = leaderstats:FindFirstChild("Drinks")
 				
-				if humanoid and humanoid.Health > 0 and drinksStat then
-					local currentDrinks = drinksStat.Value
-					local targetDrinkName = getTargetDrinkName(currentDrinks)
+				if humanoid and humanoid.Health > 0 then
+					local bestDrink = getBestOwnedDrink()
 					
-					if not backpack:FindFirstChild("Starter Drink") and not character:FindFirstChild("Starter Drink") then
-						character:BreakJoints()
-						dynamicWait = 2.0 
-					else
+					if bestDrink then
 						local equippedTool = character:FindFirstChildOfClass("Tool")
 						
-						if equippedTool and equippedTool.Name == targetDrinkName then
+						if equippedTool and equippedTool.Name == bestDrink then
 							equippedTool:Activate()
 						else
-							local targetTool = backpack:FindFirstChild(targetDrinkName)
+							local targetTool = backpack:FindFirstChild(bestDrink)
 							if targetTool then
 								humanoid:EquipTool(targetTool)
-								dynamicWait = 0.2 
+								dynamicWait = 0.2 -- Switch rapidly to item click cycle
 							end
 						end
+					else
+						-- Fallback reset logic if no valid items are found
+						character:BreakJoints()
+						dynamicWait = 2.0
 					end
 				end
 			end
@@ -262,7 +247,7 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 		end
 	end
 
-	task.spawn(startStableAutoFarmer)
+	task.spawn(startInventoryAutoFarmer)
 end)
 
 -- Category 5: OP Scripts
