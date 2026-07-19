@@ -1,15 +1,16 @@
---Drinkhaxx v7.3.0
+--Drinkhaxx v7.3.1 Fixed
 --By WryTheDev
 --Original Drinkhaxx by 2_2Epik4u (Credit)
---Update: Auto Drink Switch has been upgraded, thanks to Thatdamngranny!
---⚠️: Do not share Drinkhaxx with anyone without my permission!
 
 local ScreenGui = Instance.new("ScreenGui")
-local Frame = Instance.new("TextButton")
-local Title = Instance.new("TextButton")
-local Menu = Instance.new("TextLabel")
+local Frame = Instance.new("Frame") -- Changed to Frame to prevent click conflict
+local Title = Instance.new("TextLabel") -- Changed to TextLabel for cleaner titles
+local Menu = Instance.new("Frame")
 local Close = Instance.new("TextButton")
 local Minimize = Instance.new("TextButton")
+
+--Sub-menu container to align items perfectly inside the main frame
+local SubMenuContainer = Instance.new("Frame")
 
 --Speed Drink Characters
 local AutoDrink = Instance.new("TextButton")
@@ -26,21 +27,11 @@ local SpamBurp2 = Instance.new("TextButton")
 --Drink Settings Characters
 local DrinkSettings = Instance.new("TextButton")
 local AutoDrinkSwitcher = Instance.new("TextButton")
-local SwitcherBackup = Instance.new("TextButton")
 
 --OP Scripts Characters
 local OPScripts = Instance.new("TextButton")
 local InfiniteYield = Instance.new("TextButton")
 local OwlHub = Instance.new("TextButton")
-local RevizAdmin = Instance.new("TextButton")
-local DarkDex = Instance.new("TextButton")
-local UnnamedESP = Instance.new("TextButton")
-local WarningWindow = Instance.new("TextButton")
-local WarningWindow2 = Instance.new("TextButton")
-local Yes = Instance.new("TextButton")
-local No = Instance.new("TextButton")
-local Yes2 = Instance.new("TextButton")
-local No2 = Instance.new("TextButton")
 
 --Misc Characters
 local Misc = Instance.new("TextButton")
@@ -70,124 +61,167 @@ if not success then ScreenGui.Parent = game:GetService("Players").LocalPlayer:Wa
 
 Frame.Name = "Frame"
 Frame.Parent = ScreenGui
-Frame.Style = 1
-Frame.BackgroundColor3 = Color3.new(0, 0, 0)
-Frame.Position = UDim2.new(0.15, 0, 0.307, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Frame.BorderSizePixel = 1
+Frame.BorderColor3 = Color3.fromRGB(255, 0, 0)
+Frame.Position = UDim2.new(0.3, 0, 0.3, 0)
 Frame.Size = UDim2.new(0, 470, 0, 283)
-Frame.TextColor3 = Color3.new(0, 0, 0)
-Frame.Text = ""
-Frame.TextSize = 0
-Frame.Selectable = false
-Frame.Active = false
+Frame.Active = true
+Frame.Draggable = true -- Makes the GUI movable cleanly
 
 Title.Name = "Title"
-Title.Parent = ScreenGui
-Title.Style = 1
-Title.BackgroundColor3 = Color3.new(0, 0, 0)
-Title.Position = UDim2.new(0.15, 0, 0.307, 0)
-Title.Size = UDim2.new(0, 470, 0, 28)
+Title.Parent = Frame
+Title.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+Title.BorderSizePixel = 1
+Title.BorderColor3 = Color3.fromRGB(255, 0, 0)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.Size = UDim2.new(1, 0, 0, 28)
 Title.Font = Enum.Font.GothamBlack
-Title.Text = "Drinkhaxx v.7.3.0"
-Title.TextColor3 = Color3.new(255, 0, 0)
+Title.Text = "Drinkhaxx v.7.3.1"
+Title.TextColor3 = Color3.fromRGB(255, 0, 0)
 Title.TextSize = 14
 Title.TextXAlignment = Enum.TextXAlignment.Center
-Title.Selectable = false
-Title.Active = false
 
 Menu.Name = "Menu"
-Menu.Parent = ScreenGui
-Menu.BackgroundColor3 = Color3.new(0, 0, 0)
-Menu.Position = UDim2.new(0.154, 0, 0.342, 0)
-Menu.Size = UDim2.new(0, 92, 0, 249)
-Menu.Font = Enum.Font.GothamBlack
-Menu.Text = ""
-Menu.TextColor3 = Color3.new(0, 0, 0)
-Menu.TextSize = 0
+Menu.Parent = Frame
+Menu.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+Menu.BorderSizePixel = 0
+Menu.Position = UDim2.new(0, 5, 0, 33)
+Menu.Size = UDim2.new(0, 100, 0, 245)
+
+SubMenuContainer.Name = "SubMenuContainer"
+SubMenuContainer.Parent = Frame
+SubMenuContainer.BackgroundTransparency = 1
+SubMenuContainer.Position = UDim2.new(0, 115, 0, 33)
+SubMenuContainer.Size = UDim2.new(0, 350, 0, 245)
 
 Close.Name = "Close"
-Close.Parent = ScreenGui
-Close.BackgroundColor3 = Color3.new(0, 0, 0)
-Close.BorderSizePixel = 0
-Close.Position = UDim2.new(0.427, 0, 0.314, 0)
-Close.Size = UDim2.new(0, 17, 0, 17)
+Close.Parent = Frame
+Close.BackgroundTransparency = 1
+Close.Position = UDim2.new(1, -25, 0, 5)
+Close.Size = UDim2.new(0, 20, 0, 20)
 Close.Font = Enum.Font.GothamBlack
 Close.Text = "X"
-Close.TextColor3 = Color3.new(255, 0, 0)
+Close.TextColor3 = Color3.fromRGB(255, 0, 0)
 Close.TextSize = 14
 Close.TextXAlignment = Enum.TextXAlignment.Center
 Close.MouseButton1Down:Connect(function()
-	Frame.Visible = false
-	Title.Visible = false
-	Menu.Visible = false
-	Close.Visible = false
-	Minimize.Visible = false
-	SpeedDrink.Visible = false
-	AutoPrestige.Visible = false
-	DrinkSettings.Visible = false
-	SpamBurp.Visible = false
-	OPScripts.Visible = false
-	Misc.Visible = false
-	clearSubMenus()
+	ScreenGui:Destroy()
 end)
 
-Minimize.Name = "Minimize"
-Minimize.Parent = ScreenGui
-Minimize.BorderSizePixel = 0
-Minimize.BackgroundColor3 = Color3.new(0, 0, 0)
-Minimize.Position = UDim2.new(0.414, 0, 0.314, 0)
-Minimize.Size = UDim2.new(0, 17, 0, 17)
-Minimize.Font = Enum.Font.GothamBlack
-Minimize.Text = "-"
-Minimize.TextColor3 = Color3.new(255, 0, 0)
-Minimize.TextSize = 14
-Minimize.TextXAlignment = Enum.TextXAlignment.Center
-
---Speed Drink Properties
+-- Sidebar Layout positioning (Relative to Menu frame)
 SpeedDrink.Name = "SpeedDrink"
-SpeedDrink.Parent = ScreenGui
-SpeedDrink.Style = 1
-SpeedDrink.BackgroundColor3 = Color3.new(0, 0, 0)
-SpeedDrink.Position = UDim2.new(0.1588, 0, 0.365, 0)
-SpeedDrink.Size = UDim2.new(0, 76, 0, 21)
+SpeedDrink.Parent = Menu
+SpeedDrink.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+SpeedDrink.Position = UDim2.new(0, 5, 0, 10)
+SpeedDrink.Size = UDim2.new(0, 90, 0, 25)
 SpeedDrink.Font = Enum.Font.GothamBlack
 SpeedDrink.Text = "Speed Drink"
-SpeedDrink.TextColor3 = Color3.new(255, 0, 0)
-SpeedDrink.TextSize = 12
+SpeedDrink.TextColor3 = Color3.fromRGB(255, 0, 0)
+SpeedDrink.TextSize = 11
 SpeedDrink.TextXAlignment = Enum.TextXAlignment.Center
 SpeedDrink.MouseButton1Down:Connect(function()
 	clearSubMenus()
 	AutoDrink.Visible = true
-	
-	task.spawn(function()
-		local steps = {0, 0.1, 0.5, 0.75, 1}
-		SpeedDrink.Text = "Loading"
-		for _, v in ipairs(steps) do SpeedDrink.TextTransparency = v task.wait(0.01) end
-		for i = #steps, 1, -1 do SpeedDrink.TextTransparency = steps[i] task.wait(0.01) end
-		SpeedDrink.Text = "Speed Drink"
-		for _, v in ipairs(steps) do SpeedDrink.TextTransparency = v task.wait(0.01) end
-		for i = #steps, 1, -1 do SpeedDrink.TextTransparency = steps[i] task.wait(0.01) end
-	end)
 end)
 
+AutoPrestige.Name = "AutoPrestige"
+AutoPrestige.Parent = Menu
+AutoPrestige.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+AutoPrestige.Position = UDim2.new(0, 5, 0, 45)
+AutoPrestige.Size = UDim2.new(0, 90, 0, 25)
+AutoPrestige.Font = Enum.Font.GothamBlack
+AutoPrestige.Text = "Auto Prestige"
+AutoPrestige.TextColor3 = Color3.fromRGB(255, 0, 0)
+AutoPrestige.TextSize = 11
+AutoPrestige.TextXAlignment = Enum.TextXAlignment.Center
+AutoPrestige.MouseButton1Down:Connect(function()
+	clearSubMenus()
+	AutoPrestige2.Visible = true
+end)
+
+SpamBurp.Name = "SpamBurp"
+SpamBurp.Parent = Menu
+SpamBurp.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+SpamBurp.Position = UDim2.new(0, 5, 0, 80)
+SpamBurp.Size = UDim2.new(0, 90, 0, 25)
+SpamBurp.Font = Enum.Font.GothamBlack
+SpamBurp.Text = "Spam Burp"
+SpamBurp.TextColor3 = Color3.fromRGB(255, 0, 0)
+SpamBurp.TextSize = 11
+SpamBurp.TextXAlignment = Enum.TextXAlignment.Center
+SpamBurp.MouseButton1Down:Connect(function()
+	clearSubMenus()
+	SpamBurp2.Visible = true
+end)
+
+DrinkSettings.Name = "DrinkSettings"
+DrinkSettings.Parent = Menu
+DrinkSettings.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+DrinkSettings.Position = UDim2.new(0, 5, 0, 115)
+DrinkSettings.Size = UDim2.new(0, 90, 0, 25)
+DrinkSettings.Font = Enum.Font.GothamBlack
+DrinkSettings.Text = "Settings"
+DrinkSettings.TextColor3 = Color3.fromRGB(255, 0, 0)
+DrinkSettings.TextSize = 11
+DrinkSettings.TextXAlignment = Enum.TextXAlignment.Center
+DrinkSettings.MouseButton1Down:Connect(function()
+	clearSubMenus()
+	AutoDrinkSwitcher.Visible = true
+end)
+
+OPScripts.Name = "OPScripts"
+OPScripts.Parent = Menu
+OPScripts.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+OPScripts.Position = UDim2.new(0, 5, 0, 150)
+OPScripts.Size = UDim2.new(0, 90, 0, 25)
+OPScripts.Font = Enum.Font.GothamBlack
+OPScripts.Text = "OP Scripts"
+OPScripts.TextColor3 = Color3.fromRGB(255, 0, 0)
+OPScripts.TextSize = 11
+OPScripts.TextXAlignment = Enum.TextXAlignment.Center
+OPScripts.MouseButton1Down:Connect(function()
+	clearSubMenus()
+	InfiniteYield.Visible = true
+	OwlHub.Visible = true
+end)
+
+Misc.Name = "Misc"
+Misc.Parent = Menu
+Misc.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+Misc.Position = UDim2.new(0, 5, 0, 185)
+Misc.Size = UDim2.new(0, 90, 0, 25)
+Misc.Font = Enum.Font.GothamBlack
+Misc.Text = "Misc"
+Misc.TextColor3 = Color3.fromRGB(255, 0, 0)
+Misc.TextSize = 11
+Misc.TextXAlignment = Enum.TextXAlignment.Center
+Misc.MouseButton1Down:Connect(function()
+	clearSubMenus()
+	AntiAfk.Visible = true
+	AntiAfk2.Visible = true
+	GiveDrink.Visible = true
+	DiamondAutoFarm.Visible = true
+end)
+
+-- Sub-menu Button Placements (Properly contained inside frame)
 AutoDrink.Name = "AutoDrink"
-AutoDrink.Parent = ScreenGui
-AutoDrink.Style = 1
-AutoDrink.BackgroundColor3 = Color3.new(0, 0, 0)
-AutoDrink.Position = UDim2.new(0.245, 0, 0.365, 0)
-AutoDrink.Size = UDim2.new(0, 110, 0, 21)
+AutoDrink.Parent = SubMenuContainer
+AutoDrink.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+AutoDrink.Position = UDim2.new(0, 10, 0, 10)
+AutoDrink.Size = UDim2.new(0, 140, 0, 30)
 AutoDrink.Font = Enum.Font.GothamBlack
-AutoDrink.Text = "Execute Drink"
-AutoDrink.TextColor3 = Color3.new(255, 0, 0)
+AutoDrink.Text = "Execute Drink Loop"
+AutoDrink.TextColor3 = Color3.fromRGB(255, 0, 0)
 AutoDrink.TextSize = 12
 AutoDrink.TextXAlignment = Enum.TextXAlignment.Center
-AutoDrink.Visible = false 
+AutoDrink.Visible = false
 
 local autoDrinking = false
 AutoDrink.MouseButton1Down:Connect(function()
 	if autoDrinking then return end
 	autoDrinking = true
-	AutoDrink.Text = "Executed"
-	
+	AutoDrink.Text = "Loop Active"
 	task.spawn(function()
 		local drinks = {
 			"Starter Drink", "Second Drink", "Third Drink", "Fourth Drink", "Fifth Drink",
@@ -203,32 +237,14 @@ AutoDrink.MouseButton1Down:Connect(function()
 	end)
 end)
 
---Auto Prestige Properties
-AutoPrestige.Name = "AutoPrestige"
-AutoPrestige.Parent = ScreenGui
-AutoPrestige.Style = 1
-AutoPrestige.BackgroundColor3 = Color3.new(0, 0, 0)
-AutoPrestige.Position = UDim2.new(0.1588, 0, 0.42, 0)
-AutoPrestige.Size = UDim2.new(0, 76, 0, 21)
-AutoPrestige.Font = Enum.Font.GothamBlack
-AutoPrestige.Text = "Auto Prestige"
-AutoPrestige.TextColor3 = Color3.new(255, 0, 0)
-AutoPrestige.TextSize = 11
-AutoPrestige.TextXAlignment = Enum.TextXAlignment.Center
-AutoPrestige.MouseButton1Down:Connect(function()
-	clearSubMenus()
-	AutoPrestige2.Visible = true
-end)
-
 AutoPrestige2.Name = "AutoPrestige2"
-AutoPrestige2.Parent = ScreenGui
-AutoPrestige2.Style = 1
-AutoPrestige2.BackgroundColor3 = Color3.new(0, 0, 0)
-AutoPrestige2.Position = UDim2.new(0.245, 0, 0.42, 0)
-AutoPrestige2.Size = UDim2.new(0, 110, 0, 21)
+AutoPrestige2.Parent = SubMenuContainer
+AutoPrestige2.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+AutoPrestige2.Position = UDim2.new(0, 10, 0, 45)
+AutoPrestige2.Size = UDim2.new(0, 140, 0, 30)
 AutoPrestige2.Font = Enum.Font.GothamBlack
 AutoPrestige2.Text = "Run Auto Prestige"
-AutoPrestige2.TextColor3 = Color3.new(255, 0, 0)
+AutoPrestige2.TextColor3 = Color3.fromRGB(255, 0, 0)
 AutoPrestige2.TextSize = 11
 AutoPrestige2.TextXAlignment = Enum.TextXAlignment.Center
 AutoPrestige2.Visible = false
@@ -246,33 +262,14 @@ AutoPrestige2.MouseButton1Down:Connect(function()
 	end)
 end)
 
---Spam Burp Properties
-SpamBurp.Name = "SpamBurp"
-SpamBurp.Parent = ScreenGui
-SpamBurp.Style = 1
-SpamBurp.BackgroundColor3 = Color3.new(0, 0, 0)
-SpamBurp.Position = UDim2.new(0.1588, 0, 0.475, 0)
-SpamBurp.Size = UDim2.new(0, 76, 0, 21)
-SpamBurp.Font = Enum.Font.GothamBlack
-SpamBurp.Text = "Spam Burp"
-SpamBurp.TextColor3 = Color3.new(255, 0, 0)
-SpamBurp.TextSize = 11
-SpamBurp.TextXAlignment = Enum.TextXAlignment.Center
-SpamBurp.Visible = true
-SpamBurp.MouseButton1Down:Connect(function()
-	clearSubMenus()
-	SpamBurp2.Visible = true
-end)
-
 SpamBurp2.Name = "SpamBurp2"
-SpamBurp2.Parent = ScreenGui
-SpamBurp2.Style = 1
-SpamBurp2.BackgroundColor3 = Color3.new(0, 0, 0)
-SpamBurp2.Position = UDim2.new(0.245, 0, 0.475, 0)
-SpamBurp2.Size = UDim2.new(0, 110, 0, 21)
+SpamBurp2.Parent = SubMenuContainer
+SpamBurp2.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+SpamBurp2.Position = UDim2.new(0, 10, 0, 80)
+SpamBurp2.Size = UDim2.new(0, 140, 0, 30)
 SpamBurp2.Font = Enum.Font.GothamBlack
 SpamBurp2.Text = "Run Spam Burp"
-SpamBurp2.TextColor3 = Color3.new(255, 0, 0)
+SpamBurp2.TextColor3 = Color3.fromRGB(255, 0, 0)
 SpamBurp2.TextSize = 11
 SpamBurp2.TextXAlignment = Enum.TextXAlignment.Center
 SpamBurp2.Visible = false
@@ -290,34 +287,15 @@ SpamBurp2.MouseButton1Down:Connect(function()
 	end)
 end)
 
---Drink Settings Properties
-DrinkSettings.Name = "DrinkSettings"
-DrinkSettings.Parent = ScreenGui
-DrinkSettings.Style = 1
-DrinkSettings.BackgroundColor3 = Color3.new(0, 0, 0)
-DrinkSettings.Position = UDim2.new(0.1588, 0, 0.528, 0)
-DrinkSettings.Size = UDim2.new(0, 76, 0, 21)
-DrinkSettings.Font = Enum.Font.GothamBlack
-DrinkSettings.Text = "Drink Settings"
-DrinkSettings.TextColor3 = Color3.new(255, 0, 0)
-DrinkSettings.TextSize = 10
-DrinkSettings.TextXAlignment = Enum.TextXAlignment.Center
-DrinkSettings.Visible = true
-DrinkSettings.MouseButton1Down:Connect(function()
-	clearSubMenus()
-	AutoDrinkSwitcher.Visible = true
-end)
-
 AutoDrinkSwitcher.Name = "AutoDrinkSwitcher"
-AutoDrinkSwitcher.Parent = ScreenGui
-AutoDrinkSwitcher.Style = 1
-AutoDrinkSwitcher.BackgroundColor3 = Color3.new(0, 0, 0)
-AutoDrinkSwitcher.Position = UDim2.new(0.245, 0, 0.528, 0)
-AutoDrinkSwitcher.Size = UDim2.new(0, 110, 0, 21)
+AutoDrinkSwitcher.Parent = SubMenuContainer
+AutoDrinkSwitcher.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+AutoDrinkSwitcher.Position = UDim2.new(0, 10, 0, 115)
+AutoDrinkSwitcher.Size = UDim2.new(0, 140, 0, 30)
 AutoDrinkSwitcher.Font = Enum.Font.GothamBlack
-AutoDrinkSwitcher.Text = "Auto Equip"
-AutoDrinkSwitcher.TextColor3 = Color3.new(255, 0, 0)
-AutoDrinkSwitcher.TextSize = 10
+AutoDrinkSwitcher.Text = "Smart Auto Equip"
+AutoDrinkSwitcher.TextColor3 = Color3.fromRGB(255, 0, 0)
+AutoDrinkSwitcher.TextSize = 11
 AutoDrinkSwitcher.TextXAlignment = Enum.TextXAlignment.Center
 AutoDrinkSwitcher.Visible = false
 
@@ -325,7 +303,7 @@ local autoEquipActive = false
 AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 	if autoEquipActive then return end
 	autoEquipActive = true
-	AutoDrinkSwitcher.Text = "Equipping..."
+	AutoDrinkSwitcher.Text = "Smart Equip Active"
 	
 	task.spawn(function()
 		local player = game:GetService("Players").LocalPlayer
@@ -334,9 +312,22 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 			local character = player.Character
 			
 			if backpack and character then
-				for _, item in ipairs(backpack:GetChildren()) do
-					if item:IsA("Tool") and (item.Name:match("Drink") or item.Name:match("Juice") or item.Name:match("Fizz")) then
-						item.Parent = character
+				-- Check if you are already holding a target drink item
+				local holdingDrink = false
+				for _, heldItem in ipairs(character:GetChildren()) do
+					if heldItem:IsA("Tool") and (heldItem.Name:match("Drink") or heldItem.Name:match("Juice") or heldItem.Name:match("Fizz")) then
+						holdingDrink = true
+						break
+					end
+				end
+				
+				-- Only pull a new drink if your hands are empty
+				if not holdingDrink then
+					for _, item in ipairs(backpack:GetChildren()) do
+						if item:IsA("Tool") and (item.Name:match("Drink") or item.Name:match("Juice") or item.Name:match("Fizz")) then
+							item.Parent = character
+							break -- Equips exactly one item instead of flooding your character
+						end
 					end
 				end
 			end
@@ -345,35 +336,15 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 	end)
 end)
 
---OP Scripts Properties
-OPScripts.Name = "OPScripts"
-OPScripts.Parent = ScreenGui
-OPScripts.Style = 1
-OPScripts.BackgroundColor3 = Color3.new(0, 0, 0)
-OPScripts.Position = UDim2.new(0.1588, 0, 0.58, 0)
-OPScripts.Size = UDim2.new(0, 76, 0, 21)
-OPScripts.Font = Enum.Font.GothamBlack
-OPScripts.Text = "OP Scripts"
-OPScripts.TextColor3 = Color3.new(255, 0, 0)
-OPScripts.TextSize = 10
-OPScripts.TextXAlignment = Enum.TextXAlignment.Center
-OPScripts.Visible = true
-OPScripts.MouseButton1Down:Connect(function()
-	clearSubMenus()
-	InfiniteYield.Visible = true
-	OwlHub.Visible = true
-end)
-
 InfiniteYield.Name = "InfiniteYield"
-InfiniteYield.Parent = ScreenGui
-InfiniteYield.Style = 1
-InfiniteYield.BackgroundColor3 = Color3.new(0, 0, 0)
-InfiniteYield.Position = UDim2.new(0.245, 0, 0.58, 0)
-InfiniteYield.Size = UDim2.new(0, 95, 0, 21)
+InfiniteYield.Parent = SubMenuContainer
+InfiniteYield.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+InfiniteYield.Position = UDim2.new(0, 10, 0, 150)
+InfiniteYield.Size = UDim2.new(0, 110, 0, 30)
 InfiniteYield.Font = Enum.Font.GothamBlack
 InfiniteYield.Text = "Infinite Yield"
-InfiniteYield.TextColor3 = Color3.new(255, 0, 0)
-InfiniteYield.TextSize = 10
+InfiniteYield.TextColor3 = Color3.fromRGB(255, 0, 0)
+InfiniteYield.TextSize = 11
 InfiniteYield.TextXAlignment = Enum.TextXAlignment.Center
 InfiniteYield.Visible = false
 InfiniteYield.MouseButton1Down:Connect(function()
@@ -381,59 +352,35 @@ InfiniteYield.MouseButton1Down:Connect(function()
 end)
 
 OwlHub.Name = "OwlHub"
-OwlHub.Parent = ScreenGui
-OwlHub.Style = 1
-OwlHub.BackgroundColor3 = Color3.new(0, 0, 0)
-OwlHub.Position = UDim2.new(0.35, 0, 0.58, 0)
-OwlHub.Size = UDim2.new(0, 95, 0, 21)
+OwlHub.Parent = SubMenuContainer
+OwlHub.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+OwlHub.Position = UDim2.new(0, 130, 0, 150)
+OwlHub.Size = UDim2.new(0, 110, 0, 30)
 OwlHub.Font = Enum.Font.GothamBlack
 OwlHub.Text = "Reviz Admin"
-OwlHub.TextColor3 = Color3.new(255, 0, 0)
-OwlHub.TextSize = 10
+OwlHub.TextColor3 = Color3.fromRGB(255, 0, 0)
+OwlHub.TextSize = 11
 OwlHub.TextXAlignment = Enum.TextXAlignment.Center
 OwlHub.Visible = false
 OwlHub.MouseButton1Down:Connect(function()
 	loadstring(game:HttpGet('https://pastebin.com/VhE8hS8H/raw'))()
 end)
 
---Misc Properties
-Misc.Name = "Misc"
-Misc.Parent = ScreenGui
-Misc.Style = 1
-Misc.BackgroundColor3 = Color3.new(0, 0, 0)
-Misc.Position = UDim2.new(0.1588, 0, 0.63, 0)
-Misc.Size = UDim2.new(0, 76, 0, 21)
-Misc.Font = Enum.Font.GothamBlack
-Misc.Text = "Misc"
-Misc.TextColor3 = Color3.new(255, 0, 0)
-Misc.TextSize = 10
-Misc.TextXAlignment = Enum.TextXAlignment.Center
-Misc.Visible = true
-Misc.MouseButton1Down:Connect(function()
-	clearSubMenus()
-	AntiAfk.Visible = true
-	AntiAfk2.Visible = true
-	GiveDrink.Visible = true
-	DiamondAutoFarm.Visible = true
-end)
-
 AntiAfk.Name = "AntiAfk"
-AntiAfk.Parent = ScreenGui
-AntiAfk.Style = 1
-AntiAfk.BackgroundColor3 = Color3.new(0, 0, 0)
-AntiAfk.Position = UDim2.new(0.245, 0, 0.63, 0)
-AntiAfk.Size = UDim2.new(0, 70, 0, 21)
+AntiAfk.Parent = SubMenuContainer
+AntiAfk.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+AntiAfk.Position = UDim2.new(0, 10, 0, 185)
+AntiAfk.Size = UDim2.new(0, 110, 0, 25)
 AntiAfk.Font = Enum.Font.GothamBlack
 AntiAfk.Text = "Anti Afk 1"
-AntiAfk.TextColor3 = Color3.new(255, 0, 0)
-AntiAfk.TextSize = 10
+AntiAfk.TextColor3 = Color3.fromRGB(255, 0, 0)
+AntiAfk.TextSize = 11
 AntiAfk.TextXAlignment = Enum.TextXAlignment.Center
 AntiAfk.Visible = false
 AntiAfk.MouseButton1Down:Connect(function()
 	local mt = getrawmetatable(game)
 	local old = mt.__namecall
 	local protect = newcclosure or function(f) return f end
-
 	setreadonly(mt, false)
 	mt.__namecall = protect(function(self, ...)
 		local method = getnamecallmethod()
@@ -443,19 +390,17 @@ AntiAfk.MouseButton1Down:Connect(function()
 		end
 		return old(self, ...)
 	end)
-	hookfunction(game.Players.LocalPlayer.Kick, protect(function() task.wait(9e9) end))
 end)
 
 AntiAfk2.Name = "AntiAfk2"
-AntiAfk2.Parent = ScreenGui
-AntiAfk2.Style = 1
-AntiAfk2.BackgroundColor3 = Color3.new(0, 0, 0)
-AntiAfk2.Position = UDim2.new(0.32, 0, 0.63, 0)
-AntiAfk2.Size = UDim2.new(0, 70, 0, 21)
+AntiAfk2.Parent = SubMenuContainer
+AntiAfk2.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+AntiAfk2.Position = UDim2.new(0, 130, 0, 185)
+AntiAfk2.Size = UDim2.new(0, 110, 0, 25)
 AntiAfk2.Font = Enum.Font.GothamBlack
 AntiAfk2.Text = "Anti Afk 2"
-AntiAfk2.TextColor3 = Color3.new(255, 0, 0)
-AntiAfk2.TextSize = 10
+AntiAfk2.TextColor3 = Color3.fromRGB(255, 0, 0)
+AntiAfk2.TextSize = 11
 AntiAfk2.TextXAlignment = Enum.TextXAlignment.Center
 AntiAfk2.Visible = false
 AntiAfk2.MouseButton1Down:Connect(function()
@@ -463,15 +408,14 @@ AntiAfk2.MouseButton1Down:Connect(function()
 end)
 
 GiveDrink.Name = "GiveDrink"
-GiveDrink.Parent = ScreenGui
-GiveDrink.Style = 1
-GiveDrink.BackgroundColor3 = Color3.new(0, 0, 0)
-GiveDrink.Position = UDim2.new(0.395, 0, 0.63, 0)
-GiveDrink.Size = UDim2.new(0, 70, 0, 21)
+GiveDrink.Parent = SubMenuContainer
+GiveDrink.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+GiveDrink.Position = UDim2.new(0, 10, 0, 215)
+GiveDrink.Size = UDim2.new(0, 110, 0, 25)
 GiveDrink.Font = Enum.Font.GothamBlack
 GiveDrink.Text = "BP Counter"
-GiveDrink.TextColor3 = Color3.new(255, 0, 0)
-GiveDrink.TextSize = 10
+GiveDrink.TextColor3 = Color3.fromRGB(255, 0, 0)
+GiveDrink.TextSize = 11
 GiveDrink.TextXAlignment = Enum.TextXAlignment.Center
 GiveDrink.Visible = false
 GiveDrink.MouseButton1Down:Connect(function()
@@ -479,15 +423,14 @@ GiveDrink.MouseButton1Down:Connect(function()
 end)
 
 DiamondAutoFarm.Name = "DiamondAutoFarm"
-DiamondAutoFarm.Parent = ScreenGui
-DiamondAutoFarm.Style = 1
-DiamondAutoFarm.BackgroundColor3 = Color3.new(0, 0, 0)
-DiamondAutoFarm.Position = UDim2.new(0.245, 0, 0.67, 0)
-DiamondAutoFarm.Size = UDim2.new(0, 110, 0, 21)
+DiamondAutoFarm.Parent = SubMenuContainer
+DiamondAutoFarm.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+DiamondAutoFarm.Position = UDim2.new(0, 130, 0, 215)
+DiamondAutoFarm.Size = UDim2.new(0, 110, 0, 25)
 DiamondAutoFarm.Font = Enum.Font.GothamBlack
-DiamondAutoFarm.Text = "Diamond Auto Farm"
-DiamondAutoFarm.TextColor3 = Color3.new(255, 0, 0)
-DiamondAutoFarm.TextSize = 8
+DiamondAutoFarm.Text = "Diamond Farm"
+DiamondAutoFarm.TextColor3 = Color3.fromRGB(255, 0, 0)
+DiamondAutoFarm.TextSize = 11
 DiamondAutoFarm.TextXAlignment = Enum.TextXAlignment.Center
 DiamondAutoFarm.Visible = false
 
