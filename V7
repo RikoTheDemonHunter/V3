@@ -294,96 +294,14 @@ AutoDrinkSwitcher.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 AutoDrinkSwitcher.Position = UDim2.new(0, 10, 0, 115)
 AutoDrinkSwitcher.Size = UDim2.new(0, 140, 0, 30)
 AutoDrinkSwitcher.Font = Enum.Font.GothamBlack
-AutoDrinkSwitcher.Text = "Best Drink Auto Equip"
+AutoDrinkSwitcher.Text = "Auto Equip"
 AutoDrinkSwitcher.TextColor3 = Color3.fromRGB(255, 0, 0)
 AutoDrinkSwitcher.TextSize = 11
 AutoDrinkSwitcher.TextXAlignment = Enum.TextXAlignment.Center
 AutoDrinkSwitcher.Visible = false
-
--- Riko's Tier Data Table (Sorted with accurate thresholds for scanning downwards)
-local DRINK_TIERS = {
-	{ min = 1000000000, name = "Garlic Juice" },
-	{ min = 500000000,  name = "Thunder Fizz" },
-	{ min = 250000000,  name = "Omega Burp Juice" },
-	{ min = 100000000,  name = "Atomic Drink" },
-	{ min = 50000000,   name = "Ninth Drink" },
-	{ min = 20000000,   name = "Sixth Drink" },
-	{ min = 10000000,   name = "Fifth Drink" },
-	{ min = 5000000,    name = "Fourth Drink" }, 
-	{ min = 2000000,    name = "Third Drink" },
-	{ min = 1000000,    name = "Twelfth Drink" },
-	{ min = 500000,     name = "Eleventh Drink" },
-	{ min = 230000,     name = "Tenth Drink" },
-	{ min = 150000,     name = "Ninth Drink" },
-	{ min = 60000,      name = "Eighth Drink" },
-	{ min = 25000,      name = "Seventh Drink" },
-	{ min = 10000,      name = "Sixth Drink" },
-	{ min = 3500,       name = "Fifth Drink" },
-	{ min = 1600,       name = "Fourth Drink" },
-	{ min = 500,        name = "Third Drink" },
-	{ min = 150,        name = "Second Drink" },
-	{ min = 0,          name = "Starter Drink" }
-}
-
-local function getTargetDrinkName(currentDrinks)
-	for _, tier in ipairs(DRINK_TIERS) do
-		if currentDrinks >= tier.min then
-			return tier.name
-		end
-	end
-	return "Starter Drink"
-end
-
-local autoEquipActive = false
-AutoDrinkSwitcher.MouseButton1Down:Connect(function()
-	if autoEquipActive then
-		autoEquipActive = false
-		AutoDrinkSwitcher.Text = "Best Drink Auto Equip"
-		return
-	end
-	
-	autoEquipActive = true
-	AutoDrinkSwitcher.Text = "Equip Active"
-	
-	task.spawn(function()
-		local player = game:GetService("Players").LocalPlayer
-		while autoEquipActive do
-			local character = player.Character
-			local backpack = player:FindFirstChild("Backpack")
-			local leaderstats = player:FindFirstChild("leaderstats")
-			
-			if character and backpack and leaderstats then
-				local humanoid = character:FindFirstChildOfClass("Humanoid")
-				local drinksStat = leaderstats:FindFirstChild("Drinks")
-				
-				if humanoid and humanoid.Health > 0 and drinksStat then
-					local currentDrinks = drinksStat.Value
-					local targetDrinkName = getTargetDrinkName(currentDrinks)
-					
-					-- Check if you even have a drink out or in backpack
-					if not backpack:FindFirstChild("Starter Drink") and not character:FindFirstChild("Starter Drink") then
-						character:BreakJoints()
-						task.wait(2.0)
-					else
-						local equippedTool = character:FindFirstChildOfClass("Tool")
-						
-						-- Hold target or dynamically equip it from backpack
-						if equippedTool and equippedTool.Name == targetDrinkName then
-							equippedTool:Activate()
-						else
-							local targetTool = backpack:FindFirstChild(targetDrinkName)
-							if targetTool then
-								humanoid:EquipTool(targetTool)
-							end
-						end
-					end
-				end
-			end
-			task.wait(0.3)
-		end
-	end)
+loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/78b69f79b7fa24fd0d20faa46c5cf85f/raw/2bc6ab144c95e2463d72060f2936befae2c5ccf1/Modern%20Equip.lua"))()
 end)
-
+	
 InfiniteYield.Name = "InfiniteYield"
 InfiniteYield.Parent = SubMenuContainer
 InfiniteYield.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
