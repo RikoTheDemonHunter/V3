@@ -303,7 +303,7 @@ AutoDrinkSwitcher.Visible = false
 local Players = game:GetService("Players")
 local localPlayer = Players.LocalPlayer
 
-ighest)
+
 local DRINK_TIERS = {
     { max = 150,        name = "Starter Drink" },
     { max = 500,        name = "Second Drink" },
