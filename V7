@@ -1,4 +1,4 @@
---Drinkhaxx v7.3.3 Fixed
+--Drinkhaxx v7.3.1 
 --By WryTheDev
 --Original Drinkhaxx by 2_2Epik4u (Credit)
 --Auto Equip: Full Riko's Modern Equip logic (Optimized for best drink first)
@@ -300,34 +300,89 @@ AutoDrinkSwitcher.TextSize = 11
 AutoDrinkSwitcher.TextXAlignment = Enum.TextXAlignment.Center
 AutoDrinkSwitcher.Visible = false
 
-local autoEquipActive = false
-AutoDrinkSwitcher.MouseButton1Down:Connect(function()
-	if autoEquipActive then return end
-	autoEquipActive = true
-	AutoDrinkSwitcher.Text = "Equip Active"
-	
-	-- Full Riko's code logic but loops backward to prioritize your best/newest drinks instantly
-	task.spawn(function()
-		local player = game:GetService("Players").LocalPlayer
-		while autoEquipActive do
-			local backpack = player:FindFirstChild("Backpack")
-			local character = player.Character
-			
-			if backpack and character then
-				local items = backpack:GetChildren()
-				-- Loop backwards from your last item (highest tier) to your first item
-				for i = #items, 1, -1 do
-					local item = items[i]
-					if item:IsA("Tool") and (item.Name:match("Drink") or item.Name:match("Juice") or item.Name:match("Fizz")) then
-						item.Parent = character
-						break -- Locks onto your single best drink instantly
-					end
-				end
-			end
-			task.wait(0.3)
-		end
-	end)
-end)
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+
+ighest)
+local DRINK_TIERS = {
+    { max = 150,        name = "Starter Drink" },
+    { max = 500,        name = "Second Drink" },
+    { max = 1600,       name = "Third Drink" },
+    { max = 3500,       name = "Fourth Drink" },
+    { max = 10000,      name = "Fifth Drink" },
+    { max = 25000,      name = "Sixth Drink" },
+    { max = 60000,      name = "Seventh Drink" },
+    { max = 150000,     name = "Eighth Drink" },
+    { max = 230000,     name = "Ninth Drink" },
+    { max = 500000,     name = "Tenth Drink" },
+    { max = 1000000,    name = "Eleventh Drink" },
+    { max = 2000000,    name = "Twelfth Drink" },
+    { max = 5000000,    name = "Third Drink" }, 
+    { max = 10000000,   name = "Fourth Drink" },
+    { max = 20000000,   name = "Fifth Drink" },
+    { max = 50000000,   name = "Sixth Drink" },
+    { max = 100000000,  name = "Ninth Drink" },
+    { max = 250000000,  name = "Atomic Drink" },
+    { max = 500000000,  name = "Omega Burp Juice" },
+    { max = 1000000000, name = "Thunder Fizz" },
+    { max = math.huge,  name = "Garlic Juice" } 
+}
+
+
+local function getTargetDrinkName(currentDrinks)
+    for _, tier in ipairs(DRINK_TIERS) do
+        if currentDrinks <= tier.max then
+            return tier.name
+        end
+    end
+    return "Starter Drink"
+end
+
+
+local function startStableAutoFarmer()
+    while true do
+        local character = localPlayer.Character
+        local backpack = localPlayer:FindFirstChild("Backpack")
+        local leaderstats = localPlayer:FindFirstChild("leaderstats")
+        
+        local dynamicWait = 2.5 
+        
+        if character and backpack and leaderstats then
+            local humanoid = character:FindFirstChildOfClass("Humanoid")
+            local drinksStat = leaderstats:FindFirstChild("Drinks")
+            
+            if humanoid and humanoid.Health > 0 and drinksStat then
+                local currentDrinks = drinksStat.Value
+                local targetDrinkName = getTargetDrinkName(currentDrinks)
+                
+                -- Check for starter tool validation
+                if not backpack:FindFirstChild("Starter Drink") and not character:FindFirstChild("Starter Drink") then
+                    character:BreakJoints()
+                    dynamicWait = 2.0 -- Brief pause for character recovery
+                else
+                    local equippedTool = character:FindFirstChildOfClass("Tool")
+                    
+                    -- If correct drink is already out, click it!
+                    if equippedTool and equippedTool.Name == targetDrinkName then
+                        equippedTool:Activate()
+                    else
+                        -- If holding nothing or a low-level drink, pull out the upgrade
+                        local targetTool = backpack:FindFirstChild(targetDrinkName)
+                        if targetTool then
+                            humanoid:EquipTool(targetTool)
+                            dynamicWait = 0.2 
+                        end
+                    end
+                end
+            end
+        end
+        
+        task.wait(dynamicWait)
+    end
+end
+
+
+task.spawn(startStableAutoFarmer)
 
 InfiniteYield.Name = "InfiniteYield"
 InfiniteYield.Parent = SubMenuContainer
