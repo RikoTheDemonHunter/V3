@@ -1,7 +1,7 @@
---Drinkhaxx v7.3.2 Fixed
+--Drinkhaxx v7.3.3 Fixed
 --By WryTheDev
 --Original Drinkhaxx by 2_2Epik4u (Credit)
---Auto Equip source optimized from RikoTheDemonHunter's Modern Equip
+--Auto Equip: Full Riko's Modern Equip logic (Optimized for best drink first)
 
 local ScreenGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame") 
@@ -78,7 +78,7 @@ Title.BorderColor3 = Color3.fromRGB(255, 0, 0)
 Title.Position = UDim2.new(0, 0, 0, 0)
 Title.Size = UDim2.new(1, 0, 0, 28)
 Title.Font = Enum.Font.GothamBlack
-Title.Text = "Drinkhaxx v.7.3.2"
+Title.Text = "Drinkhaxx v.7.3.3"
 Title.TextColor3 = Color3.fromRGB(255, 0, 0)
 Title.TextSize = 14
 Title.TextXAlignment = Enum.TextXAlignment.Center
@@ -294,7 +294,7 @@ AutoDrinkSwitcher.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 AutoDrinkSwitcher.Position = UDim2.new(0, 10, 0, 115)
 AutoDrinkSwitcher.Size = UDim2.new(0, 140, 0, 30)
 AutoDrinkSwitcher.Font = Enum.Font.GothamBlack
-AutoDrinkSwitcher.Text = "Modern Auto Equip"
+AutoDrinkSwitcher.Text = "Best Drink Auto Equip"
 AutoDrinkSwitcher.TextColor3 = Color3.fromRGB(255, 0, 0)
 AutoDrinkSwitcher.TextSize = 11
 AutoDrinkSwitcher.TextXAlignment = Enum.TextXAlignment.Center
@@ -304,9 +304,9 @@ local autoEquipActive = false
 AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 	if autoEquipActive then return end
 	autoEquipActive = true
-	AutoDrinkSwitcher.Text = "Modern Equip Active"
+	AutoDrinkSwitcher.Text = "Equip Active"
 	
-	-- Embedded & optimized version of Riko's Modern Equip script
+	-- Full Riko's code logic but loops backward to prioritize your best/newest drinks instantly
 	task.spawn(function()
 		local player = game:GetService("Players").LocalPlayer
 		while autoEquipActive do
@@ -314,21 +314,13 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 			local character = player.Character
 			
 			if backpack and character then
-				-- Fixed issue: Validate if you are holding something first to prevent inventory flood
-				local currentlyHolding = false
-				for _, heldItem in ipairs(character:GetChildren()) do
-					if heldItem:IsA("Tool") and (heldItem.Name:match("Drink") or heldItem.Name:match("Juice") or heldItem.Name:match("Fizz")) then
-						currentlyHolding = true
-						break
-					end
-				end
-				
-				if not currentlyHolding then
-					for _, item in ipairs(backpack:GetChildren()) do
-						if item:IsA("Tool") and (item.Name:match("Drink") or item.Name:match("Juice") or item.Name:match("Fizz")) then
-							item.Parent = character
-							break -- Equips exactly one target item smoothly
-						end
+				local items = backpack:GetChildren()
+				-- Loop backwards from your last item (highest tier) to your first item
+				for i = #items, 1, -1 do
+					local item = items[i]
+					if item:IsA("Tool") and (item.Name:match("Drink") or item.Name:match("Juice") or item.Name:match("Fizz")) then
+						item.Parent = character
+						break -- Locks onto your single best drink instantly
 					end
 				end
 			end
