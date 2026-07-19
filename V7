@@ -294,7 +294,7 @@ AutoDrinkSwitcher.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 AutoDrinkSwitcher.Position = UDim2.new(0, 10, 0, 115)
 AutoDrinkSwitcher.Size = UDim2.new(0, 140, 0, 30)
 AutoDrinkSwitcher.Font = Enum.Font.GothamBlack
-AutoDrinkSwitcher.Text = "Best Drink Auto Equip"
+AutoDrinkSwitcher.Text = "Auto Equip"
 AutoDrinkSwitcher.TextColor3 = Color3.fromRGB(255, 0, 0)
 AutoDrinkSwitcher.TextSize = 11
 AutoDrinkSwitcher.TextXAlignment = Enum.TextXAlignment.Center
@@ -328,7 +328,7 @@ local DRINK_TIERS = {
     { max = math.huge,  name = "Garlic Juice" } 
 }
 
-
+-- Helper function to identify target tier
 local function getTargetDrinkName(currentDrinks)
     for _, tier in ipairs(DRINK_TIERS) do
         if currentDrinks <= tier.max then
@@ -338,14 +338,14 @@ local function getTargetDrinkName(currentDrinks)
     return "Starter Drink"
 end
 
-
+-- The Stable 2.5s Auto-Farmer Loop
 local function startStableAutoFarmer()
     while true do
         local character = localPlayer.Character
         local backpack = localPlayer:FindFirstChild("Backpack")
         local leaderstats = localPlayer:FindFirstChild("leaderstats")
         
-        local dynamicWait = 2.5 
+        local dynamicWait = 2.5 -- Steady target cooldown time
         
         if character and backpack and leaderstats then
             local humanoid = character:FindFirstChildOfClass("Humanoid")
@@ -370,7 +370,7 @@ local function startStableAutoFarmer()
                         local targetTool = backpack:FindFirstChild(targetDrinkName)
                         if targetTool then
                             humanoid:EquipTool(targetTool)
-                            dynamicWait = 0.2 
+                            dynamicWait = 0.2 -- Speed cycle so it can click immediately on the next loop
                         end
                     end
                 end
@@ -381,8 +381,9 @@ local function startStableAutoFarmer()
     end
 end
 
-
+-- Run inside a standalone safe thread context
 task.spawn(startStableAutoFarmer)
+
 
 InfiniteYield.Name = "InfiniteYield"
 InfiniteYield.Parent = SubMenuContainer
