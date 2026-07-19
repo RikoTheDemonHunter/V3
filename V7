@@ -229,25 +229,10 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 					end
 				end
 			end
-			task.wait(1)
+			task.wait()
 		end
 	end)
 
-	-- Thread 2: Handles ultra-fast clicking without overload lockouts
-	task.spawn(function()
-		while true do
-			local character = localPlayer.Character
-			if character then
-				local equippedTool = character:FindFirstChildOfClass("Tool")
-				-- Verifies it's a valid drink script target before clicking
-				if equippedTool and table.find(DRINK_ORDER, equippedTool.Name) then
-					equippedTool:Activate()
-				end
-			end
-			task.wait(2.34) -- Safe high-speed click threshold to prevent game crashes
-		end
-	end)
-end)
 
 -- Category 5: OP Scripts
 local OPScripts = createCategoryTab("OP Scripts", 5, function()
