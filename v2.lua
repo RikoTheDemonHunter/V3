@@ -740,6 +740,7 @@ end)
 LocalPlayer:Button("Reset", function(v)
 				game.Players.LocalPlayer.Character:BreakJoints()
 			end)
+
 LocalPlayer:Button("Rejoin", function(v)
 				game:GetService("TeleportService"):Teleport(game.PlaceId)
 			end)
