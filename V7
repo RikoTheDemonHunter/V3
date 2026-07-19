@@ -229,7 +229,7 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 					end
 				end
 			end
-			task.wait(0.5) -- Deliberate check rate to prevent character model lag
+			task.wait()
 		end
 	end)
 
@@ -244,7 +244,7 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 					equippedTool:Activate()
 				end
 			end
-			task.wait(0.05) -- Safe high-speed click threshold to prevent game crashes
+			task.wait() -- Safe high-speed click threshold to prevent game crashes
 		end
 	end)
 end)
