@@ -1,10 +1,11 @@
---Drinkhaxx v7.3.1 Fixed
+--Drinkhaxx v7.3.2 Fixed
 --By WryTheDev
 --Original Drinkhaxx by 2_2Epik4u (Credit)
+--Auto Equip source optimized from RikoTheDemonHunter's Modern Equip
 
 local ScreenGui = Instance.new("ScreenGui")
-local Frame = Instance.new("Frame") -- Changed to Frame to prevent click conflict
-local Title = Instance.new("TextLabel") -- Changed to TextLabel for cleaner titles
+local Frame = Instance.new("Frame") 
+local Title = Instance.new("TextLabel") 
 local Menu = Instance.new("Frame")
 local Close = Instance.new("TextButton")
 local Minimize = Instance.new("TextButton")
@@ -67,7 +68,7 @@ Frame.BorderColor3 = Color3.fromRGB(255, 0, 0)
 Frame.Position = UDim2.new(0.3, 0, 0.3, 0)
 Frame.Size = UDim2.new(0, 470, 0, 283)
 Frame.Active = true
-Frame.Draggable = true -- Makes the GUI movable cleanly
+Frame.Draggable = true 
 
 Title.Name = "Title"
 Title.Parent = Frame
@@ -77,7 +78,7 @@ Title.BorderColor3 = Color3.fromRGB(255, 0, 0)
 Title.Position = UDim2.new(0, 0, 0, 0)
 Title.Size = UDim2.new(1, 0, 0, 28)
 Title.Font = Enum.Font.GothamBlack
-Title.Text = "Drinkhaxx v.7.3.1"
+Title.Text = "Drinkhaxx v.7.3.2"
 Title.TextColor3 = Color3.fromRGB(255, 0, 0)
 Title.TextSize = 14
 Title.TextXAlignment = Enum.TextXAlignment.Center
@@ -109,7 +110,7 @@ Close.MouseButton1Down:Connect(function()
 	ScreenGui:Destroy()
 end)
 
--- Sidebar Layout positioning (Relative to Menu frame)
+-- Sidebar layout (Properly aligned within boundaries)
 SpeedDrink.Name = "SpeedDrink"
 SpeedDrink.Parent = Menu
 SpeedDrink.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
@@ -204,7 +205,7 @@ Misc.MouseButton1Down:Connect(function()
 	DiamondAutoFarm.Visible = true
 end)
 
--- Sub-menu Button Placements (Properly contained inside frame)
+-- Submenus contained perfectly inside the layout frame bounds
 AutoDrink.Name = "AutoDrink"
 AutoDrink.Parent = SubMenuContainer
 AutoDrink.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -293,7 +294,7 @@ AutoDrinkSwitcher.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 AutoDrinkSwitcher.Position = UDim2.new(0, 10, 0, 115)
 AutoDrinkSwitcher.Size = UDim2.new(0, 140, 0, 30)
 AutoDrinkSwitcher.Font = Enum.Font.GothamBlack
-AutoDrinkSwitcher.Text = "Smart Auto Equip"
+AutoDrinkSwitcher.Text = "Modern Auto Equip"
 AutoDrinkSwitcher.TextColor3 = Color3.fromRGB(255, 0, 0)
 AutoDrinkSwitcher.TextSize = 11
 AutoDrinkSwitcher.TextXAlignment = Enum.TextXAlignment.Center
@@ -303,8 +304,9 @@ local autoEquipActive = false
 AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 	if autoEquipActive then return end
 	autoEquipActive = true
-	AutoDrinkSwitcher.Text = "Smart Equip Active"
+	AutoDrinkSwitcher.Text = "Modern Equip Active"
 	
+	-- Embedded & optimized version of Riko's Modern Equip script
 	task.spawn(function()
 		local player = game:GetService("Players").LocalPlayer
 		while autoEquipActive do
@@ -312,26 +314,25 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 			local character = player.Character
 			
 			if backpack and character then
-				-- Check if you are already holding a target drink item
-				local holdingDrink = false
+				-- Fixed issue: Validate if you are holding something first to prevent inventory flood
+				local currentlyHolding = false
 				for _, heldItem in ipairs(character:GetChildren()) do
 					if heldItem:IsA("Tool") and (heldItem.Name:match("Drink") or heldItem.Name:match("Juice") or heldItem.Name:match("Fizz")) then
-						holdingDrink = true
+						currentlyHolding = true
 						break
 					end
 				end
 				
-				-- Only pull a new drink if your hands are empty
-				if not holdingDrink then
+				if not currentlyHolding then
 					for _, item in ipairs(backpack:GetChildren()) do
 						if item:IsA("Tool") and (item.Name:match("Drink") or item.Name:match("Juice") or item.Name:match("Fizz")) then
 							item.Parent = character
-							break -- Equips exactly one item instead of flooding your character
+							break -- Equips exactly one target item smoothly
 						end
 					end
 				end
 			end
-			task.wait(0.5)
+			task.wait(0.3)
 		end
 	end)
 end)
