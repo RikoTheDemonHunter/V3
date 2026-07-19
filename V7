@@ -216,7 +216,7 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 		while true do
 			local character = localPlayer.Character
 			local backpack = localPlayer:FindFirstChild("Backpack")
-			local dynamicWait = 2.5 
+			local dynamicWait = 2.5
 			
 			if character and backpack then
 				local humanoid = character:FindFirstChildOfClass("Humanoid")
@@ -233,13 +233,13 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 							local targetTool = backpack:FindFirstChild(bestDrink)
 							if targetTool then
 								humanoid:EquipTool(targetTool)
-								dynamicWait = 0.2 -- Switch rapidly to item click cycle
+								dynamicWait = 
 							end
 						end
 					else
 						-- Fallback reset logic if no valid items are found
 						character:BreakJoints()
-						dynamicWait = 2.0
+						dynamicWait = 
 					end
 				end
 			end
