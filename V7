@@ -19,7 +19,7 @@ Frame.BorderColor3 = Color3.fromRGB(255, 0, 0)
 Frame.Position = UDim2.new(0.3, 0, 0.3, 0)
 Frame.Size = UDim2.new(0, 470, 0, 283)
 Frame.Active = true
-Frame.Draggable = true -- Allows the GUI to be moved around smoothly
+Frame.Draggable = true
 
 -- Title Bar
 local Title = Instance.new("TextLabel")
@@ -44,7 +44,7 @@ Menu.BorderSizePixel = 0
 Menu.Position = UDim2.new(0, 0, 0, 30)
 Menu.Size = UDim2.new(0, 110, 1, -30)
 
--- Content Area (Where sub-buttons will display inside borders)
+-- Content Area (Keeps buttons inside borders)
 local ContentFrame = Instance.new("Frame")
 ContentFrame.Name = "ContentFrame"
 ContentFrame.Parent = Frame
@@ -79,7 +79,7 @@ Minimize.Text = "-"
 Minimize.TextColor3 = Color3.fromRGB(255, 0, 0)
 Minimize.TextSize = 14
 
--- Sub-Menu Action Button Initializations (All Parented to ContentFrame now)
+-- Sub-Menu Action Button Initializations
 local AutoDrink = Instance.new("TextButton")
 local AutoPrestige2 = Instance.new("TextButton")
 local SpamBurp2 = Instance.new("TextButton")
@@ -178,7 +178,7 @@ SpamBurp2.MouseButton1Down:Connect(function()
 	end
 end)
 
--- Category 4: Drink Settings
+-- Category 4: Drink Settings (INTEGRATED AUTO-FARM CODE)
 local DrinkSettings = createCategoryTab("Drink Settings", 4, function()
 	hideAllSubMenus()
 	AutoDrinkSwitcher.Visible = true
@@ -186,7 +186,83 @@ end)
 
 styleActionButton(AutoDrinkSwitcher, "Auto Drink Switcher", 0, 0, 9)
 AutoDrinkSwitcher.MouseButton1Down:Connect(function()
-	loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/78b69f79b7fa24fd0d20faa46c5cf85f/raw/2bc6ab144c95e2463d72060f2936befae2c5ccf1/Modern%20Equip.lua"))()
+	AutoDrinkSwitcher.Text = "Running Auto..."
+	
+	local Players = game:GetService("Players")
+	local localPlayer = Players.LocalPlayer
+
+	local DRINK_TIERS = {
+		{ max = 150,        name = "Starter Drink" },
+		{ max = 500,        name = "Second Drink" },
+		{ max = 1600,       name = "Third Drink" },
+		{ max = 3500,       name = "Fourth Drink" },
+		{ max = 10000,      name = "Fifth Drink" },
+		{ max = 25000,      name = "Sixth Drink" },
+		{ max = 60000,      name = "Seventh Drink" },
+		{ max = 150000,     name = "Eighth Drink" },
+		{ max = 230000,     name = "Ninth Drink" },
+		{ max = 500000,     name = "Tenth Drink" },
+		{ max = 1000000,    name = "Eleventh Drink" },
+		{ max = 2000000,    name = "Twelfth Drink" },
+		{ max = 5000000,    name = "Third Drink" }, 
+		{ max = 10000000,   name = "Fourth Drink" },
+		{ max = 20000000,   name = "Fifth Drink" },
+		{ max = 50000000,   name = "Sixth Drink" },
+		{ max = 100000000,  name = "Ninth Drink" },
+		{ max = 250000000,  name = "Atomic Drink" },
+		{ max = 500000000,  name = "Omega Burp Juice" },
+		{ max = 1000000000, name = "Thunder Fizz" },
+		{ max = math.huge,  name = "Garlic Juice" } 
+	}
+
+	local function getTargetDrinkName(currentDrinks)
+		for _, tier in ipairs(DRINK_TIERS) do
+			if currentDrinks <= tier.max then
+				return tier.name
+			end
+		end
+		return "Starter Drink"
+	end
+
+	local function startStableAutoFarmer()
+		while true do
+			local character = localPlayer.Character
+			local backpack = localPlayer:FindFirstChild("Backpack")
+			local leaderstats = localPlayer:FindFirstChild("leaderstats")
+			
+			local dynamicWait = 2.5 
+			
+			if character and backpack and leaderstats then
+				local humanoid = character:FindFirstChildOfClass("Humanoid")
+				local drinksStat = leaderstats:FindFirstChild("Drinks")
+				
+				if humanoid and humanoid.Health > 0 and drinksStat then
+					local currentDrinks = drinksStat.Value
+					local targetDrinkName = getTargetDrinkName(currentDrinks)
+					
+					if not backpack:FindFirstChild("Starter Drink") and not character:FindFirstChild("Starter Drink") then
+						character:BreakJoints()
+						dynamicWait = 2.0 
+					else
+						local equippedTool = character:FindFirstChildOfClass("Tool")
+						
+						if equippedTool and equippedTool.Name == targetDrinkName then
+							equippedTool:Activate()
+						else
+							local targetTool = backpack:FindFirstChild(targetDrinkName)
+							if targetTool then
+								humanoid:EquipTool(targetTool)
+								dynamicWait = 0.2 
+							end
+						end
+					end
+				end
+			end
+			task.wait(dynamicWait)
+		end
+	end
+
+	task.spawn(startStableAutoFarmer)
 end)
 
 -- Category 5: OP Scripts
