@@ -178,7 +178,7 @@ SpamBurp2.MouseButton1Down:Connect(function()
 	end
 end)
 
--- Category 4: Drink Settings (FIXED INVENTORY-BASED AUTO FARM)
+-- Category 4: Drink Settings (OVERLOAD PROTECTED AUTO FARM)
 local DrinkSettings = createCategoryTab("Drink Settings", 4, function()
 	hideAllSubMenus()
 	AutoDrinkSwitcher.Visible = true
@@ -191,7 +191,6 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 	local Players = game:GetService("Players")
 	local localPlayer = Players.LocalPlayer
 
-	-- List sorted from absolute best down to starter tier
 	local DRINK_ORDER = {
 		"Garlic Juice", "Thunder Fizz", "Omega Burp Juice", "Atomic Drink", 
 		"Ninth Drink", "Sixth Drink", "Fifth Drink", "Fourth Drink", "Third Drink",
@@ -199,11 +198,9 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 		"Seventh Drink", "Second Drink", "Starter Drink"
 	}
 
-	-- Automatically finds the best drink matching the order list
 	local function getBestOwnedDrink()
 		local character = localPlayer.Character
 		local backpack = localPlayer:FindFirstChild("Backpack")
-		
 		for _, drinkName in ipairs(DRINK_ORDER) do
 			if (backpack and backpack:FindFirstChild(drinkName)) or (character and character:FindFirstChild(drinkName)) then
 				return drinkName
@@ -212,42 +209,44 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 		return nil
 	end
 
-	local function startInventoryAutoFarmer()
+	-- Thread 1: Handles smooth auto-equipping without stuttering
+	task.spawn(function()
 		while true do
 			local character = localPlayer.Character
 			local backpack = localPlayer:FindFirstChild("Backpack")
-			local dynamicWait = 2.5
 			
 			if character and backpack then
 				local humanoid = character:FindFirstChildOfClass("Humanoid")
+				local bestDrink = getBestOwnedDrink()
 				
-				if humanoid and humanoid.Health > 0 then
-					local bestDrink = getBestOwnedDrink()
-					
-					if bestDrink then
-						local equippedTool = character:FindFirstChildOfClass("Tool")
-						
-						if equippedTool and equippedTool.Name == bestDrink then
-							equippedTool:Activate()
-						else
-							local targetTool = backpack:FindFirstChild(bestDrink)
-							if targetTool then
-								humanoid:EquipTool(targetTool)
-								dynamicWait = 
-							end
+				if humanoid and humanoid.Health > 0 and bestDrink then
+					local equippedTool = character:FindFirstChildOfClass("Tool")
+					if not equippedTool or equippedTool.Name ~= bestDrink then
+						local targetTool = backpack:FindFirstChild(bestDrink)
+						if targetTool then
+							humanoid:EquipTool(targetTool)
 						end
-					else
-						-- Fallback reset logic if no valid items are found
-						character:BreakJoints()
-						dynamicWait = 
 					end
 				end
 			end
-			task.wait(dynamicWait)
+			task.wait(0.5) -- Deliberate check rate to prevent character model lag
 		end
-	end
+	end)
 
-	task.spawn(startInventoryAutoFarmer)
+	-- Thread 2: Handles ultra-fast clicking without overload lockouts
+	task.spawn(function()
+		while true do
+			local character = localPlayer.Character
+			if character then
+				local equippedTool = character:FindFirstChildOfClass("Tool")
+				-- Verifies it's a valid drink script target before clicking
+				if equippedTool and table.find(DRINK_ORDER, equippedTool.Name) then
+					equippedTool:Activate()
+				end
+			end
+			task.wait(0.05) -- Safe high-speed click threshold to prevent game crashes
+		end
+	end)
 end)
 
 -- Category 5: OP Scripts
