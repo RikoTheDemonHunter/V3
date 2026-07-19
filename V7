@@ -65,7 +65,6 @@ end
 
 --User Interface Properties
 ScreenGui.Name = "ScreenGui"
--- Safely handle execution environments where CoreGui isn't accessible
 local success, err = pcall(function() ScreenGui.Parent = game.CoreGui end)
 if not success then ScreenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui") end
 
@@ -91,6 +90,7 @@ Title.Font = Enum.Font.GothamBlack
 Title.Text = "Drinkhaxx v.7.3.0"
 Title.TextColor3 = Color3.new(255, 0, 0)
 Title.TextSize = 14
+Title.TextXAlignment = Enum.TextXAlignment.Center
 Title.Selectable = false
 Title.Active = false
 
@@ -114,6 +114,7 @@ Close.Font = Enum.Font.GothamBlack
 Close.Text = "X"
 Close.TextColor3 = Color3.new(255, 0, 0)
 Close.TextSize = 14
+Close.TextXAlignment = Enum.TextXAlignment.Center
 Close.MouseButton1Down:Connect(function()
 	Frame.Visible = false
 	Title.Visible = false
@@ -139,6 +140,7 @@ Minimize.Font = Enum.Font.GothamBlack
 Minimize.Text = "-"
 Minimize.TextColor3 = Color3.new(255, 0, 0)
 Minimize.TextSize = 14
+Minimize.TextXAlignment = Enum.TextXAlignment.Center
 
 --Speed Drink Properties
 SpeedDrink.Name = "SpeedDrink"
@@ -151,11 +153,11 @@ SpeedDrink.Font = Enum.Font.GothamBlack
 SpeedDrink.Text = "Speed Drink"
 SpeedDrink.TextColor3 = Color3.new(255, 0, 0)
 SpeedDrink.TextSize = 12
+SpeedDrink.TextXAlignment = Enum.TextXAlignment.Center
 SpeedDrink.MouseButton1Down:Connect(function()
 	clearSubMenus()
 	AutoDrink.Visible = true
 	
-	-- Fixed non-blocking text animation thread
 	task.spawn(function()
 		local steps = {0, 0.1, 0.5, 0.75, 1}
 		SpeedDrink.Text = "Loading"
@@ -171,13 +173,13 @@ AutoDrink.Name = "AutoDrink"
 AutoDrink.Parent = ScreenGui
 AutoDrink.Style = 1
 AutoDrink.BackgroundColor3 = Color3.new(0, 0, 0)
--- Aligned side-by-side with Menu categories
 AutoDrink.Position = UDim2.new(0.245, 0, 0.365, 0)
 AutoDrink.Size = UDim2.new(0, 110, 0, 21)
 AutoDrink.Font = Enum.Font.GothamBlack
 AutoDrink.Text = "Execute Drink"
 AutoDrink.TextColor3 = Color3.new(255, 0, 0)
 AutoDrink.TextSize = 12
+AutoDrink.TextXAlignment = Enum.TextXAlignment.Center
 AutoDrink.Visible = false 
 
 local autoDrinking = false
@@ -212,6 +214,7 @@ AutoPrestige.Font = Enum.Font.GothamBlack
 AutoPrestige.Text = "Auto Prestige"
 AutoPrestige.TextColor3 = Color3.new(255, 0, 0)
 AutoPrestige.TextSize = 11
+AutoPrestige.TextXAlignment = Enum.TextXAlignment.Center
 AutoPrestige.MouseButton1Down:Connect(function()
 	clearSubMenus()
 	AutoPrestige2.Visible = true
@@ -227,6 +230,7 @@ AutoPrestige2.Font = Enum.Font.GothamBlack
 AutoPrestige2.Text = "Run Auto Prestige"
 AutoPrestige2.TextColor3 = Color3.new(255, 0, 0)
 AutoPrestige2.TextSize = 11
+AutoPrestige2.TextXAlignment = Enum.TextXAlignment.Center
 AutoPrestige2.Visible = false
 
 local prestigeActive = false
@@ -253,6 +257,7 @@ SpamBurp.Font = Enum.Font.GothamBlack
 SpamBurp.Text = "Spam Burp"
 SpamBurp.TextColor3 = Color3.new(255, 0, 0)
 SpamBurp.TextSize = 11
+SpamBurp.TextXAlignment = Enum.TextXAlignment.Center
 SpamBurp.Visible = true
 SpamBurp.MouseButton1Down:Connect(function()
 	clearSubMenus()
@@ -269,6 +274,7 @@ SpamBurp2.Font = Enum.Font.GothamBlack
 SpamBurp2.Text = "Run Spam Burp"
 SpamBurp2.TextColor3 = Color3.new(255, 0, 0)
 SpamBurp2.TextSize = 11
+SpamBurp2.TextXAlignment = Enum.TextXAlignment.Center
 SpamBurp2.Visible = false
 
 local burpActive = false
@@ -295,6 +301,7 @@ DrinkSettings.Font = Enum.Font.GothamBlack
 DrinkSettings.Text = "Drink Settings"
 DrinkSettings.TextColor3 = Color3.new(255, 0, 0)
 DrinkSettings.TextSize = 10
+DrinkSettings.TextXAlignment = Enum.TextXAlignment.Center
 DrinkSettings.Visible = true
 DrinkSettings.MouseButton1Down:Connect(function()
 	clearSubMenus()
@@ -308,12 +315,35 @@ AutoDrinkSwitcher.BackgroundColor3 = Color3.new(0, 0, 0)
 AutoDrinkSwitcher.Position = UDim2.new(0.245, 0, 0.528, 0)
 AutoDrinkSwitcher.Size = UDim2.new(0, 110, 0, 21)
 AutoDrinkSwitcher.Font = Enum.Font.GothamBlack
-AutoDrinkSwitcher.Text = "Auto Drink Switcher"
+AutoDrinkSwitcher.Text = "Auto Equip"
 AutoDrinkSwitcher.TextColor3 = Color3.new(255, 0, 0)
-AutoDrinkSwitcher.TextSize = 9
+AutoDrinkSwitcher.TextSize = 10
+AutoDrinkSwitcher.TextXAlignment = Enum.TextXAlignment.Center
 AutoDrinkSwitcher.Visible = false
+
+local autoEquipActive = false
 AutoDrinkSwitcher.MouseButton1Down:Connect(function()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Equip.lua"))()
+	if autoEquipActive then return end
+	autoEquipActive = true
+	AutoDrinkSwitcher.Text = "Equipping..."
+	
+	
+	task.spawn(function()
+		local player = game:GetService("Players").LocalPlayer
+		while autoEquipActive do
+			local backpack = player:FindFirstChild("Backpack")
+			local character = player.Character
+			
+			if backpack and character then
+				for _, item in ipairs(backpack:GetChildren()) do
+					if item:IsA("Tool") and (item.Name:match("Drink") or item.Name:match("Juice") or item.Name:match("Fizz")) then
+						item.Parent = character
+					end
+				end
+			end
+			task.wait(0.5)
+		end
+	end)
 end)
 
 --OP Scripts Properties
@@ -327,6 +357,7 @@ OPScripts.Font = Enum.Font.GothamBlack
 OPScripts.Text = "OP Scripts"
 OPScripts.TextColor3 = Color3.new(255, 0, 0)
 OPScripts.TextSize = 10
+OPScripts.TextXAlignment = Enum.TextXAlignment.Center
 OPScripts.Visible = true
 OPScripts.MouseButton1Down:Connect(function()
 	clearSubMenus()
@@ -344,6 +375,7 @@ InfiniteYield.Font = Enum.Font.GothamBlack
 InfiniteYield.Text = "Infinite Yield"
 InfiniteYield.TextColor3 = Color3.new(255, 0, 0)
 InfiniteYield.TextSize = 10
+InfiniteYield.TextXAlignment = Enum.TextXAlignment.Center
 InfiniteYield.Visible = false
 InfiniteYield.MouseButton1Down:Connect(function()
 	loadstring(game:HttpGet(('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'), true))()
@@ -359,6 +391,7 @@ OwlHub.Font = Enum.Font.GothamBlack
 OwlHub.Text = "Reviz Admin"
 OwlHub.TextColor3 = Color3.new(255, 0, 0)
 OwlHub.TextSize = 10
+OwlHub.TextXAlignment = Enum.TextXAlignment.Center
 OwlHub.Visible = false
 OwlHub.MouseButton1Down:Connect(function()
 	loadstring(game:HttpGet('https://pastebin.com/VhE8hS8H/raw'))()
@@ -375,6 +408,7 @@ Misc.Font = Enum.Font.GothamBlack
 Misc.Text = "Misc"
 Misc.TextColor3 = Color3.new(255, 0, 0)
 Misc.TextSize = 10
+Misc.TextXAlignment = Enum.TextXAlignment.Center
 Misc.Visible = true
 Misc.MouseButton1Down:Connect(function()
 	clearSubMenus()
@@ -394,6 +428,7 @@ AntiAfk.Font = Enum.Font.GothamBlack
 AntiAfk.Text = "Anti Afk 1"
 AntiAfk.TextColor3 = Color3.new(255, 0, 0)
 AntiAfk.TextSize = 10
+AntiAfk.TextXAlignment = Enum.TextXAlignment.Center
 AntiAfk.Visible = false
 AntiAfk.MouseButton1Down:Connect(function()
 	local mt = getrawmetatable(game)
@@ -422,6 +457,7 @@ AntiAfk2.Font = Enum.Font.GothamBlack
 AntiAfk2.Text = "Anti Afk 2"
 AntiAfk2.TextColor3 = Color3.new(255, 0, 0)
 AntiAfk2.TextSize = 10
+AntiAfk2.TextXAlignment = Enum.TextXAlignment.Center
 AntiAfk2.Visible = false
 AntiAfk2.MouseButton1Down:Connect(function()
 	loadstring(game:HttpGet("https://pastebin.com/raw/KHZ8pYx9", true))()
@@ -437,6 +473,7 @@ GiveDrink.Font = Enum.Font.GothamBlack
 GiveDrink.Text = "BP Counter"
 GiveDrink.TextColor3 = Color3.new(255, 0, 0)
 GiveDrink.TextSize = 10
+GiveDrink.TextXAlignment = Enum.TextXAlignment.Center
 GiveDrink.Visible = false
 GiveDrink.MouseButton1Down:Connect(function()
 	loadstring(game:HttpGet("https://pastebin.com/raw/CCj0zCeD"))()
@@ -452,6 +489,7 @@ DiamondAutoFarm.Font = Enum.Font.GothamBlack
 DiamondAutoFarm.Text = "Diamond Auto Farm"
 DiamondAutoFarm.TextColor3 = Color3.new(255, 0, 0)
 DiamondAutoFarm.TextSize = 8
+DiamondAutoFarm.TextXAlignment = Enum.TextXAlignment.Center
 DiamondAutoFarm.Visible = false
 
 local farmActive = false
