@@ -1,7 +1,7 @@
---Drinkhaxx v7.3.4 Fixed
+--Drinkhaxx v7.3.5 Fixed
 --By WryTheDev
 --Original Drinkhaxx by 2_2Epik4u (Credit)
---Auto Equip: Full Riko's Modern Equip logic integrated with Best Drink prioritization
+--Auto Equip: Full Riko's Modern Equip logic (Fixed progression math)
 
 local ScreenGui = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame") 
@@ -78,7 +78,7 @@ Title.BorderColor3 = Color3.fromRGB(255, 0, 0)
 Title.Position = UDim2.new(0, 0, 0, 0)
 Title.Size = UDim2.new(1, 0, 0, 28)
 Title.Font = Enum.Font.GothamBlack
-Title.Text = "Drinkhaxx v.7.3.4"
+Title.Text = "Drinkhaxx v.7.3.5"
 Title.TextColor3 = Color3.fromRGB(255, 0, 0)
 Title.TextSize = 14
 Title.TextXAlignment = Enum.TextXAlignment.Center
@@ -300,34 +300,34 @@ AutoDrinkSwitcher.TextSize = 11
 AutoDrinkSwitcher.TextXAlignment = Enum.TextXAlignment.Center
 AutoDrinkSwitcher.Visible = false
 
--- Riko's Tier Data Table
+-- Riko's Tier Data Table (Sorted with accurate thresholds for scanning downwards)
 local DRINK_TIERS = {
-	{ max = 150,        name = "Starter Drink" },
-	{ max = 500,        name = "Second Drink" },
-	{ max = 1600,       name = "Third Drink" },
-	{ max = 3500,       name = "Fourth Drink" },
-	{ max = 10000,      name = "Fifth Drink" },
-	{ max = 25000,      name = "Sixth Drink" },
-	{ max = 60000,      name = "Seventh Drink" },
-	{ max = 150000,     name = "Eighth Drink" },
-	{ max = 230000,     name = "Ninth Drink" },
-	{ max = 500000,     name = "Tenth Drink" },
-	{ max = 1000000,    name = "Eleventh Drink" },
-	{ max = 2000000,    name = "Twelfth Drink" },
-	{ max = 5000000,    name = "Third Drink" }, 
-	{ max = 10000000,   name = "Fourth Drink" },
-	{ max = 20000000,   name = "Fifth Drink" },
-	{ max = 50000000,   name = "Sixth Drink" },
-	{ max = 100000000,  name = "Ninth Drink" },
-	{ max = 250000000,  name = "Atomic Drink" },
-	{ max = 500000000,  name = "Omega Burp Juice" },
-	{ max = 1000000000, name = "Thunder Fizz" },
-	{ max = math.huge,  name = "Garlic Juice" } 
+	{ min = 1000000000, name = "Garlic Juice" },
+	{ min = 500000000,  name = "Thunder Fizz" },
+	{ min = 250000000,  name = "Omega Burp Juice" },
+	{ min = 100000000,  name = "Atomic Drink" },
+	{ min = 50000000,   name = "Ninth Drink" },
+	{ min = 20000000,   name = "Sixth Drink" },
+	{ min = 10000000,   name = "Fifth Drink" },
+	{ min = 5000000,    name = "Fourth Drink" }, 
+	{ min = 2000000,    name = "Third Drink" },
+	{ min = 1000000,    name = "Twelfth Drink" },
+	{ min = 500000,     name = "Eleventh Drink" },
+	{ min = 230000,     name = "Tenth Drink" },
+	{ min = 150000,     name = "Ninth Drink" },
+	{ min = 60000,      name = "Eighth Drink" },
+	{ min = 25000,      name = "Seventh Drink" },
+	{ min = 10000,      name = "Sixth Drink" },
+	{ min = 3500,       name = "Fifth Drink" },
+	{ min = 1600,       name = "Fourth Drink" },
+	{ min = 500,        name = "Third Drink" },
+	{ min = 150,        name = "Second Drink" },
+	{ min = 0,          name = "Starter Drink" }
 }
 
 local function getTargetDrinkName(currentDrinks)
 	for _, tier in ipairs(DRINK_TIERS) do
-		if currentDrinks <= tier.max then
+		if currentDrinks >= tier.min then
 			return tier.name
 		end
 	end
@@ -336,9 +336,14 @@ end
 
 local autoEquipActive = false
 AutoDrinkSwitcher.MouseButton1Down:Connect(function()
-	if autoEquipActive then return end
+	if autoEquipActive then
+		autoEquipActive = false
+		AutoDrinkSwitcher.Text = "Best Drink Auto Equip"
+		return
+	end
+	
 	autoEquipActive = true
-	AutoDrinkSwitcher.Text = "Best Equip Active"
+	AutoDrinkSwitcher.Text = "Equip Active"
 	
 	task.spawn(function()
 		local player = game:GetService("Players").LocalPlayer
@@ -355,14 +360,14 @@ AutoDrinkSwitcher.MouseButton1Down:Connect(function()
 					local currentDrinks = drinksStat.Value
 					local targetDrinkName = getTargetDrinkName(currentDrinks)
 					
-					-- Reset validation logic check
+					-- Check if you even have a drink out or in backpack
 					if not backpack:FindFirstChild("Starter Drink") and not character:FindFirstChild("Starter Drink") then
 						character:BreakJoints()
 						task.wait(2.0)
 					else
 						local equippedTool = character:FindFirstChildOfClass("Tool")
 						
-						-- Instantly checks character or swaps from backpack if mismatch
+						-- Hold target or dynamically equip it from backpack
 						if equippedTool and equippedTool.Name == targetDrinkName then
 							equippedTool:Activate()
 						else
