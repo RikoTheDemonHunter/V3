@@ -1,4 +1,3 @@
-
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
@@ -17,6 +16,7 @@ cloudFolder.Name = "LocalCloudPlatforms"
 cloudFolder.Parent = Workspace
 
 local cloudPlatforms = {}
+local platformConnections = {}
 
 local function isCloudPart(part)
 	if not part:IsA("BasePart") then
@@ -51,30 +51,34 @@ local function createPlatform(cloudPart)
 	cloudPlatforms[cloudPart] = platform
 	
 	if not CONFIG.DynamicClouds then
-		local sizeConn = cloudPart:GetPropertyChangedSignal("Size"):Connect(function()
-			if cloudPlatforms[cloudPart] then
-				updatePlatformTransform(cloudPart, platform)
-			end
-		end)
-		local cframeConn = cloudPart:GetPropertyChangedSignal("CFrame"):Connect(function()
-			if cloudPlatforms[cloudPart] then
-				updatePlatformTransform(cloudPart, platform)
-			end
-		end)
+		local connections = {}
 		
-		platform:SetAttribute("SizeConn", sizeConn)
-		platform:SetAttribute("CFrameConn", cframeConn)
+		table.insert(connections, cloudPart:GetPropertyChangedSignal("Size"):Connect(function()
+			if cloudPlatforms[cloudPart] then
+				updatePlatformTransform(cloudPart, platform)
+			end
+		end))
+		
+		table.insert(connections, cloudPart:GetPropertyChangedSignal("CFrame"):Connect(function()
+			if cloudPlatforms[cloudPart] then
+				updatePlatformTransform(cloudPart, platform)
+			end
+		end))
+		
+		platformConnections[cloudPart] = connections
 	end
 end
 
 local function removePlatform(cloudPart)
 	local platform = cloudPlatforms[cloudPart]
 	if platform then
-		local sizeConn = platform:GetAttribute("SizeConn")
-		if sizeConn then sizeConn:Disconnect() end
-		
-		local cframeConn = platform:GetAttribute("CFrameConn")
-		if cframeConn then cframeConn:Disconnect() end
+		local connections = platformConnections[cloudPart]
+		if connections then
+			for _, conn in ipairs(connections) do
+				conn:Disconnect()
+			end
+			platformConnections[cloudPart] = nil
+		end
 		
 		platform:Destroy()
 		cloudPlatforms[cloudPart] = nil
