@@ -15,7 +15,7 @@ pcall(function()
     local CoreGui = cloneref(game:GetService("CoreGui")) or LocalPlayer:WaitForChild("PlayerGui")
 
     -- Clean up previous execution
-    local oldGui = CoreGui:FindFirstChild("GazeVerificator") or CoreGui:FindFirstChild("DraggableGui")
+    local oldGui = CoreGui:FindFirstChild("AveryHubGui") or CoreGui:FindFirstChild("GazeVerificator") or CoreGui:FindFirstChild("DraggableGui")
     if oldGui then oldGui:Destroy() end
 
     -- COMPLETE PUBLIC R15 ANIMATION PACK DATABASE
@@ -194,18 +194,32 @@ pcall(function()
         local humanoid = char:WaitForChild("Humanoid", 5)
         if not animateScript or not humanoid then return end
 
-        -- Stop currently playing tracks
+        -- Disable script temporarily to clear current animation loop safely
+        animateScript.Disabled = true
+
+        -- Stop all playing tracks to clear glitched states
         for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
-            track:Stop()
+            track:Stop(0)
         end
 
-        -- Update Animate Script IDs
-        local function setAnim(folderName, id)
+        -- Safe ID re-assignment helper
+        local function setAnim(folderName, idData)
             local folder = animateScript:FindFirstChild(folderName)
-            if folder then
+            if not folder then return end
+
+            if type(idData) == "table" then
+                -- Handle double-idle animations (Animation1, Animation2)
+                local children = folder:GetChildren()
+                for index, animId in ipairs(idData) do
+                    if children[index] and children[index]:IsA("Animation") then
+                        children[index].AnimationId = "http://www.roblox.com/asset/?id=" .. tostring(animId)
+                    end
+                end
+            else
+                -- Handle single animation folders (walk, run, jump, fall)
                 for _, anim in ipairs(folder:GetChildren()) do
                     if anim:IsA("Animation") then
-                        anim.AnimationId = "rbxassetid://" .. tostring(id)
+                        anim.AnimationId = "http://www.roblox.com/asset/?id=" .. tostring(idData)
                     end
                 end
             end
@@ -214,30 +228,26 @@ pcall(function()
         -- Apply Selected Pack IDs dynamically
         for category, anims in pairs(OriginalAnimations) do
             if anims[packName] then
-                local animData = anims[packName]
-                if category == "Idle" and type(animData) == "table" then
-                    setAnim("idle", animData[1])
-                else
-                    setAnim(category:lower(), animData)
-                end
+                setAnim(category:lower(), anims[packName])
             end
         end
 
-        -- Refresh Humanoid State to force animation update
-        humanoid:ChangeState(Enum.HumanoidStateType.Landed)
+        -- Restart Animate script to register new track pointers cleanly
+        task.wait(0.1)
+        animateScript.Disabled = false
     end
 
     -- Keep Animation Active Across Respawns
     LocalPlayer.CharacterAdded:Connect(function(newChar)
         if SelectedPack then
-            task.wait(1)
+            task.wait(0.8)
             ApplyAnimationPack(newChar, SelectedPack)
         end
     end)
 
     -- Build Main UI
     local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "GazeVerificator"
+    screenGui.Name = "AveryHubGui"
     screenGui.Parent = CoreGui
 
     local camera = workspace.CurrentCamera
@@ -246,7 +256,7 @@ pcall(function()
     end
 
     local frame = Instance.new("Frame")
-    frame.Name = "GazeMain"
+    frame.Name = "AveryMain"
     frame.Size = getScaledSize(0.3, 0.4)
     frame.Position = UDim2.new(0.5, -frame.Size.X.Offset/2, 0.5, -frame.Size.Y.Offset/2)
     frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
@@ -269,7 +279,7 @@ pcall(function()
 
     closeBtn.MouseButton1Click:Connect(function()
         frame.Visible = false
-        Notify("Gaze", "Press Right-Control to open again!", 2)
+        Notify("Avery Hub", "Press Right-Control to open again!", 2)
     end)
 
     -- Toggle Menu Visibility with Right Control
@@ -279,15 +289,15 @@ pcall(function()
         end
     end)
 
-    local gazeLabel = Instance.new("TextLabel")
-    gazeLabel.Text = "GAZE ANIMATOR"
-    gazeLabel.Font = Enum.Font.SourceSansBold
-    gazeLabel.TextScaled = true
-    gazeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    gazeLabel.BackgroundTransparency = 1
-    gazeLabel.Size = UDim2.new(0.7, 0, 0.1, 0)
-    gazeLabel.Position = UDim2.new(0.05, 0, 0, 0)
-    gazeLabel.Parent = frame
+    local hubLabel = Instance.new("TextLabel")
+    hubLabel.Text = "AVERY HUB"
+    hubLabel.Font = Enum.Font.SourceSansBold
+    hubLabel.TextScaled = true
+    hubLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    hubLabel.BackgroundTransparency = 1
+    hubLabel.Size = UDim2.new(0.7, 0, 0.1, 0)
+    hubLabel.Position = UDim2.new(0.05, 0, 0, 0)
+    hubLabel.Parent = frame
 
     local searchBar = Instance.new("TextBox")
     searchBar.PlaceholderText = "Search animations..."
@@ -356,5 +366,5 @@ pcall(function()
         end
     end)
 
-    Notify("Gaze Loaded", "Press Right-Control to hide/show UI.", 4)
+    Notify("Avery Hub Loaded", "Press Right-Control to hide/show UI.", 4)
 end)
