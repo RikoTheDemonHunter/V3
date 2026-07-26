@@ -1,260 +1,256 @@
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+pcall(function()
+    local Players = game:GetService("Players")
+    local TweenService = game:GetService("TweenService")
+    local HttpService = game:GetService("HttpService")
+    local UserInputService = game:GetService("UserInputService")
+    local LocalPlayer = Players.LocalPlayer
 
--- Complete Animation Package Catalog (R15 Asset IDs)
-local AnimationPacks = {
-    ["Toy"] = {
-        idle = {"754201088", "754202324"},
-        walk = {"754207777"},
-        run = {"754204780"},
-        jump = {"754203431"},
-        fall = {"754201889"},
-        climb = {"754200411"},
-        swim = {"754205469"}
-    },
-    ["Ninja"] = {
-        idle = {"656117400", "656118341"},
-        walk = {"656121766"},
-        run = {"656118852"},
-        jump = {"656117878"},
-        fall = {"656115606"},
-        climb = {"656114359"},
-        swim = {"656120286"}
-    },
-    ["Mage"] = {
-        idle = {"707742142", "707855907"},
-        walk = {"707897309"},
-        run = {"707861613"},
-        jump = {"707853694"},
-        fall = {"707829716"},
-        climb = {"707826056"},
-        swim = {"707886350"}
-    },
-    ["Pirate"] = {
-        idle = {"750781872", "750782770"},
-        walk = {"750785693"},
-        run = {"750783738"},
-        jump = {"750782230"},
-        fall = {"750780242"},
-        climb = {"750779899"},
-        swim = {"750784268"}
-    },
-    ["Superhero"] = {
-        idle = {"616088211", "616089862"},
-        walk = {"616095330"},
-        run = {"616091570"},
-        jump = {"616090535"},
-        fall = {"616087089"},
-        climb = {"616086104"},
-        swim = {"616093456"}
-    },
-    ["Zombie"] = {
-        idle = {"616158929", "616160636"},
-        walk = {"616168032"},
-        run = {"616163682"},
-        jump = {"616161997"},
-        fall = {"616157476"},
-        climb = {"616156119"},
-        swim = {"616165109"}
-    },
-    ["Vampire"] = {
-        idle = {"1083445855", "1083450166"},
-        walk = {"1083456082"},
-        run = {"1083453805"},
-        jump = {"1083452285"},
-        fall = {"1083443587"},
-        climb = {"1083439238"},
-        swim = {"1083455122"}
-    },
-    ["Knight"] = {
-        idle = {"657564596", "657565700"},
-        walk = {"657568420"},
-        run = {"657566804"},
-        jump = {"657566192"},
-        fall = {"657563012"},
-        climb = {"657561858"},
-        swim = {"657567468"}
-    },
-    ["Robot"] = {
-        idle = {"616080208", "616081593"},
-        walk = {"616085208"},
-        run = {"616083160"},
-        jump = {"616081988"},
-        fall = {"616078750"},
-        climb = {"616077202"},
-        swim = {"616084236"}
-    },
-    ["Elderly"] = {
-        idle = {"845396260", "845400520"},
-        walk = {"845403240"},
-        run = {"845401761"},
-        jump = {"845398858"},
-        fall = {"845396048"},
-        climb = {"845392038"},
-        swim = {"845402452"}
-    },
-    ["Levitation"] = {
-        idle = {"616006778", "616008087"},
-        walk = {"616013216"},
-        run = {"616010382"},
-        jump = {"616008936"},
-        fall = {"616005863"},
-        climb = {"616003713"},
-        swim = {"616011509"}
-    }
-}
-
--- Keep reference updated on death/respawn
-LocalPlayer.CharacterAdded:Connect(function(newChar)
-    Character = newChar
-end)
-
--- Notification Helper
-local function Notify(title, text, duration)
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = title,
-        Text = text,
-        Duration = duration or 3
-    })
-end
-
--- UI Setup
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "AnimPackSelectorGui"
-ScreenGui.ResetOnSpawn = false
-ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
-
-local MainFrame = Instance.new("Frame")
-MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 320, 0, 420)
-MainFrame.Position = UDim2.new(0.5, -160, 0.5, -210)
-MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-MainFrame.BorderSizePixel = 0
-MainFrame.Active = true
-MainFrame.Draggable = true
-MainFrame.Parent = ScreenGui
-
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 8)
-UICorner.Parent = MainFrame
-
-local TitleBar = Instance.new("TextLabel")
-TitleBar.Name = "TitleBar"
-TitleBar.Size = UDim2.new(1, 0, 0, 40)
-TitleBar.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
-TitleBar.Text = "Animation Pack Switcher"
-TitleBar.TextColor3 = Color3.fromRGB(255, 255, 255)
-TitleBar.TextSize = 16
-TitleBar.Font = Enum.Font.SourceSansBold
-TitleBar.Parent = MainFrame
-
-local TitleCorner = Instance.new("UICorner")
-TitleCorner.CornerRadius = UDim.new(0, 8)
-TitleCorner.Parent = TitleBar
-
-local SearchBar = Instance.new("TextBox")
-SearchBar.Name = "SearchBar"
-SearchBar.Size = UDim2.new(0.9, 0, 0, 30)
-SearchBar.Position = UDim2.new(0.05, 0, 0.12, 0)
-SearchBar.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
-SearchBar.PlaceholderText = "Search package (Toy, Ninja, Mage...)"
-SearchBar.Text = ""
-SearchBar.TextColor3 = Color3.fromRGB(255, 255, 255)
-SearchBar.TextSize = 14
-SearchBar.Font = Enum.Font.SourceSans
-SearchBar.Parent = MainFrame
-
-local SearchCorner = Instance.new("UICorner")
-SearchCorner.CornerRadius = UDim.new(0, 5)
-SearchCorner.Parent = SearchBar
-
-local ScrollFrame = Instance.new("ScrollingFrame")
-ScrollFrame.Name = "ScrollFrame"
-ScrollFrame.Size = UDim2.new(0.9, 0, 0.78, 0)
-ScrollFrame.Position = UDim2.new(0.05, 0, 0.2, 0)
-ScrollFrame.BackgroundTransparency = 1
-ScrollFrame.BorderSizePixel = 0
-ScrollFrame.ScrollBarThickness = 6
-ScrollFrame.Parent = MainFrame
-
-local UIListLayout = Instance.new("UIListLayout")
-UIListLayout.Parent = ScrollFrame
-UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout.Padding = UDim.new(0, 5)
-
-UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
-end)
-
--- Button Helper
-local function createTheButton(name, onClick)
-    local button = Instance.new("TextButton")
-    button.Name = name
-    button.Size = UDim2.new(1, -10, 0, 35)
-    button.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
-    button.Text = name .. " Pack"
-    button.TextColor3 = Color3.fromRGB(220, 220, 220)
-    button.TextSize = 15
-    button.Font = Enum.Font.SourceSansBold
-    button.Parent = ScrollFrame
-
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 6)
-    corner.Parent = button
-
-    button.MouseButton1Click:Connect(onClick)
-    return button
-end
-
--- Filter Logic
-SearchBar:GetPropertyChangedSignal("Text"):Connect(function()
-    local searchText = SearchBar.Text:lower()
-    for _, child in pairs(ScrollFrame:GetChildren()) do
-        if child:IsA("TextButton") then
-            child.Visible = (searchText == "" or child.Name:lower():find(searchText) ~= nil)
-        end
-    end
-end)
-
--- Core Function to apply the chosen package to character's Animate script
-local function applyPackage(packageName, packData)
-    local animateScript = Character:FindFirstChild("Animate")
-    if not animateScript then
-        Notify("Error", "Animate script missing from Character!", 3)
+    -- Check R15
+    if not LocalPlayer.Character or LocalPlayer.Character:WaitForChild("Humanoid").RigType ~= Enum.HumanoidRigType.R15 then 
+        game:GetService("StarterGui"):SetCore("SendNotification", {Title = "R6 Error", Text = "You are on R6. Please switch to R15!", Duration = 10})
         return
     end
 
-    for category, ids in pairs(packData) do
-        local targetFolder = animateScript:FindFirstChild(category)
-        if targetFolder then
-            targetFolder:ClearAllChildren()
-            for i, id in ipairs(ids) do
-                local newAnim = Instance.new("Animation")
-                newAnim.Name = category .. "Anim" .. i
-                newAnim.AnimationId = "rbxassetid://" .. id
-                newAnim.Parent = targetFolder
+    local cloneref = cloneref or function(o) return o end
+    local CoreGui = cloneref(game:GetService("CoreGui")) or LocalPlayer:WaitForChild("PlayerGui")
 
-                local weightVal = Instance.new("NumberValue")
-                weightVal.Name = "Weight"
-                weightVal.Value = (i == 1 and 10 or 1)
-                weightVal.Parent = newAnim
+    -- Clean up previous execution
+    local oldGui = CoreGui:FindFirstChild("GazeVerificator") or CoreGui:FindFirstChild("DraggableGui")
+    if oldGui then oldGui:Destroy() end
+
+    -- Custom Notification System
+    local Notifbro = {}
+    local function Notify(titletxt, text, time)
+        coroutine.wrap(function()
+            local GUI = Instance.new("ScreenGui")
+            GUI.Name = "BackgroundNotif"
+            GUI.Parent = CoreGui
+
+            local sw = workspace.CurrentCamera.ViewportSize.X
+            local sh = workspace.CurrentCamera.ViewportSize.Y
+            local nh = sh / 7
+            local nw = sw / 5
+
+            local Main = Instance.new("Frame", GUI)
+            Main.Name = "MainFrame"
+            Main.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+            Main.BackgroundTransparency = 0.2
+            Main.BorderSizePixel = 0
+            Main.Size = UDim2.new(0, nw, 0, nh)
+
+            local title = Instance.new("TextLabel", Main)
+            title.Size = UDim2.new(1, 0, 0, nh / 2)
+            title.Font = Enum.Font.GothamBold
+            title.Text = titletxt
+            title.TextColor3 = Color3.new(1, 1, 1)
+            title.TextScaled = true
+            title.BackgroundTransparency = 0.9
+            title.BackgroundColor3 = Color3.new(0,0,0)
+
+            local message = Instance.new("TextLabel", Main)
+            message.Position = UDim2.new(0, 0, 0, nh / 2)
+            message.Size = UDim2.new(1, 0, 1, -nh / 2)
+            message.Font = Enum.Font.Gotham
+            message.Text = text
+            message.TextColor3 = Color3.new(1, 1, 1)
+            message.TextScaled = true
+            message.BackgroundTransparency = 1
+
+            local offset = 50
+            for _, notif in ipairs(Notifbro) do
+                offset = offset + notif.Size.Y.Offset + 10
             end
-        end
+
+            Main.Position = UDim2.new(1, 5, 0, offset)
+            table.insert(Notifbro, Main)
+
+            task.wait(0.1)
+            Main:TweenPosition(UDim2.new(1, -nw, 0, offset), Enum.EasingDirection.Out, Enum.EasingStyle.Bounce, 0.4, true)
+            task.wait(time or 3)
+
+            Main:TweenPosition(UDim2.new(1, 5, 0, offset), Enum.EasingDirection.In, Enum.EasingStyle.Bounce, 0.4, true)
+            task.wait(0.4)
+            GUI:Destroy()
+
+            for i, notif in ipairs(Notifbro) do
+                if notif == Main then
+                    table.remove(Notifbro, i)
+                    break
+                end
+            end
+        end)()
     end
 
-    -- Force Humanoid to update animation state immediately
-    local humanoid = Character:FindFirstChildOfClass("Humanoid")
-    if humanoid then
+    -- Persistent Active Pack State
+    local SelectedPack = nil
+
+    local function ApplyAnimationPack(char, packName)
+        if not char or not packName then return end
+        local animateScript = char:WaitForChild("Animate", 5)
+        local humanoid = char:WaitForChild("Humanoid", 5)
+        if not animateScript or not humanoid then return end
+
+        -- Stop currently playing tracks to avoid overlap bugs
+        for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
+            track:Stop()
+        end
+
+        -- Update Animate Script IDs
+        local function setAnim(folderName, id)
+            local folder = animateScript:FindFirstChild(folderName)
+            if folder then
+                for _, anim in ipairs(folder:GetChildren()) do
+                    if anim:IsA("Animation") then
+                        anim.AnimationId = "rbxassetid://" .. tostring(id)
+                    end
+                end
+            end
+        end
+
+        -- Apply Selected Pack IDs dynamically
+        for category, anims in pairs(OriginalAnimations) do
+            if anims[packName] then
+                local animData = anims[packName]
+                if category == "Idle" and type(animData) == "table" then
+                    setAnim("idle", animData[1])
+                else
+                    setAnim(category:lower(), animData)
+                end
+            end
+        end
+
+        -- Refresh Humanoid State to force animation update
         humanoid:ChangeState(Enum.HumanoidStateType.Landed)
     end
 
-    Notify("Applied", "Equipped " .. packageName .. " Package!", 2)
-end
-
--- Populate buttons for all available animation packages
-for packName, packData in pairs(AnimationPacks) do
-    createTheButton(packName, function()
-        applyPackage(packName, packData)
+    -- Keep Animation Active Across Respawns
+    LocalPlayer.CharacterAdded:Connect(function(newChar)
+        if SelectedPack then
+            task.wait(1) -- Allow character load
+            ApplyAnimationPack(newChar, SelectedPack)
+        end
     end)
-end
+
+    -- Build Main UI
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "GazeVerificator"
+    screenGui.Parent = CoreGui
+
+    local camera = workspace.CurrentCamera
+    local function getScaledSize(rw, rh)
+        return UDim2.new(0, math.floor(camera.ViewportSize.X * rw), 0, math.floor(camera.ViewportSize.Y * rh))
+    end
+
+    local frame = Instance.new("Frame")
+    frame.Name = "GazeMain"
+    frame.Size = getScaledSize(0.3, 0.4)
+    frame.Position = UDim2.new(0.5, -frame.Size.X.Offset/2, 0.5, -frame.Size.Y.Offset/2)
+    frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    frame.BorderSizePixel = 0
+    frame.Active = true
+    frame.Draggable = true
+    frame.Parent = screenGui
+
+    -- Close Button (X)
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Size = UDim2.new(0, 30, 0, 30)
+    closeBtn.Position = UDim2.new(1, -35, 0, 5)
+    closeBtn.Text = "X"
+    closeBtn.Font = Enum.Font.SourceSansBold
+    closeBtn.TextSize = 18
+    closeBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    closeBtn.BorderSizePixel = 0
+    closeBtn.Parent = frame
+
+    closeBtn.MouseButton1Click:Connect(function()
+        frame.Visible = false
+        Notify("Gaze", "Press Right-Control to open again!", 2)
+    end)
+
+    -- Toggle Menu Visibility with Right Control
+    UserInputService.InputBegan:Connect(function(input, gpe)
+        if not gpe and input.KeyCode == Enum.KeyCode.RightControl then
+            frame.Visible = not frame.Visible
+        end
+    end)
+
+    local gazeLabel = Instance.new("TextLabel")
+    gazeLabel.Text = "GAZE ANIMATOR"
+    gazeLabel.Font = Enum.Font.SourceSansBold
+    gazeLabel.TextScaled = true
+    gazeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    gazeLabel.BackgroundTransparency = 1
+    gazeLabel.Size = UDim2.new(0.7, 0, 0.1, 0)
+    gazeLabel.Position = UDim2.new(0.05, 0, 0, 0)
+    gazeLabel.Parent = frame
+
+    local searchBar = Instance.new("TextBox")
+    searchBar.PlaceholderText = "Search animations..."
+    searchBar.Font = Enum.Font.SourceSans
+    searchBar.TextScaled = true
+    searchBar.TextColor3 = Color3.fromRGB(220, 220, 220)
+    searchBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    searchBar.BorderSizePixel = 0
+    searchBar.Size = UDim2.new(0.9, 0, 0.12, 0)
+    searchBar.Position = UDim2.new(0.05, 0, 0.12, 0)
+    searchBar.Parent = frame
+
+    local scrollFrame = Instance.new("ScrollingFrame")
+    scrollFrame.Size = UDim2.new(0.9, 0, 0.7, 0)
+    scrollFrame.Position = UDim2.new(0.05, 0, 0.26, 0)
+    scrollFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    scrollFrame.BorderSizePixel = 0
+    scrollFrame.ScrollBarThickness = 4
+    scrollFrame.Parent = frame
+
+    local scrollLayout = Instance.new("UIListLayout")
+    scrollLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    scrollLayout.Padding = UDim.new(0, 4)
+    scrollLayout.Parent = scrollFrame
+
+    scrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        scrollFrame.CanvasSize = UDim2.new(0, 0, 0, scrollLayout.AbsoluteContentSize.Y)
+    end)
+
+    -- Populate Animation Packs List
+    local createdSet = {}
+    local buttons = {}
+
+    local function createPackButton(packName)
+        if createdSet[packName] then return end
+        createdSet[packName] = true
+
+        local button = Instance.new("TextButton")
+        button.Text = packName
+        button.Font = Enum.Font.SourceSansBold
+        button.TextSize = 16
+        button.TextColor3 = Color3.fromRGB(240, 240, 240)
+        button.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+        button.Size = UDim2.new(1, 0, 0, 35)
+        button.BorderSizePixel = 0
+        button.Parent = scrollFrame
+
+        button.MouseButton1Click:Connect(function()
+            SelectedPack = packName
+            ApplyAnimationPack(LocalPlayer.Character, packName)
+            Notify("Applied", packName .. " animations loaded!", 2)
+        end)
+
+        table.insert(buttons, button)
+    end
+
+    -- Load all unique pack names from idle category
+    for name, _ in pairs(OriginalAnimations["Idle"]) do
+        createPackButton(name)
+    end
+
+    searchBar:GetPropertyChangedSignal("Text"):Connect(function()
+        local filter = searchBar.Text:lower()
+        for _, btn in ipairs(buttons) do
+            btn.Visible = (filter == "" or btn.Text:lower():find(filter, 1, true) ~= nil)
+        end
+    end)
+
+    Notify("Gaze Loaded", "Press Right-Control to hide/show UI.", 4)
+end)
