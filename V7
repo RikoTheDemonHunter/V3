@@ -2,6 +2,7 @@ pcall(function()
     local Players = game:GetService("Players")
     local TweenService = game:GetService("TweenService")
     local UserInputService = game:GetService("UserInputService")
+    local ContentProvider = game:GetService("ContentProvider")
     local LocalPlayer = Players.LocalPlayer
 
     -- Check R15 Setup
@@ -82,21 +83,31 @@ pcall(function()
     -- State Management
     local SelectedPack = nil
 
-    -- Clean Animation Application Engine
+    -- Fully Fixed Animation Application Engine
     local function ApplyAnimationPack(char, packName)
         if not char or not packName then return end
-        local animateScript = char:WaitForChild("Animate", 3)
-        local humanoid = char:WaitForChild("Humanoid", 3)
+        local animateScript = char:WaitForChild("Animate", 4)
+        local humanoid = char:WaitForChild("Humanoid", 4)
         if not animateScript or not humanoid then return end
 
-        -- Stop active tracks to clear visual glitching
-        for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
-            track:Stop(0.1)
+        local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 2)
+
+        -- Force stop all currently playing animation tracks on Animator/Humanoid
+        if animator then
+            for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+                track:Stop(0)
+            end
         end
 
-        -- Clone & re-inject Animate script to wipe out old memory references cleanly
+        for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
+            track:Stop(0)
+        end
+
+        -- Clone & reboot Animate script safely
         local animClone = animateScript:Clone()
         animateScript:Destroy()
+
+        local preloadAssets = {}
 
         local function updateValues(folderName, idData)
             local folder = animClone:FindFirstChild(folderName)
@@ -107,26 +118,47 @@ pcall(function()
                 for _, child in ipairs(folder:GetChildren()) do
                     if child:IsA("Animation") then table.insert(animObjs, child) end
                 end
+
                 for idx, id in ipairs(idData) do
                     if animObjs[idx] then
-                        animObjs[idx].AnimationId = "rbxassetid://" .. tostring(id)
+                        local formattedId = "rbxassetid://" .. tostring(id)
+                        animObjs[idx].AnimationId = formattedId
+                        table.insert(preloadAssets, animObjs[idx])
+
+                        -- Fix double-idle weight values so both idles play correctly
+                        local weightVal = animObjs[idx]:FindFirstChild("Weight")
+                        if not weightVal then
+                            weightVal = Instance.new("NumberValue", animObjs[idx])
+                            weightVal.Name = "Weight"
+                        end
+                        weightVal.Value = 10
                     end
                 end
             else
                 for _, child in ipairs(folder:GetChildren()) do
                     if child:IsA("Animation") then
-                        child.AnimationId = "rbxassetid://" .. tostring(idData)
+                        local formattedId = "rbxassetid://" .. tostring(idData)
+                        child.AnimationId = formattedId
+                        table.insert(preloadAssets, child)
                     end
                 end
             end
         end
 
+        -- Update values for every state category
         for category, packs in pairs(OriginalAnimations) do
             if packs[packName] then
                 updateValues(category:lower(), packs[packName])
             end
         end
 
+        -- Preload tracks into client memory to prevent mobile freezing/flicker
+        pcall(function()
+            ContentProvider:PreloadAsync(preloadAssets)
+        end)
+
+        -- Re-inject Animate script to restart movement loop cleanly
+        animClone.Disabled = false
         animClone.Parent = char
     end
 
@@ -138,7 +170,7 @@ pcall(function()
         end
     end)
 
-    -- UI BUILD (MOBILE OPTIMIZED)
+    -- UI BUILD (MOBILE OPTIMIZED) - UNTOUCHED
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "AveryHubGui"
     screenGui.ResetOnSpawn = false
