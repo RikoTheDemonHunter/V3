@@ -5,6 +5,9 @@ pcall(function()
     local ContentProvider = game:GetService("ContentProvider")
     local LocalPlayer = Players.LocalPlayer
 
+    -- Global state persistence across resets
+    getgenv().AverySelectedPack = getgenv().AverySelectedPack or nil
+
     -- Check R15 Setup
     local function checkR15(char)
         local humanoid = char:WaitForChild("Humanoid", 5)
@@ -80,95 +83,73 @@ pcall(function()
         }
     }
 
-    -- State Management
-    local SelectedPack = nil
-
-    -- Fully Fixed Animation Application Engine
+    -- Direct Animation Engine Core
     local function ApplyAnimationPack(char, packName)
         if not char or not packName then return end
-        local animateScript = char:WaitForChild("Animate", 4)
-        local humanoid = char:WaitForChild("Humanoid", 4)
-        if not animateScript or not humanoid then return end
+        local humanoid = char:WaitForChild("Humanoid", 5)
+        local animateScript = char:WaitForChild("Animate", 5)
+        if not humanoid or not animateScript then return end
 
-        local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 2)
+        local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 3)
 
-        -- Force stop all currently playing animation tracks on Animator/Humanoid
-        if animator then
-            for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
-                track:Stop(0)
-            end
-        end
-
-        for _, track in ipairs(humanoid:GetPlayingAnimationTracks()) do
-            track:Stop(0)
-        end
-
-        -- Clone & reboot Animate script safely
-        local animClone = animateScript:Clone()
-        animateScript:Destroy()
-
-        local preloadAssets = {}
-
-        local function updateValues(folderName, idData)
-            local folder = animClone:FindFirstChild(folderName)
+        -- Safely modify values inside default Animate script tree
+        local function modifyAnimFolder(folderName, animIdData)
+            local folder = animateScript:FindFirstChild(folderName)
             if not folder then return end
 
-            if type(idData) == "table" then
-                local animObjs = {}
-                for _, child in ipairs(folder:GetChildren()) do
-                    if child:IsA("Animation") then table.insert(animObjs, child) end
+            if type(animIdData) == "table" then
+                local animChildren = {}
+                for _, v in ipairs(folder:GetChildren()) do
+                    if v:IsA("Animation") then table.insert(animChildren, v) end
                 end
-
-                for idx, id in ipairs(idData) do
-                    if animObjs[idx] then
-                        local formattedId = "rbxassetid://" .. tostring(id)
-                        animObjs[idx].AnimationId = formattedId
-                        table.insert(preloadAssets, animObjs[idx])
-
-                        -- Fix double-idle weight values so both idles play correctly
-                        local weightVal = animObjs[idx]:FindFirstChild("Weight")
-                        if not weightVal then
-                            weightVal = Instance.new("NumberValue", animObjs[idx])
-                            weightVal.Name = "Weight"
-                        end
-                        weightVal.Value = 10
+                
+                for i, id in ipairs(animIdData) do
+                    if animChildren[i] then
+                        animChildren[i].AnimationId = "rbxassetid://" .. tostring(id)
                     end
                 end
             else
-                for _, child in ipairs(folder:GetChildren()) do
-                    if child:IsA("Animation") then
-                        local formattedId = "rbxassetid://" .. tostring(idData)
-                        child.AnimationId = formattedId
-                        table.insert(preloadAssets, child)
+                for _, v in ipairs(folder:GetChildren()) do
+                    if v:IsA("Animation") then
+                        v.AnimationId = "rbxassetid://" .. tostring(animIdData)
                     end
                 end
             end
         end
 
-        -- Update values for every state category
-        for category, packs in pairs(OriginalAnimations) do
-            if packs[packName] then
-                updateValues(category:lower(), packs[packName])
+        -- Update animation definitions
+        modifyAnimFolder("idle", OriginalAnimations.Idle[packName])
+        modifyAnimFolder("walk", OriginalAnimations.Walk[packName])
+        modifyAnimFolder("run", OriginalAnimations.Run[packName])
+        modifyAnimFolder("jump", OriginalAnimations.Jump[packName])
+        modifyAnimFolder("fall", OriginalAnimations.Fall[packName])
+
+        -- Flush active playing tracks on animator to force script refresh without breaking velocity
+        if animator then
+            for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+                track:Stop(0.1)
             end
         end
 
-        -- Preload tracks into client memory to prevent mobile freezing/flicker
-        pcall(function()
-            ContentProvider:PreloadAsync(preloadAssets)
-        end)
-
-        -- Re-inject Animate script to restart movement loop cleanly
-        animClone.Disabled = false
-        animClone.Parent = char
+        -- Refresh Animate loop
+        animateScript.Disabled = true
+        task.wait(0.05)
+        animateScript.Disabled = false
     end
 
-    -- Character Re-spawn Auto-Apply
-    LocalPlayer.CharacterAdded:Connect(function(newChar)
-        if SelectedPack and checkR15(newChar) then
-            task.wait(1)
-            ApplyAnimationPack(newChar, SelectedPack)
+    -- Respawn Handler: Ensures selected pack stays active after dying/resetting
+    local function setupCharacter(char)
+        if getgenv().AverySelectedPack and checkR15(char) then
+            task.wait(0.5)
+            ApplyAnimationPack(char, getgenv().AverySelectedPack)
         end
-    end)
+    end
+
+    if LocalPlayer.Character then
+        setupCharacter(LocalPlayer.Character)
+    end
+
+    LocalPlayer.CharacterAdded:Connect(setupCharacter)
 
     -- UI BUILD (MOBILE OPTIMIZED) - UNTOUCHED
     local screenGui = Instance.new("ScreenGui")
@@ -176,7 +157,7 @@ pcall(function()
     screenGui.ResetOnSpawn = false
     screenGui.Parent = CoreGui
 
-    -- Floating Touch Toggle Button (Mobile Friendly)
+    -- Floating Touch Toggle Button
     local toggleBtn = Instance.new("TextButton")
     toggleBtn.Name = "AveryToggle"
     toggleBtn.Size = UDim2.new(0, 110, 0, 38)
@@ -251,7 +232,7 @@ pcall(function()
     local closeCorner = Instance.new("UICorner", closeBtn)
     closeCorner.CornerRadius = UDim.new(0, 6)
 
-    -- Smooth Open / Close Animation System
+    -- Menu Visibility Logic
     local isOpen = true
     local function setMenuVisible(state)
         isOpen = state
@@ -318,8 +299,14 @@ pcall(function()
         local btnCorner = Instance.new("UICorner", btn)
         btnCorner.CornerRadius = UDim.new(0, 6)
 
+        -- Highlight previously selected pack on GUI reload
+        if getgenv().AverySelectedPack == packName then
+            btn.BackgroundColor3 = Color3.fromRGB(0, 150, 190)
+            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        end
+
         btn.MouseButton1Click:Connect(function()
-            SelectedPack = packName
+            getgenv().AverySelectedPack = packName
             ApplyAnimationPack(LocalPlayer.Character, packName)
 
             -- Active visual state feedback
