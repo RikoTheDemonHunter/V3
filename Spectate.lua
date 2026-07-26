@@ -33,6 +33,7 @@ pcall(function()
     -- OFFICIAL VERIFIED ROBLOX ANIMATION PACK DATABASE
     local OriginalAnimations = {
         Idle = {
+            ["Default"] = {507766388, 507766666},
             ["Ninja"] = {656117400, 656118341},
             ["Toy"] = {782841498, 782845736},
             ["Vampire"] = {1083445855, 1083450166},
@@ -53,6 +54,7 @@ pcall(function()
             ["Rorro"] = {1092105732, 1092106234}
         },
         Walk = {
+            ["Default"] = 913402848,
             ["Ninja"] = 656121766, ["Toy"] = 782843345, ["Vampire"] = 1083452282, ["Werewolf"] = 1083199849,
             ["Zombie"] = 616168032, ["Mage"] = 707897309, ["Pirate"] = 750785693, ["Superhero"] = 616122287,
             ["Knight"] = 657552124, ["Levitation"] = 616013216, ["Bubbly"] = 910025107, ["Stylish"] = 616146170,
@@ -60,6 +62,7 @@ pcall(function()
             ["Elder"] = 845403244, ["Rorro"] = 1092107129
         },
         Run = {
+            ["Default"] = 913376220,
             ["Ninja"] = 656118852, ["Toy"] = 782842708, ["Vampire"] = 1083450849, ["Werewolf"] = 1083196960,
             ["Zombie"] = 616163605, ["Mage"] = 707861613, ["Pirate"] = 750783738, ["Superhero"] = 616117088,
             ["Knight"] = 657564596, ["Levitation"] = 616008936, ["Bubbly"] = 910016857, ["Stylish"] = 616140816,
@@ -67,6 +70,7 @@ pcall(function()
             ["Elder"] = 845401765, ["Rorro"] = 1092106432
         },
         Jump = {
+            ["Default"] = 507765000,
             ["Ninja"] = 656117878, ["Toy"] = 782841968, ["Vampire"] = 1083450423, ["Werewolf"] = 1083196303,
             ["Zombie"] = 616161984, ["Mage"] = 707858694, ["Pirate"] = 750783008, ["Superhero"] = 616114845,
             ["Knight"] = 657593688, ["Levitation"] = 616008291, ["Bubbly"] = 910012220, ["Stylish"] = 616139451,
@@ -74,6 +78,7 @@ pcall(function()
             ["Elder"] = 845400922, ["Rorro"] = 1092106300
         },
         Fall = {
+            ["Default"] = 507767968,
             ["Ninja"] = 656115606, ["Toy"] = 782840523, ["Vampire"] = 1083443587, ["Werewolf"] = 1083193826,
             ["Zombie"] = 616157122, ["Mage"] = 707829716, ["Pirate"] = 750780242, ["Superhero"] = 616108112,
             ["Knight"] = 657560862, ["Levitation"] = 616005863, ["Bubbly"] = 910001910, ["Stylish"] = 616134815,
@@ -91,13 +96,11 @@ pcall(function()
 
         local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 3)
 
-        -- Safely modify existing animation object IDs without destroying folder structures
         local function modifyAnimFolder(folderName, animIdData)
             local folder = animateScript:FindFirstChild(folderName)
             if not folder then return end
 
             if type(animIdData) == "table" then
-                -- Get current animations inside folder
                 local currentAnims = {}
                 for _, child in ipairs(folder:GetChildren()) do
                     if child:IsA("Animation") then
@@ -114,7 +117,6 @@ pcall(function()
                     end
                     animInst.AnimationId = "http://www.roblox.com/asset/?id=" .. tostring(id)
 
-                    -- Ensure proper weight value exists
                     local weight = animInst:FindFirstChild("Weight") or Instance.new("NumberValue")
                     weight.Name = "Weight"
                     weight.Value = (i == 1 and 9 or 1)
@@ -136,26 +138,22 @@ pcall(function()
             end
         end
 
-        -- Stop currently playing animations to prevent overlap
         if animator then
             for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
                 track:Stop(0.1)
             end
         end
 
-        -- Modify definitions
         modifyAnimFolder("idle", OriginalAnimations.Idle[packName])
         modifyAnimFolder("walk", OriginalAnimations.Walk[packName])
         modifyAnimFolder("run", OriginalAnimations.Run[packName])
         modifyAnimFolder("jump", OriginalAnimations.Jump[packName])
         modifyAnimFolder("fall", OriginalAnimations.Fall[packName])
 
-        -- Reset Animate script to force loading the new asset IDs
         animateScript.Disabled = true
         task.wait(0.1)
         animateScript.Disabled = false
 
-        -- Force humanoid pose recalculation
         task.defer(function()
             if humanoid and humanoid.Parent then
                 humanoid:ChangeState(Enum.HumanoidStateType.Landed)
@@ -168,7 +166,7 @@ pcall(function()
     -- Respawn Handler: Persists selected pack across resets/deaths
     local function setupCharacter(char)
         if getgenv().AverySelectedPack and checkR15(char) then
-            task.wait(0.7) -- Safe delay to ensure Animate script is ready
+            task.wait(0.7)
             ApplyAnimationPack(char, getgenv().AverySelectedPack)
         end
     end
@@ -185,7 +183,6 @@ pcall(function()
     screenGui.ResetOnSpawn = false
     screenGui.Parent = CoreGui
 
-    -- Floating Touch Toggle Button
     local toggleBtn = Instance.new("TextButton")
     toggleBtn.Name = "AveryToggle"
     toggleBtn.Size = UDim2.new(0, 110, 0, 38)
@@ -206,7 +203,6 @@ pcall(function()
     toggleStroke.Color = Color3.fromRGB(0, 180, 220)
     toggleStroke.Thickness = 1.5
 
-    -- Main Container Frame
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
     mainFrame.Size = UDim2.new(0.85, 0, 0.65, 0)
@@ -230,7 +226,6 @@ pcall(function()
     frameStroke.Color = Color3.fromRGB(45, 45, 55)
     frameStroke.Thickness = 1.5
 
-    -- Header Bar
     local header = Instance.new("Frame", mainFrame)
     header.Size = UDim2.new(1, 0, 0.15, 0)
     header.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
@@ -246,7 +241,6 @@ pcall(function()
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.BackgroundTransparency = 1
 
-    -- Animated Close Button
     local closeBtn = Instance.new("TextButton", header)
     closeBtn.Size = UDim2.new(0.12, 0, 0.6, 0)
     closeBtn.Position = UDim2.new(0.85, 0, 0.2, 0)
@@ -260,7 +254,6 @@ pcall(function()
     local closeCorner = Instance.new("UICorner", closeBtn)
     closeCorner.CornerRadius = UDim.new(0, 6)
 
-    -- Menu Visibility Logic
     local isOpen = true
     local function setMenuVisible(state)
         isOpen = state
@@ -277,7 +270,6 @@ pcall(function()
     closeBtn.MouseButton1Click:Connect(function() setMenuVisible(false) end)
     toggleBtn.MouseButton1Click:Connect(function() setMenuVisible(not isOpen) end)
 
-    -- Search Input
     local searchBar = Instance.new("TextBox", mainFrame)
     searchBar.PlaceholderText = "🔍 Search packs..."
     searchBar.Font = Enum.Font.Gotham
@@ -292,7 +284,6 @@ pcall(function()
     local searchCorner = Instance.new("UICorner", searchBar)
     searchCorner.CornerRadius = UDim.new(0, 6)
 
-    -- Scrolling Area
     local scrollFrame = Instance.new("ScrollingFrame", mainFrame)
     scrollFrame.Size = UDim2.new(0.92, 0, 0.65, 0)
     scrollFrame.Position = UDim2.new(0.04, 0, 0.31, 0)
@@ -310,7 +301,6 @@ pcall(function()
         scrollFrame.CanvasSize = UDim2.new(0, 0, 0, scrollLayout.AbsoluteContentSize.Y + 10)
     end)
 
-    -- Create Buttons
     local buttons = {}
     for packName, _ in pairs(OriginalAnimations["Idle"]) do
         local btn = Instance.new("TextButton")
@@ -327,7 +317,6 @@ pcall(function()
         local btnCorner = Instance.new("UICorner", btn)
         btnCorner.CornerRadius = UDim.new(0, 6)
 
-        -- Highlight previously selected pack on GUI reload
         if getgenv().AverySelectedPack == packName then
             btn.BackgroundColor3 = Color3.fromRGB(0, 150, 190)
             btn.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -337,7 +326,6 @@ pcall(function()
             getgenv().AverySelectedPack = packName
             ApplyAnimationPack(LocalPlayer.Character, packName)
 
-            -- Active visual state feedback
             for _, b in ipairs(buttons) do
                 b.BackgroundColor3 = Color3.fromRGB(32, 32, 40)
                 b.TextColor3 = Color3.fromRGB(220, 220, 225)
@@ -349,7 +337,6 @@ pcall(function()
         table.insert(buttons, btn)
     end
 
-    -- Real-time Search Filter
     searchBar:GetPropertyChangedSignal("Text"):Connect(function()
         local filter = searchBar.Text:lower()
         for _, btn in ipairs(buttons) do
