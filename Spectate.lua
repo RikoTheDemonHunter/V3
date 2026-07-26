@@ -30,7 +30,7 @@ pcall(function()
     local oldGui = CoreGui:FindFirstChild("AveryHubGui")
     if oldGui then oldGui:Destroy() end
 
-    -- ANIMATION PACK DATABASE
+    -- OFFICIAL VERIFIED ROBLOX ANIMATION PACK DATABASE
     local OriginalAnimations = {
         Idle = {
             ["Ninja"] = {656117400, 656118341},
@@ -82,7 +82,7 @@ pcall(function()
         }
     }
 
-    -- Direct Animation Engine Core
+    -- Robust Animation Injection Core
     local function ApplyAnimationPack(char, packName)
         if not char or not packName then return end
         local humanoid = char:WaitForChild("Humanoid", 5)
@@ -91,80 +91,84 @@ pcall(function()
 
         local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 3)
 
-        -- Safely update or construct Animation objects inside folders
+        -- Safely modify existing animation object IDs without destroying folder structures
         local function modifyAnimFolder(folderName, animIdData)
             local folder = animateScript:FindFirstChild(folderName)
             if not folder then return end
 
             if type(animIdData) == "table" then
-                local existingAnims = {}
-                for _, v in ipairs(folder:GetChildren()) do
-                    if v:IsA("Animation") then
-                        table.insert(existingAnims, v)
+                -- Get current animations inside folder
+                local currentAnims = {}
+                for _, child in ipairs(folder:GetChildren()) do
+                    if child:IsA("Animation") then
+                        table.insert(currentAnims, child)
                     end
                 end
 
                 for i, id in ipairs(animIdData) do
-                    local animObj = existingAnims[i]
-                    if not animObj then
-                        animObj = Instance.new("Animation")
-                        animObj.Name = folderName .. tostring(i)
-                        animObj.Parent = folder
+                    local animInst = currentAnims[i]
+                    if not animInst then
+                        animInst = Instance.new("Animation")
+                        animInst.Name = folderName .. tostring(i)
+                        animInst.Parent = folder
                     end
-                    animObj.AnimationId = "rbxassetid://" .. tostring(id)
-                    
-                    local weightVal = animObj:FindFirstChild("Weight") or Instance.new("NumberValue")
-                    weightVal.Name = "Weight"
-                    weightVal.Value = (i == 1 and 9 or 1)
-                    weightVal.Parent = animObj
+                    animInst.AnimationId = "http://www.roblox.com/asset/?id=" .. tostring(id)
+
+                    -- Ensure proper weight value exists
+                    local weight = animInst:FindFirstChild("Weight") or Instance.new("NumberValue")
+                    weight.Name = "Weight"
+                    weight.Value = (i == 1 and 9 or 1)
+                    weight.Parent = animInst
                 end
             else
-                local animObj = folder:FindFirstChildOfClass("Animation")
-                if not animObj then
-                    animObj = Instance.new("Animation")
-                    animObj.Name = folderName .. "1"
-                    animObj.Parent = folder
+                local animInst = folder:FindFirstChildOfClass("Animation")
+                if not animInst then
+                    animInst = Instance.new("Animation")
+                    animInst.Name = folderName .. "1"
+                    animInst.Parent = folder
                 end
-                animObj.AnimationId = "rbxassetid://" .. tostring(animIdData)
-                
-                local weightVal = animObj:FindFirstChild("Weight") or Instance.new("NumberValue")
-                weightVal.Name = "Weight"
-                weightVal.Value = 10
-                weightVal.Parent = animObj
+                animInst.AnimationId = "http://www.roblox.com/asset/?id=" .. tostring(animIdData)
+
+                local weight = animInst:FindFirstChild("Weight") or Instance.new("NumberValue")
+                weight.Name = "Weight"
+                weight.Value = 10
+                weight.Parent = animInst
             end
         end
 
-        -- Flush active playing tracks on animator
+        -- Stop currently playing animations to prevent overlap
         if animator then
             for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
-                track:Stop(0)
+                track:Stop(0.1)
             end
         end
 
-        -- Update definitions inside the Animate folder tree
+        -- Modify definitions
         modifyAnimFolder("idle", OriginalAnimations.Idle[packName])
         modifyAnimFolder("walk", OriginalAnimations.Walk[packName])
         modifyAnimFolder("run", OriginalAnimations.Run[packName])
         modifyAnimFolder("jump", OriginalAnimations.Jump[packName])
         modifyAnimFolder("fall", OriginalAnimations.Fall[packName])
 
-        -- Cycle script state to force re-initialization
+        -- Reset Animate script to force loading the new asset IDs
         animateScript.Disabled = true
-        task.wait(0.15)
+        task.wait(0.1)
         animateScript.Disabled = false
 
-        -- Force Humanoid pose evaluate
+        -- Force humanoid pose recalculation
         task.defer(function()
             if humanoid and humanoid.Parent then
+                humanoid:ChangeState(Enum.HumanoidStateType.Landed)
+                task.wait(0.05)
                 humanoid:ChangeState(Enum.HumanoidStateType.Running)
             end
         end)
     end
 
-    -- Respawn Handler: Persists selected pack across deaths and character reloads
+    -- Respawn Handler: Persists selected pack across resets/deaths
     local function setupCharacter(char)
         if getgenv().AverySelectedPack and checkR15(char) then
-            task.wait(0.6) -- Allow character model/animate script to initialize fully on spawn
+            task.wait(0.7) -- Safe delay to ensure Animate script is ready
             ApplyAnimationPack(char, getgenv().AverySelectedPack)
         end
     end
