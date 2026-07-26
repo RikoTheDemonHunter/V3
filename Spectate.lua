@@ -30,66 +30,31 @@ pcall(function()
     local oldGui = CoreGui:FindFirstChild("AveryHubGui")
     if oldGui then oldGui:Destroy() end
 
-    -- OFFICIAL VERIFIED ROBLOX ANIMATION PACK DATABASE
+    -- SELECTED ANIMATION PACK DATABASE
     local OriginalAnimations = {
         Idle = {
-            ["Default"] = {507766388, 507766666},
-            ["Ninja"] = {656117400, 656118341},
             ["Toy"] = {782841498, 782845736},
-            ["Vampire"] = {1083445855, 1083450166},
-            ["Werewolf"] = {1083195517, 1083214717},
             ["Zombie"] = {616158082, 616160842},
-            ["Mage"] = {707742142, 707855907},
-            ["Pirate"] = {750781872, 750782770},
-            ["Superhero"] = {616111295, 616113536},
-            ["Knight"] = {657593035, 657593251},
-            ["Levitation"] = {616006778, 616008087},
-            ["Bubbly"] = {910004836, 910009958},
-            ["Stylish"] = {616136790, 616138447},
-            ["Robot"] = {616088211, 616089859},
-            ["Astral"] = {891621366, 891633237},
-            ["Oldschool"] = {531982821, 531983108},
-            ["Cartoony"] = {742637544, 742638445},
-            ["Elder"] = {845397899, 845400520},
-            ["Rorro"] = {1092105732, 1092106234}
+            ["Vampire"] = {1083445855, 1083450166},
+            ["Adidas"] = {18302035987, 18302035987}
         },
         Walk = {
-            ["Default"] = 913402848,
-            ["Ninja"] = 656121766, ["Toy"] = 782843345, ["Vampire"] = 1083452282, ["Werewolf"] = 1083199849,
-            ["Zombie"] = 616168032, ["Mage"] = 707897309, ["Pirate"] = 750785693, ["Superhero"] = 616122287,
-            ["Knight"] = 657552124, ["Levitation"] = 616013216, ["Bubbly"] = 910025107, ["Stylish"] = 616146170,
-            ["Robot"] = 616095330, ["Astral"] = 891662494, ["Oldschool"] = 531984711, ["Cartoony"] = 742640026,
-            ["Elder"] = 845403244, ["Rorro"] = 1092107129
+            ["Toy"] = 782843345, ["Zombie"] = 616168032, ["Vampire"] = 1083452282, ["Adidas"] = 18302047806
         },
         Run = {
-            ["Default"] = 913376220,
-            ["Ninja"] = 656118852, ["Toy"] = 782842708, ["Vampire"] = 1083450849, ["Werewolf"] = 1083196960,
-            ["Zombie"] = 616163605, ["Mage"] = 707861613, ["Pirate"] = 750783738, ["Superhero"] = 616117088,
-            ["Knight"] = 657564596, ["Levitation"] = 616008936, ["Bubbly"] = 910016857, ["Stylish"] = 616140816,
-            ["Robot"] = 616091570, ["Astral"] = 891639832, ["Oldschool"] = 531984439, ["Cartoony"] = 742638842,
-            ["Elder"] = 845401765, ["Rorro"] = 1092106432
+            ["Toy"] = 782842708, ["Zombie"] = 616163605, ["Vampire"] = 1083450849, ["Adidas"] = 18302041221
         },
         Jump = {
-            ["Default"] = 507765000,
-            ["Ninja"] = 656117878, ["Toy"] = 782841968, ["Vampire"] = 1083450423, ["Werewolf"] = 1083196303,
-            ["Zombie"] = 616161984, ["Mage"] = 707858694, ["Pirate"] = 750783008, ["Superhero"] = 616114845,
-            ["Knight"] = 657593688, ["Levitation"] = 616008291, ["Bubbly"] = 910012220, ["Stylish"] = 616139451,
-            ["Robot"] = 616090332, ["Astral"] = 891636393, ["Oldschool"] = 531983926, ["Cartoony"] = 742638590,
-            ["Elder"] = 845400922, ["Rorro"] = 1092106300
+            ["Toy"] = 782841968, ["Zombie"] = 616161984, ["Vampire"] = 1083450423, ["Adidas"] = 18302038753
         },
         Fall = {
-            ["Default"] = 507767968,
-            ["Ninja"] = 656115606, ["Toy"] = 782840523, ["Vampire"] = 1083443587, ["Werewolf"] = 1083193826,
-            ["Zombie"] = 616157122, ["Mage"] = 707829716, ["Pirate"] = 750780242, ["Superhero"] = 616108112,
-            ["Knight"] = 657560862, ["Levitation"] = 616005863, ["Bubbly"] = 910001910, ["Stylish"] = 616134815,
-            ["Robot"] = 616086039, ["Astral"] = 891628189, ["Oldschool"] = 531982238, ["Cartoony"] = 742637151,
-            ["Elder"] = 845396048, ["Rorro"] = 1092105310
+            ["Toy"] = 782840523, ["Zombie"] = 616157122, ["Vampire"] = 1083443587, ["Adidas"] = 18302033621
         }
     }
 
-    -- Robust Animation Injection Core
+    -- Animation Injection Core
     local function ApplyAnimationPack(char, packName)
-        if not char or not packName then return end
+        if not char or not packName or not OriginalAnimations.Idle[packName] then return end
         local humanoid = char:WaitForChild("Humanoid", 5)
         local animateScript = char:WaitForChild("Animate", 5)
         if not humanoid or not animateScript then return end
@@ -138,9 +103,10 @@ pcall(function()
             end
         end
 
+        -- Stop active playing animation tracks to update immediately
         if animator then
             for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
-                track:Stop(0.1)
+                track:Stop(0.05)
             end
         end
 
@@ -150,8 +116,9 @@ pcall(function()
         modifyAnimFolder("jump", OriginalAnimations.Jump[packName])
         modifyAnimFolder("fall", OriginalAnimations.Fall[packName])
 
+        -- Reset animate script cleanly
         animateScript.Disabled = true
-        task.wait(0.1)
+        task.wait(0.05)
         animateScript.Disabled = false
 
         task.defer(function()
@@ -166,7 +133,7 @@ pcall(function()
     -- Respawn Handler: Persists selected pack across resets/deaths
     local function setupCharacter(char)
         if getgenv().AverySelectedPack and checkR15(char) then
-            task.wait(0.7)
+            task.wait(0.5)
             ApplyAnimationPack(char, getgenv().AverySelectedPack)
         end
     end
@@ -177,7 +144,7 @@ pcall(function()
 
     LocalPlayer.CharacterAdded:Connect(setupCharacter)
 
-    -- UI BUILD (MOBILE OPTIMIZED)
+    -- UI BUILD
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "AveryHubGui"
     screenGui.ResetOnSpawn = false
@@ -297,9 +264,10 @@ pcall(function()
     scrollLayout.SortOrder = Enum.SortOrder.Name
     scrollLayout.Padding = UDim.new(0, 6)
 
-    scrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    local function updateCanvas()
         scrollFrame.CanvasSize = UDim2.new(0, 0, 0, scrollLayout.AbsoluteContentSize.Y + 10)
-    end)
+    end
+    scrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvas)
 
     local buttons = {}
     for packName, _ in pairs(OriginalAnimations["Idle"]) do
@@ -336,6 +304,8 @@ pcall(function()
 
         table.insert(buttons, btn)
     end
+
+    task.defer(updateCanvas)
 
     searchBar:GetPropertyChangedSignal("Text"):Connect(function()
         local filter = searchBar.Text:lower()
