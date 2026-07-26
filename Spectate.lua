@@ -1,11 +1,16 @@
 pcall(function()
     local Players = game:GetService("Players")
-    local TweenService = game:GetService("TweenService")
-    local UserInputService = game:GetService("UserInputService")
     local LocalPlayer = Players.LocalPlayer
 
     getgenv().AverySelectedPack = getgenv().AverySelectedPack or nil
 
+    -- Clean up previous execution UI
+    local cloneref = cloneref or function(o) return o end
+    local CoreGui = cloneref(game:GetService("CoreGui")) or LocalPlayer:WaitForChild("PlayerGui")
+    local oldGui = CoreGui:FindFirstChild("AveryHubGui")
+    if oldGui then oldGui:Destroy() end
+
+    -- R15 Check
     local function checkR15(char)
         local humanoid = char:WaitForChild("Humanoid", 5)
         if humanoid and humanoid.RigType ~= Enum.HumanoidRigType.R15 then 
@@ -21,31 +26,37 @@ pcall(function()
 
     if LocalPlayer.Character and not checkR15(LocalPlayer.Character) then return end
 
-    local cloneref = cloneref or function(o) return o end
-    local CoreGui = cloneref(game:GetService("CoreGui")) or LocalPlayer:WaitForChild("PlayerGui")
-
-    local oldGui = CoreGui:FindFirstChild("AveryHubGui")
-    if oldGui then oldGui:Destroy() end
-
-    -- VERIFIED ANIMATION PACK DATABASE
+    -- ANIMATION DATABASE (Standard Verified Catalog Animation Clip IDs)
     local OriginalAnimations = {
         Idle = {
-            ["Toy"] = {782841498, 782845736},
-            ["Zombie"] = {616158082, 616160842},
-            ["Vampire"] = {1083445855, 1083450166},
-            ["Adidas"] = {18302035987, 18302035987}
+            ["Toy"] = {"rbxassetid://782841498", "rbxassetid://782845736"},
+            ["Zombie"] = {"rbxassetid://616158082", "rbxassetid://616160842"},
+            ["Vampire"] = {"rbxassetid://1083445855", "rbxassetid://1083450166"},
+            ["Adidas"] = {"rbxassetid://18302035987"}
         },
         Walk = {
-            ["Toy"] = 782843345, ["Zombie"] = 616168032, ["Vampire"] = 1083452282, ["Adidas"] = 18302047806
+            ["Toy"] = "rbxassetid://782843345", 
+            ["Zombie"] = "rbxassetid://616168032", 
+            ["Vampire"] = "rbxassetid://1083452282", 
+            ["Adidas"] = "rbxassetid://18302047806"
         },
         Run = {
-            ["Toy"] = 782842708, ["Zombie"] = 616163605, ["Vampire"] = 1083450849, ["Adidas"] = 18302041221
+            ["Toy"] = "rbxassetid://782842708", 
+            ["Zombie"] = "rbxassetid://616163605", 
+            ["Vampire"] = "rbxassetid://1083450849", 
+            ["Adidas"] = "rbxassetid://18302041221"
         },
         Jump = {
-            ["Toy"] = 782841968, ["Zombie"] = 616161984, ["Vampire"] = 1083450423, ["Adidas"] = 18302038753
+            ["Toy"] = "rbxassetid://782841968", 
+            ["Zombie"] = "rbxassetid://616161984", 
+            ["Vampire"] = "rbxassetid://1083450423", 
+            ["Adidas"] = "rbxassetid://18302038753"
         },
         Fall = {
-            ["Toy"] = 782840523, ["Zombie"] = 616157122, ["Vampire"] = 1083443587, ["Adidas"] = 18302033621
+            ["Toy"] = "rbxassetid://782840523", 
+            ["Zombie"] = "rbxassetid://616157122", 
+            ["Vampire"] = "rbxassetid://1083443587", 
+            ["Adidas"] = "rbxassetid://18302033621"
         }
     }
 
@@ -57,70 +68,44 @@ pcall(function()
 
         local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 3)
 
-        local function modifyAnimFolder(folderName, animIdData)
+        -- Target exact existing Animation objects inside the Animate folder structure
+        local function modifyFolder(folderName, animData)
             local folder = animateScript:FindFirstChild(folderName)
             if not folder then return end
 
-            -- Clear existing animations in folder to avoid ID collision
-            for _, child in ipairs(folder:GetChildren()) do
-                if child:IsA("Animation") then
-                    child:Destroy()
-                end
-            end
-
-            if type(animIdData) == "table" then
-                for i, id in ipairs(animIdData) do
-                    local animInst = Instance.new("Animation")
-                    animInst.Name = folderName .. tostring(i)
-                    animInst.AnimationId = "rbxassetid://" .. tostring(id)
-                    animInst.Parent = folder
-
-                    local weight = Instance.new("NumberValue")
-                    weight.Name = "Weight"
-                    weight.Value = (i == 1 and 9 or 1)
-                    weight.Parent = animInst
+            if type(animData) == "table" then
+                for i, id in ipairs(animData) do
+                    local anim = folder:FindFirstChild("Animation" .. tostring(i)) or folder:FindFirstChildOfClass("Animation")
+                    if anim then
+                        anim.AnimationId = id
+                    end
                 end
             else
-                local animInst = Instance.new("Animation")
-                animInst.Name = folderName .. "1"
-                animInst.AnimationId = "rbxassetid://" .. tostring(animIdData)
-                animInst.Parent = folder
-
-                local weight = Instance.new("NumberValue")
-                weight.Name = "Weight"
-                weight.Value = 10
-                weight.Parent = animInst
+                local anim = folder:FindFirstChildOfClass("Animation")
+                if anim then
+                    anim.AnimationId = animData
+                end
             end
         end
 
-        -- Stop all active tracks smoothly so old animations don't stick
+        -- Stop currently running tracks so old animations drop immediately
         if animator then
             for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
                 track:Stop(0)
             end
         end
 
-        -- Update animation folders
-        modifyAnimFolder("idle", OriginalAnimations.Idle[packName])
-        modifyAnimFolder("walk", OriginalAnimations.Walk[packName])
-        modifyAnimFolder("run", OriginalAnimations.Run[packName])
-        modifyAnimFolder("jump", OriginalAnimations.Jump[packName])
-        modifyAnimFolder("fall", OriginalAnimations.Fall[packName])
+        -- Update Animate folders directly
+        modifyFolder("idle", OriginalAnimations.Idle[packName])
+        modifyFolder("walk", OriginalAnimations.Walk[packName])
+        modifyFolder("run", OriginalAnimations.Run[packName])
+        modifyFolder("jump", OriginalAnimations.Jump[packName])
+        modifyFolder("fall", OriginalAnimations.Fall[packName])
 
-        -- Force Animate script to restart cleanly
+        -- Clean restart of player's Animate script
         animateScript.Disabled = true
         task.wait(0.05)
         animateScript.Disabled = false
-
-        -- Force State updates so Jump/Fall/Walk re-evaluate immediately
-        task.defer(function()
-            if humanoid and humanoid.Parent then
-                local currentState = humanoid:GetState()
-                humanoid:ChangeState(Enum.HumanoidStateType.Landed)
-                task.wait(0.05)
-                humanoid:ChangeState(currentState)
-            end
-        end)
     end
 
     local function setupCharacter(char)
@@ -136,7 +121,7 @@ pcall(function()
 
     LocalPlayer.CharacterAdded:Connect(setupCharacter)
 
-    -- UI BUILD
+    -- UI CONSTRUCTION
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "AveryHubGui"
     screenGui.ResetOnSpawn = false
