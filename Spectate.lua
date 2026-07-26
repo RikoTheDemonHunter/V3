@@ -2,7 +2,6 @@ pcall(function()
     local Players = game:GetService("Players")
     local TweenService = game:GetService("TweenService")
     local UserInputService = game:GetService("UserInputService")
-    local ContentProvider = game:GetService("ContentProvider")
     local LocalPlayer = Players.LocalPlayer
 
     -- Global state persistence across resets
@@ -92,55 +91,80 @@ pcall(function()
 
         local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 3)
 
-        -- Safely modify values inside default Animate script tree
+        -- Safely update or construct Animation objects inside folders
         local function modifyAnimFolder(folderName, animIdData)
             local folder = animateScript:FindFirstChild(folderName)
             if not folder then return end
 
             if type(animIdData) == "table" then
-                local animChildren = {}
-                for _, v in ipairs(folder:GetChildren()) do
-                    if v:IsA("Animation") then table.insert(animChildren, v) end
-                end
-                
-                for i, id in ipairs(animIdData) do
-                    if animChildren[i] then
-                        animChildren[i].AnimationId = "rbxassetid://" .. tostring(id)
-                    end
-                end
-            else
+                local existingAnims = {}
                 for _, v in ipairs(folder:GetChildren()) do
                     if v:IsA("Animation") then
-                        v.AnimationId = "rbxassetid://" .. tostring(animIdData)
+                        table.insert(existingAnims, v)
                     end
                 end
+
+                for i, id in ipairs(animIdData) do
+                    local animObj = existingAnims[i]
+                    if not animObj then
+                        animObj = Instance.new("Animation")
+                        animObj.Name = folderName .. tostring(i)
+                        animObj.Parent = folder
+                    end
+                    animObj.AnimationId = "rbxassetid://" .. tostring(id)
+                    
+                    local weightVal = animObj:FindFirstChild("Weight") or Instance.new("NumberValue")
+                    weightVal.Name = "Weight"
+                    weightVal.Value = (i == 1 and 9 or 1)
+                    weightVal.Parent = animObj
+                end
+            else
+                local animObj = folder:FindFirstChildOfClass("Animation")
+                if not animObj then
+                    animObj = Instance.new("Animation")
+                    animObj.Name = folderName .. "1"
+                    animObj.Parent = folder
+                end
+                animObj.AnimationId = "rbxassetid://" .. tostring(animIdData)
+                
+                local weightVal = animObj:FindFirstChild("Weight") or Instance.new("NumberValue")
+                weightVal.Name = "Weight"
+                weightVal.Value = 10
+                weightVal.Parent = animObj
             end
         end
 
-        -- Update animation definitions
+        -- Flush active playing tracks on animator
+        if animator then
+            for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+                track:Stop(0)
+            end
+        end
+
+        -- Update definitions inside the Animate folder tree
         modifyAnimFolder("idle", OriginalAnimations.Idle[packName])
         modifyAnimFolder("walk", OriginalAnimations.Walk[packName])
         modifyAnimFolder("run", OriginalAnimations.Run[packName])
         modifyAnimFolder("jump", OriginalAnimations.Jump[packName])
         modifyAnimFolder("fall", OriginalAnimations.Fall[packName])
 
-        -- Flush active playing tracks on animator to force script refresh without breaking velocity
-        if animator then
-            for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
-                track:Stop(0.1)
-            end
-        end
-
-        -- Refresh Animate loop
+        -- Cycle script state to force re-initialization
         animateScript.Disabled = true
-        task.wait(0.05)
+        task.wait(0.15)
         animateScript.Disabled = false
+
+        -- Force Humanoid pose evaluate
+        task.defer(function()
+            if humanoid and humanoid.Parent then
+                humanoid:ChangeState(Enum.HumanoidStateType.Running)
+            end
+        end)
     end
 
-    -- Respawn Handler: Ensures selected pack stays active after dying/resetting
+    -- Respawn Handler: Persists selected pack across deaths and character reloads
     local function setupCharacter(char)
         if getgenv().AverySelectedPack and checkR15(char) then
-            task.wait(0.5)
+            task.wait(0.6) -- Allow character model/animate script to initialize fully on spawn
             ApplyAnimationPack(char, getgenv().AverySelectedPack)
         end
     end
@@ -151,7 +175,7 @@ pcall(function()
 
     LocalPlayer.CharacterAdded:Connect(setupCharacter)
 
-    -- UI BUILD (MOBILE OPTIMIZED) - UNTOUCHED
+    -- UI BUILD (MOBILE OPTIMIZED)
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "AveryHubGui"
     screenGui.ResetOnSpawn = false
