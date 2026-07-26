@@ -4,7 +4,7 @@ pcall(function()
 
     getgenv().AverySelectedPack = getgenv().AverySelectedPack or nil
 
-    -- Clean up previous execution UI
+    -- Clean up previous UI instance
     local cloneref = cloneref or function(o) return o end
     local CoreGui = cloneref(game:GetService("CoreGui")) or LocalPlayer:WaitForChild("PlayerGui")
     local oldGui = CoreGui:FindFirstChild("AveryHubGui")
@@ -26,7 +26,7 @@ pcall(function()
 
     if LocalPlayer.Character and not checkR15(LocalPlayer.Character) then return end
 
-    -- ANIMATION DATABASE (Standard Verified Catalog Animation Clip IDs)
+    -- ANIMATION DATABASE WITH CLIMBING SUPPORT
     local OriginalAnimations = {
         Idle = {
             ["Toy"] = {"rbxassetid://782841498", "rbxassetid://782845736"},
@@ -57,6 +57,12 @@ pcall(function()
             ["Zombie"] = "rbxassetid://616157122", 
             ["Vampire"] = "rbxassetid://1083443587", 
             ["Adidas"] = "rbxassetid://18302033621"
+        },
+        Climb = {
+            ["Toy"] = "rbxassetid://782843869", 
+            ["Zombie"] = "rbxassetid://616156119", 
+            ["Vampire"] = "rbxassetid://1083442129", 
+            ["Adidas"] = "rbxassetid://18538170170"
         }
     }
 
@@ -68,7 +74,7 @@ pcall(function()
 
         local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 3)
 
-        -- Target exact existing Animation objects inside the Animate folder structure
+        -- Target exact existing Animation instances
         local function modifyFolder(folderName, animData)
             local folder = animateScript:FindFirstChild(folderName)
             if not folder then return end
@@ -88,21 +94,22 @@ pcall(function()
             end
         end
 
-        -- Stop currently running tracks so old animations drop immediately
+        -- Stop active tracks to trigger immediate update
         if animator then
             for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
                 track:Stop(0)
             end
         end
 
-        -- Update Animate folders directly
+        -- Apply all standard movement types
         modifyFolder("idle", OriginalAnimations.Idle[packName])
         modifyFolder("walk", OriginalAnimations.Walk[packName])
         modifyFolder("run", OriginalAnimations.Run[packName])
         modifyFolder("jump", OriginalAnimations.Jump[packName])
         modifyFolder("fall", OriginalAnimations.Fall[packName])
+        modifyFolder("climb", OriginalAnimations.Climb[packName])
 
-        -- Clean restart of player's Animate script
+        -- Restart Animate script cleanly
         animateScript.Disabled = true
         task.wait(0.05)
         animateScript.Disabled = false
