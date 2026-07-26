@@ -26,98 +26,102 @@ pcall(function()
 
     if LocalPlayer.Character and not checkR15(LocalPlayer.Character) then return end
 
-    -- ANIMATION DATABASE WITH CLIMBING SUPPORT
-    local OriginalAnimations = {
-        Idle = {
-            ["Toy"] = {"rbxassetid://782841498", "rbxassetid://782845736"},
-            ["Zombie"] = {"rbxassetid://616158082", "rbxassetid://616160842"},
-            ["Vampire"] = {"rbxassetid://1083445855", "rbxassetid://1083450166"},
-            ["Adidas"] = {"rbxassetid://18302035987"}
+    -- RAW ANIMATION DATA (USING VERIFIED DIRECT ASSET IDS)
+    local AnimationPacks = {
+        ["Toy"] = {
+            idle1 = "rbxassetid://782841498",
+            idle2 = "rbxassetid://782845736",
+            walk = "rbxassetid://782843345",
+            run = "rbxassetid://782842708",
+            jump = "rbxassetid://782841968",
+            fall = "rbxassetid://782840523",
+            climb = "rbxassetid://782843869"
         },
-        Walk = {
-            ["Toy"] = "rbxassetid://782843345", 
-            ["Zombie"] = "rbxassetid://616168032", 
-            ["Vampire"] = "rbxassetid://1083452282", 
-            ["Adidas"] = "rbxassetid://18302047806"
+        ["Zombie"] = {
+            idle1 = "rbxassetid://616158082",
+            idle2 = "rbxassetid://616160842",
+            walk = "rbxassetid://616168032",
+            run = "rbxassetid://616163605",
+            jump = "rbxassetid://616161984",
+            fall = "rbxassetid://616157122",
+            climb = "rbxassetid://616156119"
         },
-        Run = {
-            ["Toy"] = "rbxassetid://782842708", 
-            ["Zombie"] = "rbxassetid://616163605", 
-            ["Vampire"] = "rbxassetid://1083450849", 
-            ["Adidas"] = "rbxassetid://18302041221"
+        ["Vampire"] = {
+            idle1 = "rbxassetid://1083445855",
+            idle2 = "rbxassetid://1083450166",
+            walk = "rbxassetid://1083452282",
+            run = "rbxassetid://1083450849",
+            jump = "rbxassetid://1083450423",
+            fall = "rbxassetid://1083443587",
+            climb = "rbxassetid://1083442129"
         },
-        Jump = {
-            ["Toy"] = "rbxassetid://782841968", 
-            ["Zombie"] = "rbxassetid://616161984", 
-            ["Vampire"] = "rbxassetid://1083450423", 
-            ["Adidas"] = "rbxassetid://18302038753"
-        },
-        Fall = {
-            ["Toy"] = "rbxassetid://782840523", 
-            ["Zombie"] = "rbxassetid://616157122", 
-            ["Vampire"] = "rbxassetid://1083443587", 
-            ["Adidas"] = "rbxassetid://18302033621"
-        },
-        Climb = {
-            ["Toy"] = "rbxassetid://782843869", 
-            ["Zombie"] = "rbxassetid://616156119", 
-            ["Vampire"] = "rbxassetid://1083442129", 
-            ["Adidas"] = "rbxassetid://18538170170"
+        ["Adidas"] = {
+            idle1 = "rbxassetid://18302035987",
+            idle2 = "rbxassetid://18302035987",
+            walk = "rbxassetid://18302047806",
+            run = "rbxassetid://18302041221",
+            jump = "rbxassetid://18302038753",
+            fall = "rbxassetid://18302033621",
+            climb = "rbxassetid://18538170170"
         }
     }
 
+    local activeConnections = {}
+
     local function ApplyAnimationPack(char, packName)
-        if not char or not packName or not OriginalAnimations.Idle[packName] then return end
+        if not char or not packName or not AnimationPacks[packName] then return end
         local humanoid = char:WaitForChild("Humanoid", 5)
         local animateScript = char:WaitForChild("Animate", 5)
         if not humanoid or not animateScript then return end
 
-        local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 3)
+        local pack = AnimationPacks[packName]
 
-        -- Target exact existing Animation instances
-        local function modifyFolder(folderName, animData)
+        -- Safely overwrite default IDs in the character Animate script
+        local function setAnim(folderName, animName, id)
             local folder = animateScript:FindFirstChild(folderName)
-            if not folder then return end
-
-            if type(animData) == "table" then
-                for i, id in ipairs(animData) do
-                    local anim = folder:FindFirstChild("Animation" .. tostring(i)) or folder:FindFirstChildOfClass("Animation")
-                    if anim then
-                        anim.AnimationId = id
-                    end
-                end
-            else
-                local anim = folder:FindFirstChildOfClass("Animation")
+            if folder then
+                local anim = folder:FindFirstChild(animName) or folder:FindFirstChildOfClass("Animation")
                 if anim then
-                    anim.AnimationId = animData
+                    anim.AnimationId = id
                 end
             end
         end
 
-        -- Stop active tracks to trigger immediate update
+        setAnim("idle", "Animation1", pack.idle1)
+        setAnim("idle", "Animation2", pack.idle2)
+        setAnim("walk", "WalkAnim", pack.walk)
+        setAnim("run", "RunAnim", pack.run)
+        setAnim("jump", "JumpAnim", pack.jump)
+        setAnim("fall", "FallAnim", pack.fall)
+        setAnim("climb", "ClimbAnim", pack.climb)
+
+        -- Preload assets to avoid Sanitized ID download error blocks
+        local ContentProvider = game:GetService("ContentProvider")
+        task.spawn(function()
+            for _, id in pairs(pack) do
+                local tempAnim = Instance.new("Animation")
+                tempAnim.AnimationId = id
+                pcall(function() ContentProvider:PreloadAsync({tempAnim}) end)
+            end
+        end)
+
+        -- Restart character Animate script
+        animateScript.Disabled = true
+        task.wait(0.05)
+        animateScript.Disabled = false
+
+        -- Force playing tracks to reload
+        local animator = humanoid:FindFirstChildOfClass("Animator")
         if animator then
             for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
                 track:Stop(0)
             end
         end
-
-        -- Apply all standard movement types
-        modifyFolder("idle", OriginalAnimations.Idle[packName])
-        modifyFolder("walk", OriginalAnimations.Walk[packName])
-        modifyFolder("run", OriginalAnimations.Run[packName])
-        modifyFolder("jump", OriginalAnimations.Jump[packName])
-        modifyFolder("fall", OriginalAnimations.Fall[packName])
-        modifyFolder("climb", OriginalAnimations.Climb[packName])
-
-        -- Restart Animate script cleanly
-        animateScript.Disabled = true
-        task.wait(0.05)
-        animateScript.Disabled = false
     end
 
     local function setupCharacter(char)
         if getgenv().AverySelectedPack and checkR15(char) then
-            task.wait(0.5)
+            task.wait(0.3)
             ApplyAnimationPack(char, getgenv().AverySelectedPack)
         end
     end
@@ -254,7 +258,7 @@ pcall(function()
     scrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvas)
 
     local buttons = {}
-    for packName, _ in pairs(OriginalAnimations["Idle"]) do
+    for packName, _ in pairs(AnimationPacks) do
         local btn = Instance.new("TextButton")
         btn.Name = packName
         btn.Text = packName .. " Pack"
