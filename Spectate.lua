@@ -4,10 +4,8 @@ pcall(function()
     local UserInputService = game:GetService("UserInputService")
     local LocalPlayer = Players.LocalPlayer
 
-    -- Global state persistence across resets
     getgenv().AverySelectedPack = getgenv().AverySelectedPack or nil
 
-    -- Check R15 Setup
     local function checkR15(char)
         local humanoid = char:WaitForChild("Humanoid", 5)
         if humanoid and humanoid.RigType ~= Enum.HumanoidRigType.R15 then 
@@ -26,11 +24,10 @@ pcall(function()
     local cloneref = cloneref or function(o) return o end
     local CoreGui = cloneref(game:GetService("CoreGui")) or LocalPlayer:WaitForChild("PlayerGui")
 
-    -- Clean up previous execution
     local oldGui = CoreGui:FindFirstChild("AveryHubGui")
     if oldGui then oldGui:Destroy() end
 
-    -- SELECTED ANIMATION PACK DATABASE
+    -- VERIFIED ANIMATION PACK DATABASE
     local OriginalAnimations = {
         Idle = {
             ["Toy"] = {782841498, 782845736},
@@ -52,7 +49,6 @@ pcall(function()
         }
     }
 
-    -- Animation Injection Core
     local function ApplyAnimationPack(char, packName)
         if not char or not packName or not OriginalAnimations.Idle[packName] then return end
         local humanoid = char:WaitForChild("Humanoid", 5)
@@ -65,72 +61,68 @@ pcall(function()
             local folder = animateScript:FindFirstChild(folderName)
             if not folder then return end
 
-            if type(animIdData) == "table" then
-                local currentAnims = {}
-                for _, child in ipairs(folder:GetChildren()) do
-                    if child:IsA("Animation") then
-                        table.insert(currentAnims, child)
-                    end
+            -- Clear existing animations in folder to avoid ID collision
+            for _, child in ipairs(folder:GetChildren()) do
+                if child:IsA("Animation") then
+                    child:Destroy()
                 end
+            end
 
+            if type(animIdData) == "table" then
                 for i, id in ipairs(animIdData) do
-                    local animInst = currentAnims[i]
-                    if not animInst then
-                        animInst = Instance.new("Animation")
-                        animInst.Name = folderName .. tostring(i)
-                        animInst.Parent = folder
-                    end
-                    animInst.AnimationId = "http://www.roblox.com/asset/?id=" .. tostring(id)
+                    local animInst = Instance.new("Animation")
+                    animInst.Name = folderName .. tostring(i)
+                    animInst.AnimationId = "rbxassetid://" .. tostring(id)
+                    animInst.Parent = folder
 
-                    local weight = animInst:FindFirstChild("Weight") or Instance.new("NumberValue")
+                    local weight = Instance.new("NumberValue")
                     weight.Name = "Weight"
                     weight.Value = (i == 1 and 9 or 1)
                     weight.Parent = animInst
                 end
             else
-                local animInst = folder:FindFirstChildOfClass("Animation")
-                if not animInst then
-                    animInst = Instance.new("Animation")
-                    animInst.Name = folderName .. "1"
-                    animInst.Parent = folder
-                end
-                animInst.AnimationId = "http://www.roblox.com/asset/?id=" .. tostring(animIdData)
+                local animInst = Instance.new("Animation")
+                animInst.Name = folderName .. "1"
+                animInst.AnimationId = "rbxassetid://" .. tostring(animIdData)
+                animInst.Parent = folder
 
-                local weight = animInst:FindFirstChild("Weight") or Instance.new("NumberValue")
+                local weight = Instance.new("NumberValue")
                 weight.Name = "Weight"
                 weight.Value = 10
                 weight.Parent = animInst
             end
         end
 
-        -- Stop active playing animation tracks to update immediately
+        -- Stop all active tracks smoothly so old animations don't stick
         if animator then
             for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
-                track:Stop(0.05)
+                track:Stop(0)
             end
         end
 
+        -- Update animation folders
         modifyAnimFolder("idle", OriginalAnimations.Idle[packName])
         modifyAnimFolder("walk", OriginalAnimations.Walk[packName])
         modifyAnimFolder("run", OriginalAnimations.Run[packName])
         modifyAnimFolder("jump", OriginalAnimations.Jump[packName])
         modifyAnimFolder("fall", OriginalAnimations.Fall[packName])
 
-        -- Reset animate script cleanly
+        -- Force Animate script to restart cleanly
         animateScript.Disabled = true
         task.wait(0.05)
         animateScript.Disabled = false
 
+        -- Force State updates so Jump/Fall/Walk re-evaluate immediately
         task.defer(function()
             if humanoid and humanoid.Parent then
+                local currentState = humanoid:GetState()
                 humanoid:ChangeState(Enum.HumanoidStateType.Landed)
                 task.wait(0.05)
-                humanoid:ChangeState(Enum.HumanoidStateType.Running)
+                humanoid:ChangeState(currentState)
             end
         end)
     end
 
-    -- Respawn Handler: Persists selected pack across resets/deaths
     local function setupCharacter(char)
         if getgenv().AverySelectedPack and checkR15(char) then
             task.wait(0.5)
