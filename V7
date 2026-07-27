@@ -1,5 +1,5 @@
 --// Avery Hub V4
---// Complete Integrated Source (DrinkHaxx + V4 Framework)
+--// Complete Integrated Source (Full DrinkHaxx Feature Set + V4 Engine)
 
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
@@ -11,133 +11,88 @@ local RunService = game:GetService("RunService")
 local Player = Players.LocalPlayer
 
 --------------------------------------------------
--- Config System
+-- Config System & Storage
 --------------------------------------------------
 
-local SETTINGS_FILE = "AveryHubV4_Config.json"
-local Config = {
-    FileName = SETTINGS_FILE,
-    Data = {
-        Theme = "Ethereal Blue",
-        Style = "Default",
-        Settings = {}
-    }
-}
+local SETTINGS_FILE = "AveryHubConfig.json"
+local SavedSettings = {}
 
-function Config:Load()
-    if isfile and readfile and isfile(self.FileName) then
-        local success, result = pcall(function()
-            return HttpService:JSONDecode(readfile(self.FileName))
-        end)
-        if success and type(result) == "table" then
-            self.Data = result
-        end
-    end
+local function LoadSettings()
+	if isfile and readfile and isfile(SETTINGS_FILE) then
+		local success, decoded = pcall(function()
+			return HttpService:JSONDecode(readfile(SETTINGS_FILE))
+		end)
+		if success and type(decoded) == "table" then
+			SavedSettings = decoded
+		end
+	end
 end
 
-function Config:Save()
-    if writefile then
-        pcall(function()
-            writefile(self.FileName, HttpService:JSONEncode(self.Data))
-        end)
-    end
+local function SaveSettings()
+	if writefile then
+		pcall(function()
+			writefile(SETTINGS_FILE, HttpService:JSONEncode(SavedSettings))
+		end)
+	end
 end
 
-Config:Load()
-
---------------------------------------------------
--- Connection Manager
---------------------------------------------------
-
-local Connections = {}
-
-function Connections:Add(connection)
-    table.insert(Connections, connection)
-    return connection
-end
-
-function Connections:Clear()
-    for _, connection in pairs(Connections) do
-        pcall(function() connection:Disconnect() end)
-    end
-    table.clear(Connections)
-end
+LoadSettings()
 
 --------------------------------------------------
 -- Theme Engine
 --------------------------------------------------
 
 local Theme = {
-    Background = Color3.fromRGB(15, 15, 25),
-    Sidebar = Color3.fromRGB(10, 10, 18),
-    Accent = Color3.fromRGB(0, 200, 255),
-    Text = Color3.fromRGB(255, 255, 255),
-    Success = Color3.fromRGB(0, 220, 130),
-    Error = Color3.fromRGB(255, 80, 80),
-    Highlight = Color3.fromRGB(255, 215, 0)
+	Background = Color3.fromRGB(15, 15, 25),
+	SideBar = Color3.fromRGB(10, 10, 18),
+	Accent = Color3.fromRGB(0, 200, 255), 
+	TextColor = Color3.fromRGB(255, 255, 255),
+	Alert = Color3.fromRGB(255, 80, 80),
+	Success = Color3.fromRGB(0, 220, 130),
+	Highlight = Color3.fromRGB(255, 215, 0)
 }
-
-local ThemeManager = {
-    Colors = {
-        ["Ethereal Blue"] = Color3.fromRGB(0, 200, 255),
-        ["Light Blue"] = Color3.fromRGB(130, 215, 255),
-        ["Pink"] = Color3.fromRGB(255, 100, 200),
-        ["Lime"] = Color3.fromRGB(110, 240, 95),
-        ["Red"] = Color3.fromRGB(255, 75, 75),
-        ["Orange"] = Color3.fromRGB(255, 140, 50)
-    }
-}
-
-function ThemeManager:Set(name)
-    local color = self.Colors[name] or self.Colors["Ethereal Blue"]
-    Theme.Accent = color
-    Config.Data.Theme = name
-    Config:Save()
-end
-
-ThemeManager:Set(Config.Data.Theme)
 
 --------------------------------------------------
--- Whitelist & Intro Verification
+-- Whitelist & Intro System
 --------------------------------------------------
 
 local url = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/switcher.json"
 local banlistUrl = "https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Banlist.json"
 
 local function isBanned(userId, banlist)
-    if not banlist then return false end
-    for _, id in ipairs(banlist) do if id == userId then return true end end
-    return false
+	if not banlist then return false end
+	for _, id in ipairs(banlist) do if id == userId then return true end end
+	return false
 end
 
 local function isWhitelisted(userId, whitelist)
-    if not whitelist then return false end
-    for _, id in ipairs(whitelist) do if id == userId then return true end end
-    return false
+	if not whitelist then return false end
+	for _, id in ipairs(whitelist) do if id == userId then return true end end
+	return false
 end
 
 local function verifyUser(p, wl, bl)
-    local id, name = p.UserId, p.Name or "Unknown"
-    return isWhitelisted(id, wl), isBanned(id, bl), name, id
+	local id, name = p.UserId, p.Name or "Unknown"
+	return isWhitelisted(id, wl), isBanned(id, bl), name, id
 end
 
-local introGui = Instance.new("ScreenGui")
-introGui.Name = "AveryHubIntro"
-introGui.ResetOnSpawn = false
-introGui.Parent = Player:WaitForChild("PlayerGui")
+local gui = Instance.new("ScreenGui")
+gui.Name = "AveryHubIntro"
+gui.ResetOnSpawn = false
+gui.Parent = Player:WaitForChild("PlayerGui")
 
-local introFrame = Instance.new("Frame")
-introFrame.Size = UDim2.new(0.48, 0, 0.5, 0)
-introFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-introFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-introFrame.BackgroundColor3 = Theme.Background
-introFrame.BackgroundTransparency = 0.15
-introFrame.BorderSizePixel = 0
-introFrame.Parent = introGui 
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.48, 0, 0.5, 0)
+frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+frame.BackgroundColor3 = Theme.Background
+frame.BackgroundTransparency = 0.15
+frame.BorderSizePixel = 0
+frame.Parent = gui 
 
-local introCorner = Instance.new("UICorner")
-introCorner.CornerRadius = UDim.new(0, 14)
-introCorner.Parent = introFrame
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 14)
+corner.Parent = frame
 
 local dateLabel = Instance.new("TextLabel")
 dateLabel.AnchorPoint = Vector2.new(0.5, 0)
@@ -149,639 +104,879 @@ dateLabel.TextSize = 14
 dateLabel.TextColor3 = Theme.Highlight
 dateLabel.TextTransparency = 1
 dateLabel.Text = os.date("%A, %B %d %Y  |  %I:%M:%S %p")
-dateLabel.Parent = introFrame
+dateLabel.Parent = frame
 
 task.spawn(function()
-    while introGui.Parent do
-        dateLabel.Text = os.date("%A, %B %d %Y  |  %I:%M:%S %p")
-        task.wait(1)
-    end
+	while gui.Parent do
+		dateLabel.Text = os.date("%A, %B %d %Y  |  %I:%M:%S %p")
+		task.wait(1)
+	end
 end)
 
 TweenService:Create(dateLabel, TweenInfo.new(1.2), {TextTransparency = 0}):Play()
 
-local introScale = Instance.new("UIScale")
-introScale.Scale = UserInputService.TouchEnabled and 1.2 or 1
-introScale.Parent = introFrame
+local uiScale = Instance.new("UIScale")
+uiScale.Scale = UserInputService.TouchEnabled and 1.2 or 1
+uiScale.Parent = frame
 
 local glow = Instance.new("UIStroke")
 glow.Color = Theme.Accent
 glow.Thickness = 2
 glow.Transparency = 0.3
 glow.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-glow.Parent = introFrame
+glow.Parent = frame
 
 task.spawn(function()
-    while introGui.Parent do
-        TweenService:Create(glow, TweenInfo.new(2, Enum.EasingStyle.Sine), {Transparency = 0.6}):Play()
-        task.wait(2)
-        TweenService:Create(glow, TweenInfo.new(2, Enum.EasingStyle.Sine), {Transparency = 0.25}):Play()
-        task.wait(2)
-    end
+	while gui.Parent do
+		TweenService:Create(glow, TweenInfo.new(2, Enum.EasingStyle.Sine), {Transparency = 0.6}):Play()
+		task.wait(2)
+		TweenService:Create(glow, TweenInfo.new(2, Enum.EasingStyle.Sine), {Transparency = 0.25}):Play()
+		task.wait(2)
+	end
 end)
 
-local introStatus = Instance.new("TextLabel")
-introStatus.Size = UDim2.new(1, -20, 0, 35)
-introStatus.Position = UDim2.new(0, 15, 0, 50)
-introStatus.BackgroundTransparency = 1
-introStatus.Font = Enum.Font.Gotham
-introStatus.TextSize = 16
-introStatus.TextColor3 = Theme.Accent
-introStatus.TextXAlignment = Enum.TextXAlignment.Left
-introStatus.Text = "✨ Initializing..."
-introStatus.Parent = introFrame
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -20, 0, 40)
+title.Position = UDim2.new(0, 15, 0, 10)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextSize = 22
+title.TextColor3 = Theme.TextColor
+title.Text = "Avery Hub | Whitelist Verification"
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = frame
+
+local status = Instance.new("TextLabel")
+status.Size = UDim2.new(1, -20, 0, 35)
+status.Position = UDim2.new(0, 15, 0, 50)
+status.BackgroundTransparency = 1
+status.Font = Enum.Font.Gotham
+status.TextSize = 16
+status.TextColor3 = Theme.Accent
+status.TextXAlignment = Enum.TextXAlignment.Left
+status.Text = "✨ Initializing..."
+status.Parent = frame
 
 local function fadeText(newText, delayTime)
-    local out = TweenService:Create(introStatus, TweenInfo.new(0.3), {TextTransparency = 1})
-    out:Play() out.Completed:Wait()
-    introStatus.Text = newText
-    TweenService:Create(introStatus, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
-    task.wait(delayTime or 1)
+	local out = TweenService:Create(status, TweenInfo.new(0.3), {TextTransparency = 1})
+	out:Play() out.Completed:Wait()
+	status.Text = newText
+	TweenService:Create(status, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
+	task.wait(delayTime or 1)
 end
 
 task.wait(0.5)
-fadeText("✨ Welcome to Avery Hub V4", 1)
+fadeText("✨ Welcome to Avery Hub", 1)
 local banData, whitelist, enabled = {}, {}, true
 
 pcall(function()
-    local raw = game:HttpGet(banlistUrl)
-    local decoded = HttpService:JSONDecode(raw)
-    banData = decoded.banned or decoded or {}
+	local raw = game:HttpGet(banlistUrl)
+	local decoded = HttpService:JSONDecode(raw)
+	banData = decoded.banned or decoded or {}
 end)
 pcall(function()
-    local raw = game:HttpGet(url)
-    local data = HttpService:JSONDecode(raw)
-    enabled = (data.enabled ~= false)
-    whitelist = data.whitelist or {}
+	local raw = game:HttpGet(url)
+	local data = HttpService:JSONDecode(raw)
+	enabled = (data.enabled ~= false)
+	whitelist = data.whitelist or {}
 end)
 
 local whitelisted, banned = verifyUser(Player, whitelist, banData)
 
 if banned then
-    fadeText("🚫 You are BANNED!", 2)
-    Player:Kick("🚫 You are banned from Avery Hub.")
-    return
+	fadeText("🚫 You are BANNED!", 2)
+	Player:Kick("🚫 You are banned from Avery Hub.")
+	return
 elseif not whitelisted and not enabled then
-    fadeText("❌ Verification Disabled via Killswitch.", 2)
-    Player:Kick("❌ System Kill Switch Active.")
-    return
+	fadeText("❌ Verification Disabled via Killswitch.", 2)
+	Player:Kick("❌ System Kill Switch Active.")
+	return
 elseif not whitelisted then
-    fadeText("❌ Access Denied: Not Whitelisted.", 2)
-    Player:Kick("❌ You are not whitelisted!")
-    return
+	fadeText("❌ Access Denied: Not Whitelisted.", 2)
+	Player:Kick("❌ You are not whitelisted!")
+	return
 end
 
 fadeText("✅ Verification Successful!", 1)
-TweenService:Create(introFrame, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
-TweenService:Create(introScale, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Scale = 0}):Play()
+TweenService:Create(frame, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+TweenService:Create(uiScale, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Scale = 0}):Play()
 task.wait(0.5)
-introGui:Destroy()
+gui:Destroy()
 
 --------------------------------------------------
--- UI Engine (Avery Hub V4 Core)
+-- UI Library Core Engine
 --------------------------------------------------
 
-getgenv().AveryV4 = {
-    Services = {
-        Players = Players,
-        TweenService = TweenService,
-        UserInputService = UserInputService,
-        RunService = RunService,
-        HttpService = HttpService
-    },
-    Player = Player,
-    Config = Config,
-    Connections = Connections,
-    Theme = Theme,
-    ThemeManager = ThemeManager
-}
+local ModernLib = {}
+function ModernLib:CreateMain(hubTitle)
+	local ScreenGui = Instance.new("ScreenGui")
+	ScreenGui.Name = "AveryHubUI"
+	ScreenGui.Parent = game.CoreGui
+	ScreenGui.ResetOnSpawn = false
 
-local UI = {}
+	local MainFrame = Instance.new("Frame")
+	MainFrame.Name = "Main"
+	MainFrame.Size = UDim2.new(0, 540, 0, 360)
+	MainFrame.Position = UDim2.new(0.5, -270, 0.5, -180)
+	MainFrame.BackgroundColor3 = Theme.Background
+	MainFrame.BorderSizePixel = 0
+	MainFrame.Parent = ScreenGui
 
-function UI:Create()
-    local gui = Instance.new("ScreenGui")
-    gui.Name = "AveryHubV4"
-    gui.ResetOnSpawn = false
-    gui.Parent = Player:WaitForChild("PlayerGui")
+	local MainCorner = Instance.new("UICorner")
+	MainCorner.CornerRadius = UDim.new(0, 12)
+	MainCorner.Parent = MainFrame
 
-    local main = Instance.new("Frame")
-    main.Size = UDim2.new(0, 560, 0, 380)
-    main.Position = UDim2.new(.5, -280, .5, -190)
-    main.BackgroundColor3 = Theme.Background
-    main.BorderSizePixel = 0
-    main.Parent = gui
+	local MainStroke = Instance.new("UIStroke")
+	MainStroke.Color = Theme.Accent
+	MainStroke.Thickness = 1.5
+	MainStroke.Parent = MainFrame
 
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 14)
-    corner.Parent = main
+	local MinimizeBtn = Instance.new("TextButton")
+	MinimizeBtn.Name = "MinimizeButton"
+	MinimizeBtn.Size = UDim2.new(0, 55, 0, 55)
+	MinimizeBtn.Position = UDim2.new(0, 20, 0.5, -27.5)
+	MinimizeBtn.BackgroundColor3 = Theme.Background
+	MinimizeBtn.BorderSizePixel = 0
+	MinimizeBtn.Text = "⚡"
+	MinimizeBtn.TextColor3 = Theme.Accent
+	MinimizeBtn.TextSize = 24
+	MinimizeBtn.Font = Enum.Font.GothamBold
+	MinimizeBtn.Visible = false
+	MinimizeBtn.Active = true
+	MinimizeBtn.Parent = ScreenGui
 
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = Theme.Accent
-    stroke.Thickness = 2
-    stroke.Parent = main
+	local MinCorner = Instance.new("UICorner")
+	MinCorner.CornerRadius = UDim.new(1, 0)
+	MinCorner.Parent = MinimizeBtn
 
-    local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, -60, 0, 45)
-    title.Position = UDim2.new(0, 15, 0, 5)
-    title.BackgroundTransparency = 1
-    title.Text = "⚡ Avery Hub V4 | DrinkHaxx Dashboard"
-    title.TextColor3 = Theme.Accent
-    title.Font = Enum.Font.GothamBold
-    title.TextSize = 18
-    title.TextXAlignment = Enum.TextXAlignment.Left
-    title.Parent = main
+	local MinStroke = Instance.new("UIStroke")
+	MinStroke.Color = Theme.Accent
+	MinStroke.Thickness = 2
+	MinStroke.Parent = MinimizeBtn
 
-    local close = Instance.new("TextButton")
-    close.Size = UDim2.new(0, 35, 0, 30)
-    close.Position = UDim2.new(1, -45, 0, 10)
-    close.Text = "X"
-    close.BackgroundColor3 = Theme.Error
-    close.TextColor3 = Theme.Text
-    close.Font = Enum.Font.GothamBold
-    close.Parent = main
-    Instance.new("UICorner", close)
+	-- Minimize Dragging
+	local minDragging, minDragInput, minDragStart, minStartPos
+	MinimizeBtn.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			minDragging = true
+			minDragStart = input.Position
+			minStartPos = MinimizeBtn.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then minDragging = false end
+			end)
+		end
+	end)
+	MinimizeBtn.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			minDragInput = input
+		end
+	end)
+	UserInputService.InputChanged:Connect(function(input)
+		if input == minDragInput and minDragging then
+			local delta = input.Position - minDragStart
+			TweenService:Create(MinimizeBtn, TweenInfo.new(0.08, Enum.EasingStyle.Sine), {
+				Position = UDim2.new(minStartPos.X.Scale, minStartPos.X.Offset + delta.X, minStartPos.Y.Scale, minStartPos.Y.Offset + delta.Y)
+			}):Play()
+		end
+	end)
 
-    local mini = Instance.new("TextButton")
-    mini.Size = UDim2.new(0, 50, 0, 50)
-    mini.Position = UDim2.new(0, 20, .5, -25)
-    mini.Text = "⚡"
-    mini.Visible = false
-    mini.BackgroundColor3 = Theme.Background
-    mini.TextColor3 = Theme.Accent
-    mini.Font = Enum.Font.GothamBold
-    mini.TextSize = 25
-    mini.Parent = gui
-    Instance.new("UICorner", mini)
+	MinimizeBtn.MouseButton1Click:Connect(function()
+		MinimizeBtn.Visible = false
+		MainFrame.Visible = true
+	end)
 
-    close.MouseButton1Click:Connect(function()
-        main.Visible = false
-        mini.Visible = true
-    end)
+	-- Toggle keybind: LeftAlt
+	UserInputService.InputBegan:Connect(function(key, gp)
+		if not gp and key.KeyCode == Enum.KeyCode.LeftAlt then
+			ScreenGui.Enabled = not ScreenGui.Enabled
+		end
+	end)
 
-    mini.MouseButton1Click:Connect(function()
-        main.Visible = true
-        mini.Visible = false
-    end)
+	-- MainFrame Dragging
+	local dragging, dragInput, dragStart, startPos
+	MainFrame.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragStart = input.Position
+			startPos = MainFrame.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then dragging = false end
+			end)
+		end
+	end)
+	MainFrame.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			dragInput = input
+		end
+	end)
+	UserInputService.InputChanged:Connect(function(input)
+		if input == dragInput and dragging then
+			local delta = input.Position - dragStart
+			TweenService:Create(MainFrame, TweenInfo.new(0.08, Enum.EasingStyle.Sine), {
+				Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+			}):Play()
+		end
+	end)
 
-    -- Drag System
-    local dragging, dragStart, startPos
-    main.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = main.Position
-        end
-    end)
-    main.InputEnded:Connect(function() dragging = false end)
+	local TitleLabel = Instance.new("TextLabel")
+	TitleLabel.Size = UDim2.new(1, -40, 0, 40)
+	TitleLabel.Position = UDim2.new(0, 15, 0, 0)
+	TitleLabel.BackgroundTransparency = 1
+	TitleLabel.Font = Enum.Font.GothamBold
+	TitleLabel.Text = hubTitle
+	TitleLabel.TextColor3 = Theme.Accent
+	TitleLabel.TextSize = 18
+	TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+	TitleLabel.Parent = MainFrame
 
-    Connections:Add(UserInputService.InputChanged:Connect(function(input)
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local delta = input.Position - dragStart
-            main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        end
-    end))
+	local CloseBtn = Instance.new("ImageButton")
+	CloseBtn.Size = UDim2.new(0, 22, 0, 22)
+	CloseBtn.Position = UDim2.new(1, -32, 0, 9)
+	CloseBtn.BackgroundTransparency = 1
+	CloseBtn.Image = "rbxassetid://3926305904"
+	CloseBtn.ImageRectOffset = Vector2.new(284, 4)
+	CloseBtn.ImageRectSize = Vector2.new(24, 24)
+	CloseBtn.ImageColor3 = Theme.Alert
+	CloseBtn.Parent = MainFrame
+	CloseBtn.MouseButton1Click:Connect(function() 
+		MainFrame.Visible = false
+		MinimizeBtn.Visible = true
+	end)
 
-    local sidebar = Instance.new("Frame")
-    sidebar.Size = UDim2.new(0, 150, 1, -70)
-    sidebar.Position = UDim2.new(0, 10, 0, 55)
-    sidebar.BackgroundColor3 = Theme.Sidebar
-    sidebar.Parent = main
-    Instance.new("UICorner", sidebar)
+	Player.Chatted:Connect(function(msg)
+		local lowered = msg:lower()
+		if lowered == "!terminate" or lowered == "!kill" then
+			ScreenGui:Destroy()
+		end
+	end)
 
-    local content = Instance.new("Frame")
-    content.Size = UDim2.new(1, -175, 1, -70)
-    content.Position = UDim2.new(0, 165, 0, 55)
-    content.BackgroundTransparency = 1
-    content.Parent = main
+	local SideBar = Instance.new("ScrollingFrame")
+	SideBar.Size = UDim2.new(0, 140, 1, -55)
+	SideBar.Position = UDim2.new(0, 10, 0, 45)
+	SideBar.BackgroundColor3 = Theme.SideBar
+	SideBar.BorderSizePixel = 0
+	SideBar.ScrollBarThickness = 2
+	SideBar.Parent = MainFrame
 
-    local tabs = {}
-    local currentPage
+	local SideCorner = Instance.new("UICorner")
+	SideCorner.CornerRadius = UDim.new(0, 8)
+	SideCorner.Parent = SideBar
 
-    function tabs:Add(name)
-        local button = Instance.new("TextButton")
-        button.Size = UDim2.new(1, -10, 0, 35)
-        button.Text = name
-        button.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        button.TextColor3 = Theme.Text
-        button.Font = Enum.Font.GothamSemibold
-        button.Parent = sidebar
-        Instance.new("UICorner", button)
+	local SideList = Instance.new("UIListLayout")
+	SideList.Padding = UDim.new(0, 5)
+	SideList.Parent = SideBar
 
-        local page = Instance.new("ScrollingFrame")
-        page.Size = UDim2.new(1, 0, 1, 0)
-        page.Visible = false
-        page.BackgroundTransparency = 1
-        page.ScrollBarThickness = 3
-        page.Parent = content
+	local Container = Instance.new("Frame")
+	Container.Size = UDim2.new(1, -175, 1, -55)
+	Container.Position = UDim2.new(0, 160, 0, 45)
+	Container.BackgroundTransparency = 1
+	Container.Parent = MainFrame
 
-        local layout = Instance.new("UIListLayout")
-        layout.Padding = UDim.new(0, 8)
-        layout.Parent = page
+	local accentObjects = {}
+	local activeConnection = nil
 
-        button.MouseButton1Click:Connect(function()
-            if currentPage then currentPage.Visible = false end
-            page.Visible = true
-            currentPage = page
-        end)
+	local function RegisterAccentObject(instance, property)
+		table.insert(accentObjects, {Obj = instance, Prop = property})
+		instance[property] = Theme.Accent
+	end
 
-        if not currentPage then
-            currentPage = page
-            page.Visible = true
-        end
+	RegisterAccentObject(MainStroke, "Color")
+	RegisterAccentObject(MinStroke, "Color")
+	RegisterAccentObject(MinimizeBtn, "TextColor3")
+	RegisterAccentObject(TitleLabel, "TextColor3")
+	RegisterAccentObject(SideBar, "ScrollBarImageColor3")
 
-        local elements = {}
+	local function ApplySolidAccent(color)
+		if activeConnection then
+			activeConnection:Disconnect()
+			activeConnection = nil
+		end
+		Theme.Accent = color
+		for _, data in ipairs(accentObjects) do
+			if data.Obj and data.Obj.Parent then
+				data.Obj[data.Prop] = color
+			end
+		end
+	end
 
-        function elements:Button(text, callback)
-            local b = Instance.new("TextButton")
-            b.Size = UDim2.new(1, -5, 0, 38)
-            b.Text = text
-            b.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-            b.TextColor3 = Theme.Accent
-            b.Font = Enum.Font.GothamSemibold
-            b.Parent = page
-            Instance.new("UICorner", b)
-            b.MouseButton1Click:Connect(callback)
-        end
+	local function StartCycleAccent(mode)
+		if activeConnection then
+			activeConnection:Disconnect()
+			activeConnection = nil
+		end
 
-        function elements:Toggle(text, callback)
-            local state = Config.Data.Settings[text] or false
-            local b = Instance.new("TextButton")
-            b.Size = UDim2.new(1, -5, 0, 38)
-            b.Text = text .. " : " .. (state and "ON" or "OFF")
-            b.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
-            b.TextColor3 = state and Theme.Success or Theme.Error
-            b.Font = Enum.Font.GothamSemibold
-            b.Parent = page
-            Instance.new("UICorner", b)
+		activeConnection = RunService.RenderStepped:Connect(function()
+			local color
+			if mode == "Rainbow" then
+				local hue = (tick() % 4) / 4
+				color = Color3.fromHSV(hue, 1, 1)
+			elseif mode == "Ethereal" then
+				local sine = (math.sin(tick() * 1.2) + 1) / 2
+				color = Color3.fromRGB(0, 170, 255):Lerp(Color3.fromRGB(255, 100, 200), sine)
+			end
 
-            if state then task.spawn(callback, true) end
+			Theme.Accent = color
+			for _, data in ipairs(accentObjects) do
+				if data.Obj and data.Obj.Parent then
+					data.Obj[data.Prop] = color
+				end
+			end
+		end)
+	end
 
-            b.MouseButton1Click:Connect(function()
-                state = not state
-                Config.Data.Settings[text] = state
-                Config:Save()
+	local Tabs = { ActivePage = nil }
+	function Tabs:Tab(tabName)
+		local TabBtn = Instance.new("TextButton")
+		TabBtn.Size = UDim2.new(1, 0, 0, 34)
+		TabBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+		TabBtn.Font = Enum.Font.GothamSemibold
+		TabBtn.TextColor3 = Color3.fromRGB(180, 180, 190)
+		TabBtn.TextSize = 13
+		TabBtn.Text = tabName
+		TabBtn.Parent = SideBar
+		Instance.new("UICorner").CornerRadius = UDim.new(0, 6)
 
-                b.Text = text .. " : " .. (state and "ON" or "OFF")
-                b.TextColor3 = state and Theme.Success or Theme.Error
-                task.spawn(callback, state)
-            end)
-        end
+		local Page = Instance.new("ScrollingFrame")
+		Page.Size = UDim2.new(1, 0, 1, 0)
+		Page.BackgroundTransparency = 1
+		Page.ScrollBarThickness = 3
+		Page.Visible = false
+		Page.Parent = Container
 
-        function elements:Label(text)
-            local l = Instance.new("TextLabel")
-            l.Size = UDim2.new(1, -5, 0, 30)
-            l.Text = text
-            l.BackgroundTransparency = 1
-            l.TextColor3 = Theme.Text
-            l.Font = Enum.Font.Gotham
-            l.Parent = page
-            return l
-        end
+		local PageList = Instance.new("UIListLayout")
+		PageList.Padding = UDim.new(0, 8)
+		PageList.Parent = Page
 
-        return elements
-    end
+		RegisterAccentObject(Page, "ScrollBarImageColor3")
 
-    getgenv().AveryV4.UI = tabs
-    return gui
+		TabBtn.MouseButton1Click:Connect(function()
+			for _, child in ipairs(Container:GetChildren()) do
+				if child:IsA("ScrollingFrame") then child.Visible = false end
+			end
+			for _, btn in ipairs(SideBar:GetChildren()) do
+				if btn:IsA("TextButton") then btn.TextColor3 = Color3.fromRGB(180, 180, 190) end
+			end
+			TabBtn.TextColor3 = Theme.Accent
+			Page.Visible = true
+		end)
+
+		if not Tabs.ActivePage then
+			TabBtn.TextColor3 = Theme.Accent
+			Page.Visible = true
+			Tabs.ActivePage = Page
+		end
+
+		local Elements = {}
+		function Elements:Toggle(toggleName, callback)
+			local ToggleFrame = Instance.new("Frame")
+			ToggleFrame.Size = UDim2.new(1, -5, 0, 36)
+			ToggleFrame.BackgroundColor3 = Color3.fromRGB(22, 22, 32)
+			ToggleFrame.Parent = Page
+			Instance.new("UICorner").CornerRadius = UDim.new(0, 6)
+
+			local lbl = Instance.new("TextLabel")
+			lbl.Size = UDim2.new(0.7, 0, 1, 0)
+			lbl.Position = UDim2.new(0, 10, 0, 0)
+			lbl.BackgroundTransparency = 1
+			lbl.Font = Enum.Font.Gotham
+			lbl.Text = toggleName
+			lbl.TextColor3 = Theme.TextColor
+			lbl.TextSize = 14
+			lbl.TextXAlignment = Enum.TextXAlignment.Left
+			lbl.Parent = ToggleFrame
+
+			local StatusIndicator = Instance.new("TextButton")
+			StatusIndicator.Size = UDim2.new(0, 45, 0, 22)
+			StatusIndicator.Position = UDim2.new(1, -55, 0, 7)
+			StatusIndicator.BackgroundColor3 = Theme.SideBar
+			StatusIndicator.Font = Enum.Font.GothamBold
+			StatusIndicator.TextSize = 11
+			StatusIndicator.Parent = ToggleFrame
+			Instance.new("UICorner").CornerRadius = UDim.new(0, 4)
+
+			local state = false
+			if SavedSettings[toggleName] ~= nil then
+				state = SavedSettings[toggleName]
+			end
+
+			StatusIndicator.Text = state and "ON" or "OFF"
+			StatusIndicator.TextColor3 = state and Theme.Success or Theme.Alert
+
+			if state then
+				task.spawn(callback, true)
+			end
+
+			StatusIndicator.MouseButton1Click:Connect(function()
+				state = not state
+				StatusIndicator.Text = state and "ON" or "OFF"
+				StatusIndicator.TextColor3 = state and Theme.Success or Theme.Alert
+				
+				SavedSettings[toggleName] = state
+				SaveSettings()
+
+				task.spawn(callback, state)
+			end)
+		end
+
+		function Elements:Button(btnName, callback)
+			local Btn = Instance.new("TextButton")
+			local c = Instance.new("UICorner")
+			Btn.Size = UDim2.new(1, -5, 0, 36)
+			Btn.BackgroundColor3 = Color3.fromRGB(28, 28, 40)
+			Btn.Font = Enum.Font.GothamSemibold
+			Btn.Text = btnName
+			Btn.TextColor3 = Theme.Accent
+			Btn.TextSize = 14
+			Btn.Parent = Page
+			c.CornerRadius = UDim.new(0, 6)
+			Btn.MouseButton1Click:Connect(callback)
+
+			RegisterAccentObject(Btn, "TextColor3")
+		end
+
+		function Elements:Label(textString)
+			local Lbl = Instance.new("TextLabel")
+			Lbl.Size = UDim2.new(1, -5, 0, 25)
+			Lbl.BackgroundTransparency = 1
+			Lbl.Font = Enum.Font.Gotham
+			Lbl.Text = textString
+			Lbl.TextColor3 = Color3.fromRGB(200, 200, 200)
+			Lbl.TextSize = 13
+			Lbl.TextXAlignment = Enum.TextXAlignment.Left
+			Lbl.Parent = Page
+			return Lbl
+		end
+
+		return Elements
+	end
+
+	task.spawn(function()
+		local activeTheme = SavedSettings["ActiveTheme"] or "Ethereal Blue"
+		if activeTheme == "Rainbow" then
+			StartCycleAccent("Rainbow")
+		elseif activeTheme == "Ethereal Cycle" then
+			StartCycleAccent("Ethereal")
+		else
+			local map = {
+				["Ethereal Blue"] = Color3.fromRGB(0, 200, 255),
+				["Light Blue"] = Color3.fromRGB(130, 215, 255),
+				["Lime"] = Color3.fromRGB(110, 240, 95),
+				["Pink"] = Color3.fromRGB(255, 110, 200),
+				["Red"] = Color3.fromRGB(255, 75, 75),
+				["Orange"] = Color3.fromRGB(255, 140, 50)
+			}
+			ApplySolidAccent(map[activeTheme] or Color3.fromRGB(0, 200, 255))
+		end
+	end)
+
+	function Tabs:SetTheme(themeName)
+		SavedSettings["ActiveTheme"] = themeName
+		SaveSettings()
+
+		if themeName == "Rainbow" then
+			StartCycleAccent("Rainbow")
+		elseif themeName == "Ethereal Cycle" then
+			StartCycleAccent("Ethereal")
+		else
+			local map = {
+				["Ethereal Blue"] = Color3.fromRGB(0, 200, 255),
+				["Light Blue"] = Color3.fromRGB(130, 215, 255),
+				["Lime"] = Color3.fromRGB(110, 240, 95),
+				["Pink"] = Color3.fromRGB(255, 110, 200),
+				["Red"] = Color3.fromRGB(255, 75, 75),
+				["Orange"] = Color3.fromRGB(255, 140, 50)
+			}
+			ApplySolidAccent(map[themeName] or Color3.fromRGB(0, 200, 255))
+		end
+	end
+
+	function Tabs:SetStyle(styleName)
+		SavedSettings["ActiveStyle"] = styleName
+		SaveSettings()
+
+		if styleName == "Transparent" then
+			MainFrame.BackgroundTransparency = 0.5
+			MainFrame.BackgroundColor3 = Theme.Background
+			SideBar.BackgroundTransparency = 0.6
+			SideBar.BackgroundColor3 = Theme.SideBar
+			MainStroke.Thickness = 1.5
+		elseif styleName == "Glossy" then
+			MainFrame.BackgroundTransparency = 0.25
+			MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 45) 
+			SideBar.BackgroundTransparency = 0.4
+			SideBar.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+			MainStroke.Thickness = 2.5 
+		else 
+			MainFrame.BackgroundTransparency = 0
+			MainFrame.BackgroundColor3 = Theme.Background
+			SideBar.BackgroundTransparency = 0
+			SideBar.BackgroundColor3 = Theme.SideBar
+			MainStroke.Thickness = 1.5
+		end
+	end
+
+	task.spawn(function()
+		local activeStyle = SavedSettings["ActiveStyle"] or "Default"
+		Tabs:SetStyle(activeStyle)
+	end)
+
+	return Tabs
 end
 
-UI:Create()
-
 --------------------------------------------------
--- Features & Tabs Registration
+-- ALL TABS AND FEATURES INITIALIZATION
 --------------------------------------------------
 
-local UI = getgenv().AveryV4.UI
+local Library = ModernLib:CreateMain("⚡ Avery Hub V3 | Premium Dashboard ⚡")
 
-local Notifications = {}
-function Notifications:Notify(message)
-    local gui = Player.PlayerGui:FindFirstChild("AveryHubV4")
-    if not gui then return end
+local AutoFarm = Library:Tab("AutoDrink")
+local LocalPlayer = Library:Tab("LocalPlayer")
+local Teleport = Library:Tab("Teleports")
+local Themes = Library:Tab("Themes")
+local Misc = Library:Tab("Misc")
+local Scripts = Library:Tab("Scripts")
+local Credits = Library:Tab("Credits")
 
-    local note = Instance.new("TextLabel")
-    note.Size = UDim2.new(0, 260, 0, 45)
-    note.Position = UDim2.new(.5, -130, 0, 20)
-    note.BackgroundColor3 = Theme.Background
-    note.TextColor3 = Theme.Accent
-    note.Text = "⚡ " .. message
-    note.Font = Enum.Font.GothamBold
-    note.TextSize = 14
-    note.Parent = gui
-    Instance.new("UICorner", note)
-
-    TweenService:Create(note, TweenInfo.new(.3), {BackgroundTransparency = 0.1}):Play()
-    task.delay(3, function() if note then note:Destroy() end end)
-end
-
+--------------------------------------------------
 -- 1. AutoDrink Tab
-local AutoFarm = UI:Add("AutoDrink")
-AutoFarm:Label("⚡ DrinkHaxx Automation")
+--------------------------------------------------
 
 local drinkTier = {
-    {req = 2000000, name = "Garlic Juice"}, {req = 1000000, name = "Thunder Fizz"},
-    {req = 500000, name = "Omega Burp Juice"}, {req = 230000, name = "Atomic Drink"},
-    {req = 150000, name = "Ninth Drink"}, {req = 60000, name = "Eighth Drink"},
-    {req = 25000, name = "Seventh Drink"}, {req = 10000, name = "Sixth Drink"},
-    {req = 3500, name = "Fifth Drink"}, {req = 1600, name = "Fourth Drink"},
-    {req = 600, name = "Third Drink"}, {req = 150, name = "Second Drink"},
-    {req = 0, name = "Starter Drink"}
+	{req = 2000000, name = "Garlic Juice"}, {req = 1000000, name = "Thunder Fizz"},
+	{req = 500000, name = "Omega Burp Juice"}, {req = 230000, name = "Atomic Drink"},
+	{req = 150000, name = "Ninth Drink"}, {req = 60000, name = "Eighth Drink"},
+	{req = 25000, name = "Seventh Drink"}, {req = 10000, name = "Sixth Drink"},
+	{req = 3500, name = "Fifth Drink"}, {req = 1600, name = "Fourth Drink"},
+	{req = 600, name = "Third Drink"}, {req = 150, name = "Second Drink"},
+	{req = 0, name = "Starter Drink"}
 }
 
 local function RunAutoEquipEngine()
-    local stats = Player:FindFirstChild("leaderstats")
-    local burpPoints = stats and stats:FindFirstChild("Burp points") and stats["Burp points"].Value or 0
-    local bp = Player:FindFirstChild("Backpack")
-    local char = Player.Character
-    local hum = char and char:FindFirstChildOfClass("Humanoid")
+	local stats = Player:FindFirstChild("leaderstats")
+	local burpPoints = stats and stats:FindFirstChild("Burp points") and stats["Burp points"].Value or 0
+	local bp = Player:FindFirstChild("Backpack")
+	local char = Player.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
 
-    if not bp or not hum then return end
+	if not bp or not hum then return end
 
-    for _, drink in ipairs(drinkTier) do
-        if burpPoints >= drink.req or bp:FindFirstChild(drink.name) then
-            local target = bp:FindFirstChild(drink.name)
-            if target then hum:EquipTool(target) end
-            break
-        end
-    end
+	for _, drink in ipairs(drinkTier) do
+		if burpPoints >= drink.req or bp:FindFirstChild(drink.name) then
+			local target = bp:FindFirstChild(drink.name)
+			if target then hum:EquipTool(target) end
+			break
+		end
+	end
 end
 
+pcall(function()
+	loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/78b69f79b7fa24fd0d20faa46c5cf85f/raw/2bc6ab144c95e2463d72060f2936befae2c5ccf1/Modern%2520Equip.lua"))()
+end)
+
 AutoFarm:Toggle("Auto Prestige", function(state)
-    getgenv().prestige = state
-    while getgenv().prestige do
-        ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
-        task.wait(0.8)
-    end
+	getgenv().prestige = state
+	while getgenv().prestige do
+		ReplicatedStorage.RemoteEvents.PrestigeEvent:FireServer()
+		task.wait(0.8)
+	end
 end)
 
 AutoFarm:Toggle("Auto Equip", function(state)
-    getgenv().equip = state
-    while getgenv().equip do
-        RunAutoEquipEngine()
-        task.wait(0.8)
-    end
+	getgenv().equip = state
+	while getgenv().equip do
+		RunAutoEquipEngine()
+		task.wait(0.8)
+	end
 end)
 
 AutoFarm:Toggle("Auto Collect Gem", function(state)
-    getgenv().collectGems = state
-    while getgenv().collectGems do
-        local gemsFolder = workspace:FindFirstChild("Diamonds")
-        local gem = gemsFolder and gemsFolder:FindFirstChild("Diamond")
-        local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-        if gem and hrp then gem.CFrame = hrp.CFrame end
-        task.wait(0.6)
-    end
+	getgenv().collectGems = state
+	while getgenv().collectGems do
+		local gemsFolder = workspace:FindFirstChild("Diamonds")
+		local gem = gemsFolder and gemsFolder:FindFirstChild("Diamond")
+		local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+		if gem and hrp then gem.CFrame = hrp.CFrame end
+		task.wait(0.6)
+	end
 end)
 
 AutoFarm:Toggle("Auto Drink", function(state)
-    getgenv().autodrink = state
-    while getgenv().autodrink do
-        for _, drink in ipairs(drinkTier) do
-            ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(drink.name)
-        end
-        task.wait(2.4)
-    end
+	getgenv().autodrink = state
+	while getgenv().autodrink do
+		for _, drink in ipairs(drinkTier) do
+			ReplicatedStorage.RemoteEvents.DrinkEvent:FireServer(drink.name)
+		end
+		task.wait(2.4)
+	end
 end)
 
 AutoFarm:Toggle("Fast Drink", function(state)
-    if state then
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/v2.lua"))()
-    end
+	if state then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/v2.lua"))()
+	end
 end)
 
 AutoFarm:Toggle("Auto Equip Pickaxe", function(state)
-    getgenv().equippickaxe = state
-    while getgenv().equippickaxe do
-        local bp = Player:FindFirstChild("Backpack")
-        local hum = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
-        if bp and hum and bp:FindFirstChild("Pickaxe") then
-            hum:EquipTool(bp.Pickaxe)
-        end
-        task.wait(0.5)
-    end
+	getgenv().equippickaxe = state
+	while getgenv().equippickaxe do
+		local bp = Player:FindFirstChild("Backpack")
+		local hum = Player.Character and Player.Character:FindFirstChildOfClass("Humanoid")
+		if bp and hum and bp:FindFirstChild("Pickaxe") then
+			hum:EquipTool(bp.Pickaxe)
+		end
+		task.wait(0.5)
+	end
 end)
 
 AutoFarm:Toggle("Auto Mine Gems", function(state)
-    getgenv().minegems = state
-    while getgenv().minegems do
-        if Player.Character and Player.Character:FindFirstChild("Pickaxe") then
-            Player.Character.Pickaxe.Server.Mine:FireServer()
-        end
-        task.wait(0.1)
-    end
+	getgenv().minegems = state
+	while getgenv().minegems do
+		if Player.Character and Player.Character:FindFirstChild("Pickaxe") then
+			Player.Character.Pickaxe.Server.Mine:FireServer()
+		end
+		task.wait(0.1)
+	end
 end)
 
+--------------------------------------------------
 -- 2. LocalPlayer Tab
-local LocalPlayerTab = UI:Add("LocalPlayer")
-LocalPlayerTab:Label("👤 Local Player Modifications")
+--------------------------------------------------
 
-LocalPlayerTab:Button("FPS-Unlocker", function()
-    if setfpscap then setfpscap(100000) end
+LocalPlayer:Button("Fps-Unlocker", function()
+	if setfpscap then setfpscap(100000) end
 end)
 
-LocalPlayerTab:Toggle("WalkSpeed", function(state)
-    getgenv().speedHack = state
-    while getgenv().speedHack do
-        if Player.Character and Player.Character:FindFirstChild("Humanoid") then
-            Player.Character.Humanoid.WalkSpeed = 459
-        end
-        task.wait()
-    end
+LocalPlayer:Toggle("WalkSpeed", function(state)
+	getgenv().speedHack = state
+	while getgenv().speedHack do
+		if Player.Character and Player.Character:FindFirstChild("Humanoid") then
+			Player.Character.Humanoid.WalkSpeed = 459
+		end
+		task.wait()
+	end
 end)
 
-LocalPlayerTab:Toggle("Inf Jump", function(state)
-    getgenv().infJump = state
-    if state then
-        getgenv().jumpConnection = UserInputService.JumpRequest:Connect(function()
-            if getgenv().infJump and Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then
-                Player.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
-            end
-        end)
-    else
-        if getgenv().jumpConnection then getgenv().jumpConnection:Disconnect() end
-    end
+LocalPlayer:Toggle("Inf Jump", function(state)
+	getgenv().infJump = state
+	if state then
+		getgenv().jumpConnection = UserInputService.JumpRequest:Connect(function()
+			if getgenv().infJump and Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then
+				Player.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+			end
+		end)
+	else
+		if getgenv().jumpConnection then getgenv().jumpConnection:Disconnect() end
+	end
 end)
 
-LocalPlayerTab:Button("Reset", function()
-    if Player.Character then Player.Character:BreakJoints() end
+LocalPlayer:Button("Reset", function()
+	if Player.Character then Player.Character:BreakJoints() end
 end)
 
 local rejoinConn
-LocalPlayerTab:Toggle("Rejoin On Error", function(state)
-    local TeleportService = game:GetService("TeleportService")
-    local GuiService = game:GetService("GuiService")
+LocalPlayer:Toggle("Rejoin", function(state)
+	local TeleportService = game:GetService("TeleportService")
+	local GuiService = game:GetService("GuiService")
 
-    if state then
-        rejoinConn = GuiService.ErrorMessageChanged:Connect(function()
-            if GuiService:GetErrorMessage() ~= "" then
-                task.wait(0.5) 
-                TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Player)
-            end
-        end)
-    else
-        if rejoinConn then rejoinConn:Disconnect() rejoinConn = nil end
-    end
+	if state then
+		rejoinConn = GuiService.ErrorMessageChanged:Connect(function()
+			if GuiService:GetErrorMessage() ~= "" then
+				task.wait(0.5) 
+				TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Player)
+			end
+		end)
+	else
+		if rejoinConn then
+			rejoinConn:Disconnect()
+			rejoinConn = nil
+		end
+	end
 end)
 
-LocalPlayerTab:Toggle("Night Mode", function(state)
-    Lighting.ClockTime = state and 0 or 14
+LocalPlayer:Toggle("Night", function(state)
+	Lighting.ClockTime = state and 0 or 14
 end)
 
-LocalPlayerTab:Toggle("Sit", function(state)
-    if Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then
-        Player.Character:FindFirstChildOfClass("Humanoid").Sit = state
-    end
+LocalPlayer:Toggle("Sit", function(state)
+	if Player.Character and Player.Character:FindFirstChildOfClass("Humanoid") then
+		Player.Character:FindFirstChildOfClass("Humanoid").Sit = state
+	end
 end)
 
-LocalPlayerTab:Button("Auto Spawn", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Spawn.lua"))()
+LocalPlayer:Button("Auto Spawn", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Auto%20Spawn.lua"))()
 end)
 
-LocalPlayerTab:Button("Users List", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/User's.lua"))()
+LocalPlayer:Button("List", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/User's.lua"))()
 end)
 
-LocalPlayerTab:Button("TP Gui", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Teleport.lua"))()
+LocalPlayer:Button("TP Gui", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Teleport.lua"))()
 end)
 
-LocalPlayerTab:Button("Cloud Stand", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Cloud.lua"))()
+LocalPlayer:Button("Cloud Stand", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Cloud.lua"))()
 end)
 
-LocalPlayerTab:Button("VoidStand", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/VoidStand.lua"))()
+LocalPlayer:Button("VoidStand", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/VoidStand.lua"))()
 end)
 
-LocalPlayerTab:Toggle("Burp Counter", function(state)
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Burp%20anti%20counter.lua"))()
+LocalPlayer:Toggle("Burp Counter", function(state)
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Burp%20anti%20counter.lua"))()
 end)
 
+--------------------------------------------------
 -- 3. Teleports Tab
-local TeleportTab = UI:Add("Teleports")
-TeleportTab:Label("📍 World Teleports")
+--------------------------------------------------
 
 local function tweenHRP(targetCFrame)
-    local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-    if hrp then
-        TweenService:Create(hrp, TweenInfo.new(0.2, Enum.EasingStyle.Linear), {CFrame = targetCFrame}):Play()
-    end
+	local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+	if hrp then
+		TweenService:Create(hrp, TweenInfo.new(0.2, Enum.EasingStyle.Linear), {CFrame = targetCFrame}):Play()
+	end
 end
 
-TeleportTab:Button("Safe Zone", function() tweenHRP(CFrame.new(-46, 48, -15)) end)
-TeleportTab:Button("Pet Shop", function() tweenHRP(CFrame.new(311, 52, 103)) end)
-TeleportTab:Button("Disco Island", function() tweenHRP(CFrame.new(63, 48, 636)) end)
-TeleportTab:Button("Cloud One", function() tweenHRP(CFrame.new(296, 566, 689)) end)
-TeleportTab:Button("Cloud Second", function() tweenHRP(CFrame.new(-1224, 557, -318)) end)
-TeleportTab:Button("Sky Island", function() tweenHRP(CFrame.new(2132, 1456, -1034)) end)
-TeleportTab:Button("SafePlace", function() tweenHRP(CFrame.new(167, 48.28, -5357)) end)
-TeleportTab:Button("SafePlace v2", function() tweenHRP(CFrame.new(0, 3605, 0)) end)
-TeleportTab:Button("FavSpot", function() tweenHRP(CFrame.new(60.12, 18.25, -72)) end)
-TeleportTab:Button("Water Spot", function() tweenHRP(CFrame.new(-564, 40, 605)) end)
-TeleportTab:Button("Hotel", function() tweenHRP(CFrame.new(-1198.27, 44.31, -5.58)) end)
+Teleport:Button("Safe Zone", function() tweenHRP(CFrame.new(-46, 48, -15)) end)
+Teleport:Button("Pet Shop", function() tweenHRP(CFrame.new(311, 52, 103)) end)
+Teleport:Button("Disco Island", function() tweenHRP(CFrame.new(63, 48, 636)) end)
+Teleport:Button("Cloud One", function() tweenHRP(CFrame.new(296, 566, 689)) end)
+Teleport:Button("Cloud Second", function() tweenHRP(CFrame.new(-1224, 557, -318)) end)
+Teleport:Button("Sky Island", function() tweenHRP(CFrame.new(2132, 1456, -1034)) end)
+Teleport:Button("SafePlace", function() tweenHRP(CFrame.new(167, 48.28, -5357)) end)
+Teleport:Button("SafePlace v2", function() tweenHRP(CFrame.new(0, 3605, 0)) end)
+Teleport:Button("FavSpot", function() tweenHRP(CFrame.new(60.12, 18.25, -72)) end)
+Teleport:Button("Water Spot", function() tweenHRP(CFrame.new(-564, 40, 605)) end)
+Teleport:Button("Hotel", function() tweenHRP(CFrame.new(-1198.27, 44.31, -5.58)) end)
 
--- 4. Misc Tab
-local MiscTab = UI:Add("Misc")
-MiscTab:Label("🛠 Extra Utilities")
+--------------------------------------------------
+-- 4. Themes Tab
+--------------------------------------------------
 
--- Walk On Water Addition
-local waterPlatform
-MiscTab:Toggle("Walk On Water", function(state)
-    getgenv().WalkOnWater = state
-    if state then
-        task.spawn(function()
-            while getgenv().WalkOnWater do
-                local char = Player.Character
-                local hrp = char and char:FindFirstChild("HumanoidRootPart")
-                if hrp then
-                    if not waterPlatform or not waterPlatform.Parent then
-                        waterPlatform = Instance.new("Part")
-                        waterPlatform.Name = "WaterPlatform"
-                        waterPlatform.Size = Vector3.new(10, 1, 10)
-                        waterPlatform.Anchored = true
-                        waterPlatform.Transparency = 0.5
-                        waterPlatform.Material = Enum.Material.SmoothPlastic
-                        waterPlatform.Color = Color3.fromRGB(0, 200, 255)
-                        waterPlatform.Parent = workspace
-                    end
-                    waterPlatform.CFrame = CFrame.new(hrp.Position.X, 35.5, hrp.Position.Z)
-                end
-                task.wait()
-            end
-            if waterPlatform then waterPlatform:Destroy() end
-        end)
-    else
-        if waterPlatform then waterPlatform:Destroy() end
-    end
+Themes:Label("--- UI Accents ---")
+Themes:Button("Ethereal Blue Accent", function() Library:SetTheme("Ethereal Blue") end)
+Themes:Button("Light Blue Accent", function() Library:SetTheme("Light Blue") end)
+Themes:Button("Lime Accent", function() Library:SetTheme("Lime") end)
+Themes:Button("Pink Accent", function() Library:SetTheme("Pink") end)
+Themes:Button("Red Accent", function() Library:SetTheme("Red") end)
+Themes:Button("Orange Accent", function() Library:SetTheme("Orange") end)
+Themes:Button("✨ Ethereal Breathing Cycle", function() Library:SetTheme("Ethereal Cycle") end)
+Themes:Button("🌈 Active Rainbow Cycle", function() Library:SetTheme("Rainbow") end)
+
+Themes:Label("--- UI Style & Transparency ---")
+Themes:Button("Default Opaque Style", function() Library:SetStyle("Default") end)
+Themes:Button("Transparent Style", function() Library:SetStyle("Transparent") end)
+Themes:Button("Glossy Glass Style", function() Library:SetStyle("Glossy") end)
+
+--------------------------------------------------
+-- 5. Misc Tab
+--------------------------------------------------
+
+Misc:Button("Bp Counter", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Bp%20Counter.lua"))()
 end)
 
-MiscTab:Button("Bp Counter", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Bp%20Counter.lua"))()
+Misc:Button("Infinity Yield", function() 
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+end)		
+
+Misc:Toggle("Anti Kick", function(state)
+	if state then
+		local mt = getrawmetatable(game)
+		local old = mt.__namecall
+		local protect = newcclosure or function(f) return f end
+
+		setreadonly(mt, false)
+		mt.__namecall = protect(function(self, ...)
+			local method = getnamecallmethod()
+			if method == "Kick" then
+				task.wait(9e9)
+				return
+			end
+			return old(self, ...)
+		end)
+		hookfunction(Player.Kick, protect(function() task.wait(9e9) end))
+	end
 end)
 
-MiscTab:Button("Infinity Yield", function() 
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-end)        
+Misc:Toggle("Anti Afk", function(state) 
+	if state then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
+	end
+end)	
 
-MiscTab:Toggle("Anti Kick", function(state)
-    if state then
-        local mt = getrawmetatable(game)
-        local old = mt.__namecall
-        local protect = newcclosure or function(f) return f end
-
-        setreadonly(mt, false)
-        mt.__namecall = protect(function(self, ...)
-            if getnamecallmethod() == "Kick" then
-                task.wait(9e9)
-                return
-            end
-            return old(self, ...)
-        end)
-        hookfunction(Player.Kick, protect(function() task.wait(9e9) end))
-    end
+Misc:Button("Battery", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Battery.lua"))()
 end)
 
-MiscTab:Toggle("Anti Afk", function(state) 
-    if state then
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
-    end
-end)    
-
-MiscTab:Button("Battery", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Battery.lua"))()
+Misc:Button("SafePlace", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace%20v1"))()
 end)
 
-MiscTab:Button("SafePlace Script", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/SafePlace%20v1"))()
+Misc:Button("Plate", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Plate.lua"))()
 end)
 
-MiscTab:Button("Plate", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Plate.lua"))()
+Misc:Button("Castle", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Castle.lua"))()
 end)
 
-MiscTab:Button("Castle", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Castle.lua"))()
+Misc:Button("Animation-Hub", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Animated/main/G"))()
+end)	
+
+local waterPart
+Misc:Toggle("Walk On Water", function(state)
+	getgenv().walkWater = state
+	if state then
+		task.spawn(function()
+			while getgenv().walkWater do
+				local char = Player.Character
+				local hrp = char and char:FindFirstChild("HumanoidRootPart")
+				if hrp then
+					if not waterPart or not waterPart.Parent then
+						waterPart = Instance.new("Part")
+						waterPart.Name = "WaterPlatform"
+						waterPart.Size = Vector3.new(12, 1, 12)
+						waterPart.Anchored = true
+						waterPart.Transparency = 0.5
+						waterPart.Color = Color3.fromRGB(0, 200, 255)
+						waterPart.Parent = workspace
+					end
+					waterPart.CFrame = CFrame.new(hrp.Position.X, 35.5, hrp.Position.Z)
+				end
+				task.wait()
+			end
+			if waterPart then waterPart:Destroy() end
+		end)
+	else
+		if waterPart then waterPart:Destroy() end
+	end
 end)
 
-MiscTab:Button("Animation Hub", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Animated/main/G"))()
+--------------------------------------------------
+-- 6. Scripts Tab
+--------------------------------------------------
+
+Scripts:Label("--- External Utilities & Hubs ---")
+Scripts:Button("Fly GUI V3", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEKO-SCRIPTS/Fly-Gui-V3/main/FlyGuiV3.lua"))()
 end)
 
--- 5. Themes Tab
-local ThemesTab = UI:Add("Themes")
-ThemesTab:Label("🎨 Customize Avery Hub V4")
+Scripts:Button("Dex Explorer", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))()
+end)
 
-for themeName, _ in pairs(ThemeManager.Colors) do
-    ThemesTab:Button(themeName, function()
-        ThemeManager:Set(themeName)
-        Notifications:Notify("Theme set to: " .. themeName)
-    end)
-end
+Scripts:Button("Remote Spy", function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/ex-ser/SimpleSpy/main/SimpleSpy.lua"))()
+end)
 
--- 6. Credits Tab
-local CreditsTab = UI:Add("Credits")
-CreditsTab:Label("⚡ Avery Hub V4 x DrinkHaxx")
-CreditsTab:Label("Developer: Avery")
-CreditsTab:Label("DrinkHaxx Logic: Riko The Demon Hunter")
-CreditsTab:Label("Framework: Avery Hub Premium Engine")
+--------------------------------------------------
+-- 7. Credits Tab
+--------------------------------------------------
 
-Notifications:Notify("Avery Hub V4 fully initialized!")
+Credits:Label("✨ Avery Hub V3 / V4 Modern Suite ✨")
+Credits:Label("Developer: Avery")
+Credits:Label("DrinkHaxx Creator: Riko The Demon Hunter")
+Credits:Label("Special Thanks to all supporters!")
