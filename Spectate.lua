@@ -11,7 +11,7 @@ pcall(function()
     local oldGui = CoreGui:FindFirstChild("AveryHubGui")
     if oldGui then oldGui:Destroy() end
 
-    -- R15 Check
+    -- R15 Check if your on R15
     local function checkR15(char)
         local humanoid = char:WaitForChild("Humanoid", 5)
         if humanoid and humanoid.RigType ~= Enum.HumanoidRigType.R15 then 
