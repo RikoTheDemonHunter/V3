@@ -1,331 +1,2213 @@
-pcall(function()
-    local Players = game:GetService("Players")
-    local TweenService = game:GetService("TweenService")
-    local UserInputService = game:GetService("UserInputService")
-    local ContentProvider = game:GetService("ContentProvider")
-    local LocalPlayer = Players.LocalPlayer
+--// Avery Hub V4
+--// Step 1: Core Foundation
 
-    -- Global state persistence across resets
-    getgenv().AverySelectedPack = getgenv().AverySelectedPack or nil
+local Services = {}
 
-    -- Check R15 Setup
-    local function checkR15(char)
-        local humanoid = char:WaitForChild("Humanoid", 5)
-        if humanoid and humanoid.RigType ~= Enum.HumanoidRigType.R15 then 
-            game:GetService("StarterGui"):SetCore("SendNotification", {
-                Title = "Rig Error",
-                Text = "R15 Rig required for Animation Swapper!",
-                Duration = 5
-            })
-            return false
-        end
-        return true
-    end
+Services.Players = game:GetService("Players")
+Services.TweenService = game:GetService("TweenService")
+Services.UserInputService = game:GetService("UserInputService")
+Services.RunService = game:GetService("RunService")
+Services.HttpService = game:GetService("HttpService")
 
-    if LocalPlayer.Character and not checkR15(LocalPlayer.Character) then return end
+local Player = Services.Players.LocalPlayer
 
-    local cloneref = cloneref or function(o) return o end
-    local CoreGui = cloneref(game:GetService("CoreGui")) or LocalPlayer:WaitForChild("PlayerGui")
 
-    -- Clean up previous execution
-    local oldGui = CoreGui:FindFirstChild("AveryHubGui")
-    if oldGui then oldGui:Destroy() end
+--// Config System
 
-    -- ANIMATION PACK DATABASE
-    local OriginalAnimations = {
-        Idle = {
-            ["Ninja"] = {656117400, 656118341},
-            ["Toy"] = {782841498, 782845736},
-            ["Vampire"] = {1083445855, 1083450166},
-            ["Werewolf"] = {1083195517, 1083214717},
-            ["Zombie"] = {616158082, 616160842},
-            ["Mage"] = {707742142, 707855907},
-            ["Pirate"] = {750781872, 750782770},
-            ["Superhero"] = {616111295, 616113536},
-            ["Knight"] = {657593035, 657593251},
-            ["Levitation"] = {616006778, 616008087},
-            ["Bubbly"] = {910004836, 910009958},
-            ["Stylish"] = {616136790, 616138447},
-            ["Robot"] = {616088211, 616089859},
-            ["Astral"] = {891621366, 891633237},
-            ["Oldschool"] = {531982821, 531983108},
-            ["Cartoony"] = {742637544, 742638445},
-            ["Elder"] = {845397899, 845400520},
-            ["Rorro"] = {1092105732, 1092106234}
-        },
-        Walk = {
-            ["Ninja"] = 656121766, ["Toy"] = 782843345, ["Vampire"] = 1083452282, ["Werewolf"] = 1083199849,
-            ["Zombie"] = 616168032, ["Mage"] = 707897309, ["Pirate"] = 750785693, ["Superhero"] = 616122287,
-            ["Knight"] = 657552124, ["Levitation"] = 616013216, ["Bubbly"] = 910025107, ["Stylish"] = 616146170,
-            ["Robot"] = 616095330, ["Astral"] = 891662494, ["Oldschool"] = 531984711, ["Cartoony"] = 742640026,
-            ["Elder"] = 845403244, ["Rorro"] = 1092107129
-        },
-        Run = {
-            ["Ninja"] = 656118852, ["Toy"] = 782842708, ["Vampire"] = 1083450849, ["Werewolf"] = 1083196960,
-            ["Zombie"] = 616163605, ["Mage"] = 707861613, ["Pirate"] = 750783738, ["Superhero"] = 616117088,
-            ["Knight"] = 657564596, ["Levitation"] = 616008936, ["Bubbly"] = 910016857, ["Stylish"] = 616140816,
-            ["Robot"] = 616091570, ["Astral"] = 891639832, ["Oldschool"] = 531984439, ["Cartoony"] = 742638842,
-            ["Elder"] = 845401765, ["Rorro"] = 1092106432
-        },
-        Jump = {
-            ["Ninja"] = 656117878, ["Toy"] = 782841968, ["Vampire"] = 1083450423, ["Werewolf"] = 1083196303,
-            ["Zombie"] = 616161984, ["Mage"] = 707858694, ["Pirate"] = 750783008, ["Superhero"] = 616114845,
-            ["Knight"] = 657593688, ["Levitation"] = 616008291, ["Bubbly"] = 910012220, ["Stylish"] = 616139451,
-            ["Robot"] = 616090332, ["Astral"] = 891636393, ["Oldschool"] = 531983926, ["Cartoony"] = 742638590,
-            ["Elder"] = 845400922, ["Rorro"] = 1092106300
-        },
-        Fall = {
-            ["Ninja"] = 656115606, ["Toy"] = 782840523, ["Vampire"] = 1083443587, ["Werewolf"] = 1083193826,
-            ["Zombie"] = 616157122, ["Mage"] = 707829716, ["Pirate"] = 750780242, ["Superhero"] = 616108112,
-            ["Knight"] = 657560862, ["Levitation"] = 616005863, ["Bubbly"] = 910001910, ["Stylish"] = 616134815,
-            ["Robot"] = 616086039, ["Astral"] = 891628189, ["Oldschool"] = 531982238, ["Cartoony"] = 742637151,
-            ["Elder"] = 845396048, ["Rorro"] = 1092105310
-        }
-    }
+local Config = {}
 
-    -- Direct Animation Engine Core
-    local function ApplyAnimationPack(char, packName)
-        if not char or not packName then return end
-        local humanoid = char:WaitForChild("Humanoid", 5)
-        local animateScript = char:WaitForChild("Animate", 5)
-        if not humanoid or not animateScript then return end
+Config.FileName = "AveryHubV4_Config.json"
+Config.Data = {
+    Theme = "Ethereal Blue",
+    Style = "Default",
+    Settings = {}
+}
 
-        local animator = humanoid:FindFirstChildOfClass("Animator") or humanoid:WaitForChild("Animator", 3)
 
-        -- Safely modify values inside default Animate script tree
-        local function modifyAnimFolder(folderName, animIdData)
-            local folder = animateScript:FindFirstChild(folderName)
-            if not folder then return end
-
-            if type(animIdData) == "table" then
-                local animChildren = {}
-                for _, v in ipairs(folder:GetChildren()) do
-                    if v:IsA("Animation") then table.insert(animChildren, v) end
-                end
-                
-                for i, id in ipairs(animIdData) do
-                    if animChildren[i] then
-                        animChildren[i].AnimationId = "rbxassetid://" .. tostring(id)
-                    end
-                end
-            else
-                for _, v in ipairs(folder:GetChildren()) do
-                    if v:IsA("Animation") then
-                        v.AnimationId = "rbxassetid://" .. tostring(animIdData)
-                    end
-                end
-            end
-        end
-
-        -- Update animation definitions
-        modifyAnimFolder("idle", OriginalAnimations.Idle[packName])
-        modifyAnimFolder("walk", OriginalAnimations.Walk[packName])
-        modifyAnimFolder("run", OriginalAnimations.Run[packName])
-        modifyAnimFolder("jump", OriginalAnimations.Jump[packName])
-        modifyAnimFolder("fall", OriginalAnimations.Fall[packName])
-
-        -- Flush active playing tracks on animator to force script refresh without breaking velocity
-        if animator then
-            for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
-                track:Stop(0.1)
-            end
-        end
-
-        -- Refresh Animate loop
-        animateScript.Disabled = true
-        task.wait(0.05)
-        animateScript.Disabled = false
-    end
-
-    -- Respawn Handler: Ensures selected pack stays active after dying/resetting
-    local function setupCharacter(char)
-        if getgenv().AverySelectedPack and checkR15(char) then
-            task.wait(0.5)
-            ApplyAnimationPack(char, getgenv().AverySelectedPack)
-        end
-    end
-
-    if LocalPlayer.Character then
-        setupCharacter(LocalPlayer.Character)
-    end
-
-    LocalPlayer.CharacterAdded:Connect(setupCharacter)
-
-    -- UI BUILD (MOBILE OPTIMIZED) - UNTOUCHED
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "AveryHubGui"
-    screenGui.ResetOnSpawn = false
-    screenGui.Parent = CoreGui
-
-    -- Floating Touch Toggle Button
-    local toggleBtn = Instance.new("TextButton")
-    toggleBtn.Name = "AveryToggle"
-    toggleBtn.Size = UDim2.new(0, 110, 0, 38)
-    toggleBtn.Position = UDim2.new(0.02, 0, 0.15, 0)
-    toggleBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
-    toggleBtn.Text = "AVERY HUB"
-    toggleBtn.TextColor3 = Color3.fromRGB(0, 230, 255)
-    toggleBtn.Font = Enum.Font.GothamBold
-    toggleBtn.TextSize = 13
-    toggleBtn.Active = true
-    toggleBtn.Draggable = true
-    toggleBtn.Parent = screenGui
-
-    local toggleCorner = Instance.new("UICorner", toggleBtn)
-    toggleCorner.CornerRadius = UDim.new(0, 8)
-
-    local toggleStroke = Instance.new("UIStroke", toggleBtn)
-    toggleStroke.Color = Color3.fromRGB(0, 180, 220)
-    toggleStroke.Thickness = 1.5
-
-    -- Main Container Frame
-    local mainFrame = Instance.new("Frame")
-    mainFrame.Name = "MainFrame"
-    mainFrame.Size = UDim2.new(0.85, 0, 0.65, 0)
-    mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-    mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-    mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
-    mainFrame.BorderSizePixel = 0
-    mainFrame.ClipsDescendants = true
-    mainFrame.Active = true
-    mainFrame.Draggable = true
-    mainFrame.Parent = screenGui
-
-    local aspectConstraint = Instance.new("UIAspectRatioConstraint", mainFrame)
-    aspectConstraint.AspectRatio = 1.3
-    aspectConstraint.AspectType = Enum.AspectType.FitWithinMaxSize
-
-    local frameCorner = Instance.new("UICorner", mainFrame)
-    frameCorner.CornerRadius = UDim.new(0, 12)
-
-    local frameStroke = Instance.new("UIStroke", mainFrame)
-    frameStroke.Color = Color3.fromRGB(45, 45, 55)
-    frameStroke.Thickness = 1.5
-
-    -- Header Bar
-    local header = Instance.new("Frame", mainFrame)
-    header.Size = UDim2.new(1, 0, 0.15, 0)
-    header.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
-    header.BorderSizePixel = 0
-
-    local titleLabel = Instance.new("TextLabel", header)
-    titleLabel.Size = UDim2.new(0.7, 0, 1, 0)
-    titleLabel.Position = UDim2.new(0.04, 0, 0, 0)
-    titleLabel.Text = "AVERY ANIMATION HUB"
-    titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextScaled = true
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.BackgroundTransparency = 1
-
-    -- Animated Close Button
-    local closeBtn = Instance.new("TextButton", header)
-    closeBtn.Size = UDim2.new(0.12, 0, 0.6, 0)
-    closeBtn.Position = UDim2.new(0.85, 0, 0.2, 0)
-    closeBtn.Text = "✕"
-    closeBtn.Font = Enum.Font.GothamBold
-    closeBtn.TextScaled = true
-    closeBtn.TextColor3 = Color3.fromRGB(255, 90, 90)
-    closeBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-    closeBtn.BorderSizePixel = 0
-
-    local closeCorner = Instance.new("UICorner", closeBtn)
-    closeCorner.CornerRadius = UDim.new(0, 6)
-
-    -- Menu Visibility Logic
-    local isOpen = true
-    local function setMenuVisible(state)
-        isOpen = state
-        if state then
-            mainFrame.Visible = true
-            mainFrame:TweenSize(UDim2.new(0.85, 0, 0.65, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Back, 0.25, true)
-        else
-            mainFrame:TweenSize(UDim2.new(0, 0, 0, 0), Enum.EasingDirection.In, Enum.EasingStyle.Back, 0.2, true, function()
-                mainFrame.Visible = false
-            end)
-        end
-    end
-
-    closeBtn.MouseButton1Click:Connect(function() setMenuVisible(false) end)
-    toggleBtn.MouseButton1Click:Connect(function() setMenuVisible(not isOpen) end)
-
-    -- Search Input
-    local searchBar = Instance.new("TextBox", mainFrame)
-    searchBar.PlaceholderText = "🔍 Search packs..."
-    searchBar.Font = Enum.Font.Gotham
-    searchBar.TextScaled = true
-    searchBar.TextColor3 = Color3.fromRGB(240, 240, 240)
-    searchBar.PlaceholderColor3 = Color3.fromRGB(130, 130, 140)
-    searchBar.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
-    searchBar.BorderSizePixel = 0
-    searchBar.Size = UDim2.new(0.92, 0, 0.11, 0)
-    searchBar.Position = UDim2.new(0.04, 0, 0.18, 0)
-
-    local searchCorner = Instance.new("UICorner", searchBar)
-    searchCorner.CornerRadius = UDim.new(0, 6)
-
-    -- Scrolling Area
-    local scrollFrame = Instance.new("ScrollingFrame", mainFrame)
-    scrollFrame.Size = UDim2.new(0.92, 0, 0.65, 0)
-    scrollFrame.Position = UDim2.new(0.04, 0, 0.31, 0)
-    scrollFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
-    scrollFrame.BorderSizePixel = 0
-    scrollFrame.ScrollBarThickness = 3
-    scrollFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 180, 220)
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-
-    local scrollLayout = Instance.new("UIListLayout", scrollFrame)
-    scrollLayout.SortOrder = Enum.SortOrder.Name
-    scrollLayout.Padding = UDim.new(0, 6)
-
-    scrollLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        scrollFrame.CanvasSize = UDim2.new(0, 0, 0, scrollLayout.AbsoluteContentSize.Y + 10)
-    end)
-
-    -- Create Buttons
-    local buttons = {}
-    for packName, _ in pairs(OriginalAnimations["Idle"]) do
-        local btn = Instance.new("TextButton")
-        btn.Name = packName
-        btn.Text = packName .. " Pack"
-        btn.Font = Enum.Font.GothamSemibold
-        btn.TextSize = 14
-        btn.TextColor3 = Color3.fromRGB(220, 220, 225)
-        btn.BackgroundColor3 = Color3.fromRGB(32, 32, 40)
-        btn.Size = UDim2.new(0.98, 0, 0, 36)
-        btn.BorderSizePixel = 0
-        btn.Parent = scrollFrame
-
-        local btnCorner = Instance.new("UICorner", btn)
-        btnCorner.CornerRadius = UDim.new(0, 6)
-
-        -- Highlight previously selected pack on GUI reload
-        if getgenv().AverySelectedPack == packName then
-            btn.BackgroundColor3 = Color3.fromRGB(0, 150, 190)
-            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        end
-
-        btn.MouseButton1Click:Connect(function()
-            getgenv().AverySelectedPack = packName
-            ApplyAnimationPack(LocalPlayer.Character, packName)
-
-            -- Active visual state feedback
-            for _, b in ipairs(buttons) do
-                b.BackgroundColor3 = Color3.fromRGB(32, 32, 40)
-                b.TextColor3 = Color3.fromRGB(220, 220, 225)
-            end
-            btn.BackgroundColor3 = Color3.fromRGB(0, 150, 190)
-            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+function Config:Load()
+    if isfile and readfile and isfile(self.FileName) then
+        
+        local success,result = pcall(function()
+            return Services.HttpService:JSONDecode(
+                readfile(self.FileName)
+            )
         end)
 
-        table.insert(buttons, btn)
+        if success and type(result) == "table" then
+            self.Data = result
+        end
+    end
+end
+
+
+function Config:Save()
+
+    if writefile then
+
+        pcall(function()
+            writefile(
+                self.FileName,
+                Services.HttpService:JSONEncode(self.Data)
+            )
+        end)
+
+    end
+end
+
+
+Config:Load()
+
+
+
+--// Connection Manager
+
+local Connections = {}
+
+
+function Connections:Add(connection)
+
+    table.insert(
+        Connections,
+        connection
+    )
+
+    return connection
+end
+
+
+function Connections:Clear()
+
+    for _,connection in pairs(Connections) do
+
+        pcall(function()
+            connection:Disconnect()
+        end)
+
     end
 
-    -- Real-time Search Filter
-    searchBar:GetPropertyChangedSignal("Text"):Connect(function()
-        local filter = searchBar.Text:lower()
-        for _, btn in ipairs(buttons) do
-            btn.Visible = (filter == "" or btn.Name:lower():find(filter, 1, true) ~= nil)
-        end
+    table.clear(Connections)
+
+end
+
+
+
+--// Theme Engine
+
+local Theme = {
+
+    Background = Color3.fromRGB(15,15,25),
+    Sidebar = Color3.fromRGB(10,10,18),
+
+    Accent = Color3.fromRGB(0,200,255),
+
+    Text = Color3.fromRGB(255,255,255),
+
+    Success = Color3.fromRGB(0,220,130),
+
+    Error = Color3.fromRGB(255,80,80)
+
+}
+
+
+local ThemeManager = {}
+
+
+ThemeManager.Colors = {
+
+    ["Ethereal Blue"] =
+        Color3.fromRGB(0,200,255),
+
+    ["Pink"] =
+        Color3.fromRGB(255,100,200),
+
+    ["Lime"] =
+        Color3.fromRGB(110,240,95),
+
+    ["Red"] =
+        Color3.fromRGB(255,75,75),
+
+    ["Orange"] =
+        Color3.fromRGB(255,140,50)
+
+}
+
+
+
+function ThemeManager:Set(name)
+
+    local color =
+        self.Colors[name]
+        or self.Colors["Ethereal Blue"]
+
+
+    Theme.Accent = color
+
+    Config.Data.Theme = name
+    Config:Save()
+
+end
+
+
+
+ThemeManager:Set(
+    Config.Data.Theme
+)
+
+
+
+--// Responsive Scaling
+
+local function ApplyScale(gui)
+
+    local scale =
+        Instance.new("UIScale")
+
+    local camera =
+        workspace.CurrentCamera
+
+
+    local size =
+        camera.ViewportSize.X
+
+
+    scale.Scale =
+        math.clamp(
+            size / 1200,
+            0.65,
+            1.25
+        )
+
+
+    scale.Parent = gui
+
+
+    Services.UserInputService
+    .WindowFocused:Connect(function()
+
+        scale.Scale =
+            math.clamp(
+                workspace.CurrentCamera.ViewportSize.X / 1200,
+                0.65,
+                1.25
+            )
+
     end)
+
+    return scale
+
+end
+
+
+
+--// Utility
+
+local Utility = {}
+
+
+function Utility:Notify(text)
+
+    print("[Avery Hub]",text)
+
+end
+
+
+
+--// Export
+
+getgenv().AveryV4 = {
+
+    Services = Services,
+    Player = Player,
+
+    Config = Config,
+    Connections = Connections,
+
+    Theme = Theme,
+    ThemeManager = ThemeManager,
+
+    ApplyScale = ApplyScale,
+
+    Utility = Utility
+
+}
+
+
+Utility:Notify("Avery Hub V4 Core Loaded")
+
+
+--// Avery Hub V4
+--// Step 2: Premium UI Engine
+
+local Core = getgenv().AveryV4
+
+local Services = Core.Services
+local Player = Core.Player
+local Theme = Core.Theme
+local Config = Core.Config
+local Connections = Core.Connections
+local ApplyScale = Core.ApplyScale
+
+
+local UI = {}
+
+
+--// Create ScreenGui
+
+function UI:Create()
+
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "AveryHubV4"
+    gui.ResetOnSpawn = false
+    gui.Parent = Player:WaitForChild("PlayerGui")
+
+
+    ApplyScale(gui)
+
+
+
+    -- Main Window
+
+    local main = Instance.new("Frame")
+    main.Size = UDim2.new(0,560,0,380)
+    main.Position = UDim2.new(.5,-280,.5,-190)
+    main.BackgroundColor3 = Theme.Background
+    main.BorderSizePixel = 0
+    main.Parent = gui
+
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0,14)
+    corner.Parent = main
+
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Theme.Accent
+    stroke.Thickness = 2
+    stroke.Parent = main
+
+
+
+    -- Title
+
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1,-60,0,45)
+    title.Position = UDim2.new(0,15,0,5)
+    title.BackgroundTransparency = 1
+    title.Text =
+        "⚡ Avery Hub V4 | Premium Dashboard"
+    title.TextColor3 = Theme.Accent
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 18
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.Parent = main
+
+
+
+    -- Close Button
+
+    local close = Instance.new("TextButton")
+
+    close.Size =
+        UDim2.new(0,35,0,30)
+
+    close.Position =
+        UDim2.new(1,-45,0,10)
+
+    close.Text = "X"
+
+    close.BackgroundColor3 =
+        Theme.Error
+
+    close.TextColor3 =
+        Theme.Text
+
+    close.Font =
+        Enum.Font.GothamBold
+
+    close.Parent = main
+
+
+    Instance.new("UICorner",close)
+
+
+
+    -- Minimize Button
+
+    local mini = Instance.new("TextButton")
+
+    mini.Size =
+        UDim2.new(0,50,0,50)
+
+    mini.Position =
+        UDim2.new(0,20,.5,-25)
+
+    mini.Text = "⚡"
+
+    mini.Visible = false
+
+    mini.BackgroundColor3 =
+        Theme.Background
+
+    mini.TextColor3 =
+        Theme.Accent
+
+    mini.Font =
+        Enum.Font.GothamBold
+
+    mini.TextSize = 25
+
+    mini.Parent = gui
+
+
+    Instance.new("UICorner",mini)
+
+
+
+    close.MouseButton1Click:Connect(function()
+
+        main.Visible = false
+        mini.Visible = true
+
+    end)
+
+
+    mini.MouseButton1Click:Connect(function()
+
+        main.Visible = true
+        mini.Visible = false
+
+    end)
+
+
+
+    -- Drag System
+
+    local dragging = false
+    local dragStart
+    local startPos
+
+
+    main.InputBegan:Connect(function(input)
+
+        if input.UserInputType ==
+            Enum.UserInputType.MouseButton1
+        or input.UserInputType ==
+            Enum.UserInputType.Touch then
+
+            dragging = true
+            dragStart = input.Position
+            startPos = main.Position
+
+        end
+
+    end)
+
+
+
+    main.InputEnded:Connect(function(input)
+
+        dragging = false
+
+    end)
+
+
+
+    Connections:Add(
+    Services.UserInputService.InputChanged:Connect(function(input)
+
+        if dragging then
+
+            local delta =
+                input.Position - dragStart
+
+
+            main.Position =
+                UDim2.new(
+                    startPos.X.Scale,
+                    startPos.X.Offset + delta.X,
+                    startPos.Y.Scale,
+                    startPos.Y.Offset + delta.Y
+                )
+
+        end
+
+    end))
+
+
+
+    -- Sidebar
+
+    local sidebar = Instance.new("Frame")
+
+    sidebar.Size =
+        UDim2.new(0,150,1,-70)
+
+    sidebar.Position =
+        UDim2.new(0,10,0,55)
+
+    sidebar.BackgroundColor3 =
+        Theme.Sidebar
+
+    sidebar.Parent = main
+
+
+    Instance.new("UICorner",sidebar)
+
+
+
+    -- Content
+
+    local content = Instance.new("Frame")
+
+    content.Size =
+        UDim2.new(1,-175,1,-70)
+
+    content.Position =
+        UDim2.new(0,165,0,55)
+
+    content.BackgroundTransparency = 1
+
+    content.Parent = main
+
+
+
+    local tabs = {}
+
+    local currentPage
+
+
+
+    -- Tab Creator
+
+    function tabs:Add(name)
+
+        local button =
+            Instance.new("TextButton")
+
+
+        button.Size =
+            UDim2.new(1,-10,0,35)
+
+        button.Position =
+            UDim2.new(0,5,0,0)
+
+        button.Text = name
+
+        button.BackgroundColor3 =
+            Color3.fromRGB(25,25,35)
+
+        button.TextColor3 =
+            Theme.Text
+
+        button.Font =
+            Enum.Font.GothamSemibold
+
+        button.Parent = sidebar
+
+
+
+        local page =
+            Instance.new("ScrollingFrame")
+
+        page.Size =
+            UDim2.new(1,0,1,0)
+
+        page.Visible = false
+
+        page.BackgroundTransparency = 1
+
+        page.ScrollBarThickness = 3
+
+        page.Parent = content
+
+
+
+        local layout =
+            Instance.new("UIListLayout")
+
+        layout.Padding =
+            UDim.new(0,8)
+
+        layout.Parent = page
+
+
+
+        button.MouseButton1Click:Connect(function()
+
+            if currentPage then
+                currentPage.Visible = false
+            end
+
+            page.Visible = true
+            currentPage = page
+
+        end)
+
+
+
+        if not currentPage then
+            currentPage = page
+            page.Visible = true
+        end
+
+
+
+        local elements = {}
+
+
+
+        function elements:Button(text,callback)
+
+            local b =
+                Instance.new("TextButton")
+
+            b.Size =
+                UDim2.new(1,-5,0,38)
+
+            b.Text=text
+
+            b.BackgroundColor3 =
+                Color3.fromRGB(30,30,45)
+
+            b.TextColor3 =
+                Theme.Accent
+
+            b.Font =
+                Enum.Font.GothamSemibold
+
+            b.Parent = page
+
+
+            Instance.new("UICorner",b)
+
+
+            b.MouseButton1Click:Connect(callback)
+
+        end
+
+
+
+        function elements:Toggle(text,callback)
+
+            local state = false
+
+
+            local b =
+                Instance.new("TextButton")
+
+
+            b.Size =
+                UDim2.new(1,-5,0,38)
+
+            b.Text =
+                text.." : OFF"
+
+            b.BackgroundColor3 =
+                Color3.fromRGB(30,30,45)
+
+            b.TextColor3 =
+                Theme.Error
+
+            b.Parent = page
+
+
+            Instance.new("UICorner",b)
+
+
+
+            b.MouseButton1Click:Connect(function()
+
+                state = not state
+
+
+                b.Text =
+                    text.." : "..(state and "ON" or "OFF")
+
+
+                b.TextColor3 =
+                    state and Theme.Success
+                    or Theme.Error
+
+
+                callback(state)
+
+            end)
+
+        end
+
+
+
+        function elements:Label(text)
+
+            local l =
+                Instance.new("TextLabel")
+
+            l.Size =
+                UDim2.new(1,-5,0,30)
+
+            l.Text=text
+
+            l.BackgroundTransparency=1
+
+            l.TextColor3 =
+                Theme.Text
+
+            l.Font =
+                Enum.Font.Gotham
+
+            l.Parent=page
+
+            return l
+
+        end
+
+
+        return elements
+
+    end
+
+
+
+    Core.UI = tabs
+
+    return gui
+
+end
+
+
+Core.UIEngine = UI
+
+
+UI:Create()
+
+print("Avery Hub V4 UI Loaded")
+
+
+--// Avery Hub V4
+--// Step 3: Feature System
+
+local Core = getgenv().AveryV4
+
+local UI = Core.UI
+local Theme = Core.Theme
+local Config = Core.Config
+local Services = Core.Services
+local Player = Core.Player
+
+
+local Features = {}
+
+
+
+--// Notification System
+
+function Features:Notify(message)
+
+    local gui = Player.PlayerGui:FindFirstChild("AveryHubV4")
+
+    if not gui then return end
+
+
+    local note = Instance.new("TextLabel")
+
+    note.Size =
+        UDim2.new(0,260,0,45)
+
+    note.Position =
+        UDim2.new(.5,-130,0,20)
+
+    note.BackgroundColor3 =
+        Theme.Background
+
+    note.TextColor3 =
+        Theme.Accent
+
+    note.Text =
+        "⚡ "..message
+
+    note.Font =
+        Enum.Font.GothamBold
+
+    note.TextSize = 14
+
+    note.Parent = gui
+
+
+    Instance.new("UICorner",note)
+
+
+    Services.TweenService:Create(
+        note,
+        TweenInfo.new(.3),
+        {
+            BackgroundTransparency = 0.1
+        }
+    ):Play()
+
+
+    task.delay(3,function()
+
+        if note then
+            note:Destroy()
+        end
+
+    end)
+
+end
+
+
+
+--// Theme Tab
+
+local Themes = UI:Add("Themes")
+
+
+Themes:Label("🎨 Avery Hub V4 Themes")
+
+
+Themes:Button(
+"Ethereal Blue",
+function()
+
+    Core.ThemeManager:Set(
+        "Ethereal Blue"
+    )
+
+    Features:Notify(
+        "Theme changed"
+    )
+
 end)
+
+
+
+Themes:Button(
+"Pink",
+function()
+
+    Core.ThemeManager:Set(
+        "Pink"
+    )
+
+    Features:Notify(
+        "Pink theme enabled"
+    )
+
+end)
+
+
+
+Themes:Button(
+"Lime",
+function()
+
+    Core.ThemeManager:Set(
+        "Lime"
+    )
+
+end)
+
+
+
+Themes:Button(
+"Orange",
+function()
+
+    Core.ThemeManager:Set(
+        "Orange"
+    )
+
+end)
+
+
+
+Themes:Button(
+"Red",
+function()
+
+    Core.ThemeManager:Set(
+        "Red"
+    )
+
+end)
+
+
+
+
+--// Teleport Module
+
+local Teleport = UI:Add("Teleports")
+
+
+Teleport:Label(
+"📍 Teleport Manager"
+)
+
+
+
+local Positions = {
+
+    ["Spawn"] =
+        CFrame.new(0,10,0),
+
+    ["Sky"] =
+        CFrame.new(0,500,0),
+
+    ["Safe Area"] =
+        CFrame.new(100,20,100)
+
+}
+
+
+
+local function TeleportTo(position)
+
+    local char =
+        Player.Character
+        or Player.CharacterAdded:Wait()
+
+
+    local root =
+        char:WaitForChild(
+            "HumanoidRootPart"
+        )
+
+
+    root.CFrame = position
+
+
+end
+
+
+
+for name,pos in pairs(Positions) do
+
+    Teleport:Button(
+        name,
+        function()
+
+            TeleportTo(pos)
+
+            Features:Notify(
+                "Teleported to "..name
+            )
+
+        end
+    )
+
+end
+
+
+
+--// Player Module
+
+local PlayerTab =
+    UI:Add("Player")
+
+
+PlayerTab:Label(
+"👤 Player Utilities"
+)
+
+
+
+PlayerTab:Button(
+"Reset Character",
+function()
+
+    local char =
+        Player.Character
+
+    if char then
+
+        local hum =
+            char:FindFirstChildOfClass(
+                "Humanoid"
+            )
+
+        if hum then
+            hum.Health = 0
+        end
+
+    end
+
+
+end)
+
+
+
+PlayerTab:Button(
+"Respawn",
+function()
+
+    Player:LoadCharacter()
+
+end)
+
+
+
+--// Module Loader
+
+local Loader = {}
+
+
+function Loader:Load(name,func)
+
+    local success,err =
+        pcall(func)
+
+
+    if success then
+
+        Features:Notify(
+            name.." Loaded"
+        )
+
+    else
+
+        warn(
+            name,
+            err
+        )
+
+    end
+
+end
+
+
+
+Core.Loader = Loader
+
+
+
+--// Credits
+
+local Credits =
+    UI:Add("Credits")
+
+
+Credits:Label(
+"⚡ Avery Hub V4"
+)
+
+
+Credits:Label(
+"Developer: Avery"
+)
+
+
+Credits:Label(
+"UI Framework: Custom Premium Engine"
+)
+
+
+Credits:Label(
+"Version: V4"
+)
+
+
+
+Features:Notify(
+"Avery Hub V4 Features Loaded"
+)
+
+
+
+Core.Features = Features
+
+
+--// Avery Hub V4
+--// Step 4: Final Integration + Polish
+
+local Core = getgenv().AveryV4
+
+local Services = Core.Services
+local Theme = Core.Theme
+local Player = Core.Player
+local Connections = Core.Connections
+
+
+local Final = {}
+
+
+
+--// Intro Loading Screen
+
+function Final:CreateIntro()
+
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "AveryHubLoader"
+    gui.ResetOnSpawn = false
+    gui.Parent = Player.PlayerGui
+
+
+    local frame = Instance.new("Frame")
+
+    frame.Size =
+        UDim2.new(0,420,0,220)
+
+    frame.Position =
+        UDim2.new(.5,-210,.5,-110)
+
+    frame.BackgroundColor3 =
+        Theme.Background
+
+    frame.Parent = gui
+
+
+    local corner =
+        Instance.new("UICorner")
+
+    corner.CornerRadius =
+        UDim.new(0,16)
+
+    corner.Parent = frame
+
+
+
+    local stroke =
+        Instance.new("UIStroke")
+
+    stroke.Color =
+        Theme.Accent
+
+    stroke.Thickness =
+        2
+
+    stroke.Parent = frame
+
+
+
+    local title =
+        Instance.new("TextLabel")
+
+
+    title.Size =
+        UDim2.new(1,0,0,50)
+
+    title.Position =
+        UDim2.new(0,0,0,25)
+
+    title.BackgroundTransparency = 1
+
+    title.Text =
+        "⚡ Avery Hub V4"
+
+    title.TextColor3 =
+        Theme.Accent
+
+    title.Font =
+        Enum.Font.GothamBold
+
+    title.TextSize =
+        28
+
+    title.Parent = frame
+
+
+
+    local status =
+        Instance.new("TextLabel")
+
+
+    status.Size =
+        UDim2.new(1,0,0,30)
+
+    status.Position =
+        UDim2.new(0,0,0,90)
+
+    status.BackgroundTransparency = 1
+
+    status.Text =
+        "Initializing..."
+
+    status.TextColor3 =
+        Theme.Text
+
+    status.Font =
+        Enum.Font.Gotham
+
+    status.Parent = frame
+
+
+
+    local bar =
+        Instance.new("Frame")
+
+
+    bar.Size =
+        UDim2.new(0,0,0,8)
+
+    bar.Position =
+        UDim2.new(0,30,0,150)
+
+    bar.BackgroundColor3 =
+        Theme.Accent
+
+    bar.Parent = frame
+
+
+    Instance.new("UICorner",bar)
+
+
+
+    local steps = {
+
+        "Loading Core",
+        "Loading UI Engine",
+        "Loading Modules",
+        "Ready"
+
+    }
+
+
+
+    for i,text in ipairs(steps) do
+
+        status.Text = text
+
+
+        Services.TweenService:Create(
+            bar,
+            TweenInfo.new(.5),
+            {
+                Size =
+                UDim2.new(i/#steps,-60,0,8)
+            }
+
+        ):Play()
+
+
+        task.wait(.5)
+
+    end
+
+
+
+    Services.TweenService:Create(
+        frame,
+        TweenInfo.new(.5),
+        {
+            BackgroundTransparency = 1
+        }
+
+    ):Play()
+
+
+    task.wait(.5)
+
+    gui:Destroy()
+
+end
+
+
+
+--// Theme Breathing Effect
+
+function Final:StartGlow()
+
+    Connections:Add(
+    Services.RunService.RenderStepped:Connect(
+    function()
+
+        local value =
+            (math.sin(
+                tick()*2
+            )+1)/2
+
+
+        local color =
+            Theme.Accent:Lerp(
+                Color3.fromRGB(
+                    255,
+                    255,
+                    255
+                ),
+                value*.15
+            )
+
+
+        Theme.Accent = color
+
+
+    end))
+
+end
+
+
+
+--// Shutdown System
+
+function Final:Shutdown()
+
+    Connections:Clear()
+
+
+    local gui =
+        Player.PlayerGui:FindFirstChild(
+            "AveryHubV4"
+        )
+
+
+    if gui then
+        gui:Destroy()
+    end
+
+
+    print(
+        "Avery Hub V4 Closed"
+    )
+
+end
+
+
+
+--// Version Info
+
+Core.Version =
+{
+    Name = "Avery Hub V4",
+    Build = "Premium",
+    Update = os.date("%Y-%m-%d")
+}
+
+
+
+--// Start
+
+Final:CreateIntro()
+
+Final:StartGlow()
+
+
+Core.Final = Final
+
+
+print(
+    "⚡ Avery Hub V4 Fully Loaded"
+)
+
+--// Avery Hub V4
+--// Step 5: Module System
+
+local Core = getgenv().AveryV4
+
+local Modules = {}
+
+Modules.List = {}
+
+
+
+--// Register Module
+
+function Modules:Register(name, callback)
+
+    self.List[name] = {
+
+        Enabled = false,
+        Start = callback
+
+    }
+
+end
+
+
+
+--// Enable Module
+
+function Modules:Enable(name)
+
+    local module = self.List[name]
+
+    if not module then
+        warn("Module not found:", name)
+        return
+    end
+
+
+    if module.Enabled then
+        return
+    end
+
+
+    module.Enabled = true
+
+
+    local success,err = pcall(function()
+
+        module.Start(true)
+
+    end)
+
+
+    if not success then
+        warn(
+            "Module Error:",
+            name,
+            err
+        )
+    end
+
+end
+
+
+
+--// Disable Module
+
+function Modules:Disable(name)
+
+    local module = self.List[name]
+
+    if module then
+
+        module.Enabled = false
+
+        pcall(function()
+
+            module.Start(false)
+
+        end)
+
+    end
+
+end
+
+
+
+--// Toggle Module
+
+function Modules:Toggle(name,state)
+
+    if state then
+
+        self:Enable(name)
+
+    else
+
+        self:Disable(name)
+
+    end
+
+end
+
+
+
+--// Example Modules
+
+
+Modules:Register(
+"Example Notification",
+function(state)
+
+    if state then
+
+        Core.Features:Notify(
+            "Example Module Enabled"
+        )
+
+    end
+
+end)
+
+
+
+Modules:Register(
+"Performance Monitor",
+function(state)
+
+    if state then
+
+        print(
+            "Performance monitor started"
+        )
+
+    else
+
+        print(
+            "Performance monitor stopped"
+        )
+
+    end
+
+end)
+
+
+
+-- Export
+
+Core.Modules = Modules
+
+
+
+print(
+"⚡ Avery Hub V4 Module System Loaded"
+)
+
+--// Avery Hub V4
+--// Step 6: Feature Tabs
+
+local Core = getgenv().AveryV4
+
+local UI = Core.UI
+local Modules = Core.Modules
+local Features = Core.Features
+local Player = Core.Player
+local Services = Core.Services
+
+
+--// Auto Systems
+
+local AutoTab = UI:Add("Auto Systems")
+
+
+AutoTab:Label("⚡ Automation Controls")
+
+
+AutoTab:Toggle(
+"Auto System Example",
+function(state)
+
+    Modules:Toggle(
+        "Example Notification",
+        state
+    )
+
+end)
+
+
+
+AutoTab:Toggle(
+"Performance Monitor",
+function(state)
+
+    Modules:Toggle(
+        "Performance Monitor",
+        state
+    )
+
+end)
+
+
+
+--// Player Tab
+
+local PlayerTab = UI:Add("Player")
+
+
+PlayerTab:Label(
+"👤 Player Controls"
+)
+
+
+PlayerTab:Button(
+"Reset Character",
+function()
+
+    local char =
+        Player.Character
+
+    if char then
+
+        local hum =
+            char:FindFirstChildOfClass(
+                "Humanoid"
+            )
+
+        if hum then
+            hum.Health = 0
+        end
+
+    end
+
+end)
+
+
+
+PlayerTab:Button(
+"Respawn Character",
+function()
+
+    Player:LoadCharacter()
+
+end)
+
+
+
+--// Teleports
+
+local TeleportTab = UI:Add("Teleports")
+
+
+TeleportTab:Label(
+"📍 Saved Locations"
+)
+
+
+
+local Locations = {
+
+    ["Spawn"] =
+        CFrame.new(0,10,0),
+
+    ["Sky"] =
+        CFrame.new(0,500,0),
+
+    ["Safe Area"] =
+        CFrame.new(100,20,100)
+
+}
+
+
+
+local function Teleport(cf)
+
+    local char =
+        Player.Character
+        or Player.CharacterAdded:Wait()
+
+
+    local root =
+        char:WaitForChild(
+            "HumanoidRootPart"
+        )
+
+
+    root.CFrame = cf
+
+end
+
+
+
+for name,position in pairs(Locations) do
+
+    TeleportTab:Button(
+        name,
+        function()
+
+            Teleport(position)
+
+            Features:Notify(
+                "Teleported: "..name
+            )
+
+        end
+    )
+
+end
+
+
+
+--// Misc
+
+local MiscTab = UI:Add("Misc")
+
+
+MiscTab:Label(
+"🛠 Utilities"
+)
+
+
+
+MiscTab:Button(
+"Show Hub Info",
+function()
+
+    Features:Notify(
+        "Avery Hub V4 Running"
+    )
+
+end)
+
+
+
+MiscTab:Button(
+"Reload UI",
+function()
+
+    local gui =
+        Player.PlayerGui:FindFirstChild(
+            "AveryHubV4"
+        )
+
+    if gui then
+        gui:Destroy()
+    end
+
+end)
+
+
+
+--// Scripts Tab
+
+local ScriptsTab = UI:Add("Scripts")
+
+
+ScriptsTab:Label(
+"📜 Script Loader"
+)
+
+
+
+ScriptsTab:Button(
+"Example Loader",
+function()
+
+    Features:Notify(
+        "Module loader ready"
+    )
+
+end)
+
+
+
+--// Credits
+
+local CreditTab = UI:Add("Credits")
+
+
+CreditTab:Label(
+"⚡ Avery Hub V4"
+)
+
+CreditTab:Label(
+"Developer: Avery"
+)
+
+CreditTab:Label(
+"Premium UI Framework"
+)
+
+CreditTab:Label(
+"Modular Architecture"
+)
+
+
+
+print(
+"⚡ Avery Hub V4 Feature Tabs Loaded"
+)
+
+--// Avery Hub V4
+--// Step 7: Feature Module Examples
+
+local Core = getgenv().AveryV4
+
+local Modules = Core.Modules
+local Config = Core.Config
+local Features = Core.Features
+local Services = Core.Services
+
+
+--// Feature State Storage
+
+local States = {}
+
+local function SetState(name,value)
+
+    States[name] = value
+
+    Config.Data.Settings[name] = value
+    Config:Save()
+
+end
+
+
+
+local function GetState(name)
+
+    return Config.Data.Settings[name] or false
+
+end
+
+
+
+--------------------------------------------------
+-- Auto Feature Module Template
+--------------------------------------------------
+
+Modules:Register(
+"Auto Example",
+function(enabled)
+
+    SetState(
+        "Auto Example",
+        enabled
+    )
+
+
+    if enabled then
+
+        task.spawn(function()
+
+            while States["Auto Example"] do
+
+                -- Feature action goes here
+
+                task.wait(1)
+
+            end
+
+        end)
+
+    end
+
+end)
+
+
+
+--------------------------------------------------
+-- Player Utility Modules
+--------------------------------------------------
+
+Modules:Register(
+"Walk Speed",
+function(enabled)
+
+
+    SetState(
+        "Walk Speed",
+        enabled
+    )
+
+
+    if enabled then
+
+        task.spawn(function()
+
+            while States["Walk Speed"] do
+
+                local char =
+                    Core.Player.Character
+
+
+                local hum =
+                    char and
+                    char:FindFirstChildOfClass(
+                        "Humanoid"
+                    )
+
+
+                if hum then
+
+                    hum.WalkSpeed = 32
+
+                end
+
+
+                task.wait(.5)
+
+            end
+
+        end)
+
+    end
+
+
+end)
+
+
+
+Modules:Register(
+"Night Mode",
+function(enabled)
+
+
+    if enabled then
+
+        game:GetService(
+            "Lighting"
+        ).ClockTime = 0
+
+    else
+
+        game:GetService(
+            "Lighting"
+        ).ClockTime = 14
+
+    end
+
+
+end)
+
+
+
+--------------------------------------------------
+-- Add Module Toggles To UI
+--------------------------------------------------
+
+local AutoTab =
+    Core.UI:Add(
+        "Auto Systems"
+    )
+
+
+AutoTab:Label(
+"⚡ Feature Modules"
+)
+
+
+
+AutoTab:Toggle(
+"Auto Example",
+function(state)
+
+    Modules:Toggle(
+        "Auto Example",
+        state
+    )
+
+end)
+
+
+
+local PlayerTab =
+    Core.UI:Add(
+        "Player"
+    )
+
+
+PlayerTab:Toggle(
+"Walk Speed",
+function(state)
+
+    Modules:Toggle(
+        "Walk Speed",
+        state
+    )
+
+end)
+
+
+
+PlayerTab:Toggle(
+"Night Mode",
+function(state)
+
+    Modules:Toggle(
+        "Night Mode",
+        state
+    )
+
+end)
+
+
+
+Features:Notify(
+"Feature modules loaded"
+)
+
+
+print(
+"Avery Hub V4 Modules Ready"
+)
+
+
+--// Avery Hub V4
+--// Step 8: Teleport + Settings System
+
+local Core = getgenv().AveryV4
+
+local UI = Core.UI
+local Features = Core.Features
+local Config = Core.Config
+local Player = Core.Player
+
+
+------------------------------------------------
+-- TELEPORT MANAGER
+------------------------------------------------
+
+local Teleports = {}
+
+
+function Teleports:Go(name,cf)
+
+    local char =
+        Player.Character
+        or Player.CharacterAdded:Wait()
+
+    local root =
+        char:WaitForChild(
+            "HumanoidRootPart"
+        )
+
+
+    root.CFrame = cf
+
+
+    Features:Notify(
+        "Teleported: "..name
+    )
+
+end
+
+
+
+function Teleports:Add(name,cf)
+
+    Teleports[name] = cf
+
+end
+
+
+
+-- Default locations
+
+Teleports:Add(
+"Spawn",
+CFrame.new(0,10,0)
+)
+
+
+Teleports:Add(
+"Sky",
+CFrame.new(0,500,0)
+)
+
+
+Teleports:Add(
+"Safe Location",
+CFrame.new(100,20,100)
+)
+
+
+
+------------------------------------------------
+-- TELEPORT UI
+------------------------------------------------
+
+local TeleportTab =
+    UI:Add(
+        "Teleports"
+    )
+
+
+TeleportTab:Label(
+"📍 Teleport Manager"
+)
+
+
+
+for name,position in pairs(Teleports) do
+
+    TeleportTab:Button(
+        name,
+        function()
+
+            Teleports:Go(
+                name,
+                position
+            )
+
+        end
+    )
+
+end
+
+
+
+------------------------------------------------
+-- SETTINGS
+------------------------------------------------
+
+local SettingsTab =
+    UI:Add(
+        "Settings"
+    )
+
+
+SettingsTab:Label(
+"⚙ Avery Hub Settings"
+)
+
+
+
+SettingsTab:Button(
+"Save Configuration",
+function()
+
+    Config:Save()
+
+    Features:Notify(
+        "Settings Saved"
+    )
+
+end)
+
+
+
+SettingsTab:Button(
+"Clear Configuration",
+function()
+
+    Config.Data.Settings = {}
+
+    Config:Save()
+
+    Features:Notify(
+        "Config Cleared"
+    )
+
+end)
+
+
+
+SettingsTab:Button(
+"Destroy Hub",
+function()
+
+    local gui =
+        Player.PlayerGui:FindFirstChild(
+            "AveryHubV4"
+        )
+
+
+    if gui then
+
+        gui:Destroy()
+
+    end
+
+
+end)
+
+
+
+------------------------------------------------
+-- EXPORT
+------------------------------------------------
+
+Core.Teleports =
+    Teleports
+
+
+print(
+"⚡ Teleport and Settings System Loaded"
+)
+
+--// Avery Hub V4
+--// Step 9
+
+local Core = getgenv().AveryV4
+
+local UI = Core.UI
+local Player = Core.Player
+local Services = Core.Services
+local Features = Core.Features
+
+--------------------------------------------------
+-- Script Loader
+--------------------------------------------------
+
+local ScriptTab = UI:Add("Scripts")
+
+ScriptTab:Label("📜 Script Loader")
+
+local Scripts = {}
+
+function Scripts:Register(name,callback)
+    ScriptTab:Button(name,function()
+
+        local ok,err = pcall(callback)
+
+        if ok then
+            Features:Notify(name.." Loaded")
+        else
+            warn(err)
+        end
+
+    end)
+end
+
+Scripts:Register("Example Script",function()
+
+    print("Example Loaded")
+
+end)
+
+Core.ScriptLoader = Scripts
+
+--------------------------------------------------
+-- FPS Counter
+--------------------------------------------------
+
+local FPS = 0
+local Last = tick()
+
+Services.RunService.RenderStepped:Connect(function()
+
+    FPS += 1
+
+    if tick()-Last >= 1 then
+
+        Last = tick()
+
+        Core.Window:SetFooter(
+            "FPS : "..FPS
+        )
+
+        FPS = 0
+
+    end
+
+end)
+
+--------------------------------------------------
+-- Search
+--------------------------------------------------
+
+local Search = UI:Add("Search")
+
+Search:Textbox("Search Feature",function(text)
+
+    print("Searching:",text)
+
+end)
+
+--------------------------------------------------
+-- Mobile Scaling
+--------------------------------------------------
+
+local Camera = workspace.CurrentCamera
+
+local function UpdateScale()
+
+    local viewport = Camera.ViewportSize
+
+    if viewport.X < 700 then
+
+        Core.Window.Scale = 1.15
+
+    elseif viewport.X < 1200 then
+
+        Core.Window.Scale = 1
+
+    else
+
+        Core.Window.Scale = .9
+
+    end
+
+end
+
+UpdateScale()
+
+Camera:GetPropertyChangedSignal("ViewportSize"):Connect(UpdateScale)
+
+--------------------------------------------------
+-- Credits
+--------------------------------------------------
+
+local Credits = UI:Add("Credits")
+
+Credits:Label("Developer : Avery")
+Credits:Label("Framework : Avery Hub V4")
+Credits:Label("Architecture : Modular")
+Credits:Label("Premium Responsive UI")
+Credits:Label("Version : 4.0")
+
+--------------------------------------------------
+-- Finished
+--------------------------------------------------
+
+Features:Notify("Step 9 Loaded")
