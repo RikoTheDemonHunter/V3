@@ -240,7 +240,6 @@ function ModernLib:CreateMain(hubTitle)
 	MainStroke.Thickness = 1.5
 	MainStroke.Parent = MainFrame
 
-	
 	local MinimizeBtn = Instance.new("TextButton")
 	MinimizeBtn.Name = "MinimizeButton"
 	MinimizeBtn.Size = UDim2.new(0, 55, 0, 55)
@@ -263,7 +262,6 @@ function ModernLib:CreateMain(hubTitle)
 	MinStroke.Color = Theme.Accent
 	MinStroke.Thickness = 2
 	MinStroke.Parent = MinimizeBtn
-
 
 	local minDragging, minDragInput, minDragStart, minStartPos
 	MinimizeBtn.InputBegan:Connect(function(input)
@@ -295,14 +293,12 @@ function ModernLib:CreateMain(hubTitle)
 		MainFrame.Visible = true
 	end)
 
-	
 	UserInputService.InputBegan:Connect(function(key, gp)
 		if not gp and key.KeyCode == Enum.KeyCode.LeftAlt then
 			ScreenGui.Enabled = not ScreenGui.Enabled
 		end
 	end)
 
-	
 	local dragging, dragInput, dragStart, startPos
 	MainFrame.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -382,7 +378,6 @@ function ModernLib:CreateMain(hubTitle)
 	Container.BackgroundTransparency = 1
 	Container.Parent = MainFrame
 
-	
 	local accentObjects = {}
 	local activeConnection = nil
 
@@ -426,6 +421,7 @@ function ModernLib:CreateMain(hubTitle)
 				color = Color3.fromRGB(0, 170, 255):Lerp(Color3.fromRGB(255, 100, 200), sine)
 			end
 
+			if not color then return end
 			Theme.Accent = color
 			for _, data in ipairs(accentObjects) do
 				if data.Obj and data.Obj.Parent then
@@ -445,7 +441,9 @@ function ModernLib:CreateMain(hubTitle)
 		TabBtn.TextSize = 13
 		TabBtn.Text = tabName
 		TabBtn.Parent = SideBar
-		Instance.new("UICorner").CornerRadius = UDim.new(0, 6)
+		local tabCorner = Instance.new("UICorner")
+		tabCorner.CornerRadius = UDim.new(0, 6)
+		tabCorner.Parent = TabBtn
 
 		local Page = Instance.new("ScrollingFrame")
 		Page.Size = UDim2.new(1, 0, 1, 0)
@@ -460,7 +458,7 @@ function ModernLib:CreateMain(hubTitle)
 
 		RegisterAccentObject(Page, "ScrollBarImageColor3")
 
-		TabBtn.MouseButton1Click:Connect(function()
+		local function setActive()
 			for _, child in ipairs(Container:GetChildren()) do
 				if child:IsA("ScrollingFrame") then child.Visible = false end
 			end
@@ -469,12 +467,13 @@ function ModernLib:CreateMain(hubTitle)
 			end
 			TabBtn.TextColor3 = Theme.Accent
 			Page.Visible = true
-		end)
+			Tabs.ActivePage = Page
+		end
+
+		TabBtn.MouseButton1Click:Connect(setActive)
 
 		if not Tabs.ActivePage then
-			TabBtn.TextColor3 = Theme.Accent
-			Page.Visible = true
-			Tabs.ActivePage = Page
+			setActive()
 		end
 
 		local Elements = {}
@@ -483,7 +482,9 @@ function ModernLib:CreateMain(hubTitle)
 			ToggleFrame.Size = UDim2.new(1, -5, 0, 36)
 			ToggleFrame.BackgroundColor3 = Color3.fromRGB(22, 22, 32)
 			ToggleFrame.Parent = Page
-			Instance.new("UICorner").CornerRadius = UDim.new(0, 6)
+			local toggleCorner = Instance.new("UICorner")
+			toggleCorner.CornerRadius = UDim.new(0, 6)
+			toggleCorner.Parent = ToggleFrame
 
 			local lbl = Instance.new("TextLabel")
 			lbl.Size = UDim2.new(0.7, 0, 1, 0)
@@ -503,7 +504,9 @@ function ModernLib:CreateMain(hubTitle)
 			StatusIndicator.Font = Enum.Font.GothamBold
 			StatusIndicator.TextSize = 11
 			StatusIndicator.Parent = ToggleFrame
-			Instance.new("UICorner").CornerRadius = UDim.new(0, 4)
+			local statusCorner = Instance.new("UICorner")
+			statusCorner.CornerRadius = UDim.new(0, 4)
+			statusCorner.Parent = StatusIndicator
 
 			local state = false
 			if SavedSettings[toggleName] ~= nil then
@@ -540,6 +543,7 @@ function ModernLib:CreateMain(hubTitle)
 			Btn.TextSize = 14
 			Btn.Parent = Page
 			c.CornerRadius = UDim.new(0, 6)
+			c.Parent = Btn
 			Btn.MouseButton1Click:Connect(callback)
 
 			RegisterAccentObject(Btn, "TextColor3")
@@ -560,7 +564,6 @@ function ModernLib:CreateMain(hubTitle)
 
 		return Elements
 	end
-
 
 	task.spawn(function()
 		local activeTheme = SavedSettings["ActiveTheme"] or "Ethereal Blue"
@@ -602,7 +605,6 @@ function ModernLib:CreateMain(hubTitle)
 		end
 	end
 
-	
 	function Tabs:SetStyle(styleName)
 		SavedSettings["ActiveStyle"] = styleName
 		SaveSettings()
@@ -636,7 +638,6 @@ function ModernLib:CreateMain(hubTitle)
 	return Tabs
 end
 
-
 local Library = ModernLib:CreateMain("⚡ Avery Hub V3 | Premium Dashboard ⚡")
 
 local AutoFarm = Library:Tab("AutoDrink")
@@ -646,8 +647,6 @@ local Themes = Library:Tab("Themes")
 local Misc = Library:Tab("Misc")
 local Scripts = Library:Tab("Scripts")
 local Credits = Library:Tab("Credits")
-
-
 
 Themes:Label("--- UI Accents ---")
 Themes:Button("Ethereal Blue Accent", function() Library:SetTheme("Ethereal Blue") end)
@@ -659,12 +658,10 @@ Themes:Button("Orange Accent", function() Library:SetTheme("Orange") end)
 Themes:Button("✨ Ethereal Breathing Cycle", function() Library:SetTheme("Ethereal Cycle") end)
 Themes:Button("🌈 Active Rainbow Cycle", function() Library:SetTheme("Rainbow") end)
 
-
 Themes:Label("--- UI Style & Transparency ---")
 Themes:Button("Default Opaque Style", function() Library:SetStyle("Default") end)
 Themes:Button("Transparent Style", function() Library:SetStyle("Transparent") end)
 Themes:Button("Glossy Glass Style", function() Library:SetStyle("Glossy") end)
-
 
 local drinkTier = {
 	{req = 2000000, name = "Garlic Juice"}, {req = 1000000, name = "Thunder Fizz"},
@@ -694,11 +691,9 @@ local function RunAutoEquipEngine()
 	end
 end
 
-
 pcall(function()
 	loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/78b69f79b7fa24fd0d20faa46c5cf85f/raw/2bc6ab144c95e2463d72060f2936befae2c5ccf1/Modern%2520Equip.lua"))()
 end)
-
 
 AutoFarm:Toggle("Auto Prestige", function(state)
 	getgenv().prestige = state
@@ -765,7 +760,6 @@ AutoFarm:Toggle("Auto Mine Gems", function(state)
 	end
 end)
 
-
 LocalPlayer:Button("Fps-Unlocker", function()
 	if setfpscap then setfpscap(100000) end
 end)
@@ -796,7 +790,6 @@ end)
 LocalPlayer:Button("Reset", function()
 	if player.Character then player.Character:BreakJoints() end
 end)
-
 
 local rejoinConn
 LocalPlayer:Toggle("Rejoin", function(state)
@@ -850,7 +843,9 @@ LocalPlayer:Button("VoidStand", function()
 end)
 
 LocalPlayer:Toggle("Burp Counter", function(state)
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Burp%20anti%20counter.lua"))()
+	if state then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Burp%20anti%20counter.lua"))()
+	end
 end)
 
 local function tweenHRP(targetCFrame)
@@ -952,9 +947,11 @@ Misc:Button("Infinity Yield", function()
 end)		
 
 Misc:Toggle("Anti Kick", function(state)
+	if not state then return end
 	local mt = getrawmetatable(game)
 	local old = mt.__namecall
 	local protect = newcclosure or protect_function
+	if not mt or not old or not protect then return end
 
 	setreadonly(mt, false)
 	mt.__namecall = protect(function(self, ...)
@@ -969,7 +966,9 @@ Misc:Toggle("Anti Kick", function(state)
 end)
 
 Misc:Toggle("Anti Afk", function(state) 
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
+	if state then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
+	end
 end)	
 
 Misc:Button("Battery", function()
@@ -1041,7 +1040,7 @@ Scripts:Button("Slow-Drink", function()
 end)		
 
 Scripts:Button("ZeroHub", function()
-           loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/a1bf0423e73a5293c014042960cf4767/raw/faaa622081cbf015f0f54efb256e2ba182b57bca/shit.lua"))()
+           loadstring(game:HttpGet("https://gist.githubusercontent.com/RikoTheDemonHunter/a1bf0423e73a5293c014042960cf4767/raw/faaa622081cbf015f0f54efb256e2ba182b57bca/*****.lua"))()
 end)		
 Scripts:Button("Avery", function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Zero.lua"))()
@@ -1086,8 +1085,3 @@ task.spawn(function()
 		LocationLabel.Text = "Location: Unknown (Fetch Error)"
 	end
 end)
-
-
-
-
-
