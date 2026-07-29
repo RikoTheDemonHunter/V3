@@ -87,8 +87,8 @@ function ModernLib:CreateMain(hubTitle)
 
 	local MainFrame = Instance.new("Frame")
 	MainFrame.Name = "Main"
-	MainFrame.Size = UDim2.new(0, 720, 0, 460)
-	MainFrame.Position = UDim2.new(0.5, -360, 0.5, -230)
+	MainFrame.Size = UDim2.new(0, 560, 0, 360)
+	MainFrame.Position = UDim2.new(0.5, -280, 0.5, -180)
 	MainFrame.BackgroundColor3 = Theme.Background
 	MainFrame.BorderSizePixel = 0
 	MainFrame.Parent = ScreenGui
@@ -108,7 +108,7 @@ function ModernLib:CreateMain(hubTitle)
 	Shadow.Parent = MainFrame
 
 	local TopBar = Instance.new("Frame")
-	TopBar.Size = UDim2.new(1, 0, 0, 52)
+	TopBar.Size = UDim2.new(1, 0, 0, 46)
 	TopBar.BackgroundColor3 = Theme.TopBar
 	TopBar.BorderSizePixel = 0
 	TopBar.Parent = MainFrame
@@ -122,49 +122,49 @@ function ModernLib:CreateMain(hubTitle)
 	TopCover.Parent = TopBar
 
 	local TitleLabel = Instance.new("TextLabel")
-	TitleLabel.Size = UDim2.new(1, -130, 1, 0)
-	TitleLabel.Position = UDim2.new(0, 18, 0, 0)
+	TitleLabel.Size = UDim2.new(1, -110, 1, 0)
+	TitleLabel.Position = UDim2.new(0, 14, 0, 0)
 	TitleLabel.BackgroundTransparency = 1
 	TitleLabel.Font = Enum.Font.GothamBold
 	TitleLabel.Text = hubTitle
 	TitleLabel.TextColor3 = Theme.Text
-	TitleLabel.TextSize = 19
+	TitleLabel.TextSize = 16
 	TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 	TitleLabel.Parent = TopBar
 
 	local CloseBtn = Instance.new("TextButton")
-	CloseBtn.Size = UDim2.new(0, 30, 0, 30)
-	CloseBtn.Position = UDim2.new(1, -40, 0.5, -15)
+	CloseBtn.Size = UDim2.new(0, 26, 0, 26)
+	CloseBtn.Position = UDim2.new(1, -34, 0.5, -13)
 	CloseBtn.BackgroundColor3 = Theme.Danger
 	CloseBtn.Text = "×"
 	CloseBtn.TextColor3 = Color3.new(1, 1, 1)
 	CloseBtn.Font = Enum.Font.GothamBold
-	CloseBtn.TextSize = 18
+	CloseBtn.TextSize = 16
 	CloseBtn.BorderSizePixel = 0
 	CloseBtn.Parent = TopBar
 	makeCorner(CloseBtn, 8)
 
 	local MinimizeBtn = Instance.new("TextButton")
-	MinimizeBtn.Size = UDim2.new(0, 30, 0, 30)
-	MinimizeBtn.Position = UDim2.new(1, -76, 0.5, -15)
+	MinimizeBtn.Size = UDim2.new(0, 26, 0, 26)
+	MinimizeBtn.Position = UDim2.new(1, -64, 0.5, -13)
 	MinimizeBtn.BackgroundColor3 = Theme.Card
 	MinimizeBtn.Text = "—"
 	MinimizeBtn.TextColor3 = Theme.Text
 	MinimizeBtn.Font = Enum.Font.GothamBold
-	MinimizeBtn.TextSize = 18
+	MinimizeBtn.TextSize = 16
 	MinimizeBtn.BorderSizePixel = 0
 	MinimizeBtn.Parent = TopBar
 	makeCorner(MinimizeBtn, 8)
 
 	local Body = Instance.new("Frame")
-	Body.Size = UDim2.new(1, 0, 1, -52)
-	Body.Position = UDim2.new(0, 0, 0, 52)
+	Body.Size = UDim2.new(1, 0, 1, -46)
+	Body.Position = UDim2.new(0, 0, 0, 46)
 	Body.BackgroundTransparency = 1
 	Body.Parent = MainFrame
 
 	local Sidebar = Instance.new("ScrollingFrame")
-	Sidebar.Size = UDim2.new(0, 180, 1, -20)
-	Sidebar.Position = UDim2.new(0, 12, 0, 10)
+	Sidebar.Size = UDim2.new(0, 145, 1, -16)
+	Sidebar.Position = UDim2.new(0, 10, 0, 8)
 	Sidebar.BackgroundColor3 = Theme.Sidebar
 	Sidebar.BorderSizePixel = 0
 	Sidebar.ScrollBarThickness = 3
@@ -174,21 +174,21 @@ function ModernLib:CreateMain(hubTitle)
 	makeCorner(Sidebar, 12)
 
 	local sidePad = Instance.new("UIPadding")
-	sidePad.PaddingTop = UDim.new(0, 12)
-	sidePad.PaddingBottom = UDim.new(0, 12)
-	sidePad.PaddingLeft = UDim.new(0, 12)
-	sidePad.PaddingRight = UDim.new(0, 12)
+	sidePad.PaddingTop = UDim.new(0, 10)
+	sidePad.PaddingBottom = UDim.new(0, 10)
+	sidePad.PaddingLeft = UDim.new(0, 10)
+	sidePad.PaddingRight = UDim.new(0, 10)
 	sidePad.Parent = Sidebar
 
 	local SideList = Instance.new("UIListLayout")
-	SideList.Padding = UDim.new(0, 8)
+	SideList.Padding = UDim.new(0, 6)
 	SideList.SortOrder = Enum.SortOrder.LayoutOrder
 	SideList.Parent = Sidebar
 	fitCanvas(Sidebar, SideList)
 
 	local Container = Instance.new("Frame")
-	Container.Size = UDim2.new(1, -208, 1, -20)
-	Container.Position = UDim2.new(0, 200, 0, 10)
+	Container.Size = UDim2.new(1, -168, 1, -16)
+	Container.Position = UDim2.new(0, 158, 0, 8)
 	Container.BackgroundTransparency = 1
 	Container.Parent = Body
 
@@ -216,7 +216,6 @@ function ModernLib:CreateMain(hubTitle)
 			activeConnection:Disconnect()
 			activeConnection = nil
 		end
-
 		activeConnection = RunService.RenderStepped:Connect(function()
 			local color
 			if mode == "Rainbow" then
@@ -225,7 +224,6 @@ function ModernLib:CreateMain(hubTitle)
 				local s = (math.sin(tick() * 1.2) + 1) / 2
 				color = Color3.fromRGB(0, 170, 255):Lerp(Color3.fromRGB(255, 100, 200), s)
 			end
-
 			if color then
 				Theme.Accent = color
 				for _, item in ipairs(accentObjects) do
@@ -241,12 +239,12 @@ function ModernLib:CreateMain(hubTitle)
 
 	function Tabs:Tab(tabName)
 		local TabBtn = Instance.new("TextButton")
-		TabBtn.Size = UDim2.new(1, 0, 0, 38)
+		TabBtn.Size = UDim2.new(1, 0, 0, 34)
 		TabBtn.BackgroundColor3 = Theme.Card
 		TabBtn.Text = tabName
 		TabBtn.TextColor3 = Theme.Muted
 		TabBtn.Font = Enum.Font.GothamSemibold
-		TabBtn.TextSize = 13
+		TabBtn.TextSize = 12
 		TabBtn.BorderSizePixel = 0
 		TabBtn.AutoButtonColor = false
 		TabBtn.Parent = Sidebar
@@ -254,8 +252,8 @@ function ModernLib:CreateMain(hubTitle)
 		makeStroke(TabBtn, Theme.Accent, 1, 0.9)
 
 		local TabAccent = Instance.new("Frame")
-		TabAccent.Size = UDim2.new(0, 4, 1, -14)
-		TabAccent.Position = UDim2.new(0, 6, 0, 7)
+		TabAccent.Size = UDim2.new(0, 4, 1, -12)
+		TabAccent.Position = UDim2.new(0, 5, 0, 6)
 		TabAccent.BackgroundColor3 = Theme.Accent
 		TabAccent.BorderSizePixel = 0
 		TabAccent.Visible = false
@@ -273,13 +271,13 @@ function ModernLib:CreateMain(hubTitle)
 		Page.Parent = Container
 
 		local pagePad = Instance.new("UIPadding")
-		pagePad.PaddingTop = UDim.new(0, 6)
-		pagePad.PaddingLeft = UDim.new(0, 4)
-		pagePad.PaddingRight = UDim.new(0, 4)
+		pagePad.PaddingTop = UDim.new(0, 4)
+		pagePad.PaddingLeft = UDim.new(0, 2)
+		pagePad.PaddingRight = UDim.new(0, 2)
 		pagePad.Parent = Page
 
 		local PageList = Instance.new("UIListLayout")
-		PageList.Padding = UDim.new(0, 10)
+		PageList.Padding = UDim.new(0, 8)
 		PageList.SortOrder = Enum.SortOrder.LayoutOrder
 		PageList.Parent = Page
 		fitCanvas(Page, PageList)
@@ -292,7 +290,6 @@ function ModernLib:CreateMain(hubTitle)
 				local prev = activeTabButton:FindFirstChild("Accent")
 				if prev then prev.Visible = false end
 			end
-
 			activePage = Page
 			activeTabButton = TabBtn
 			Page.Visible = true
@@ -302,20 +299,7 @@ function ModernLib:CreateMain(hubTitle)
 			Tabs.ActivePage = Page
 		end
 
-		TabBtn.MouseEnter:Connect(function()
-			if activeTabButton ~= TabBtn then
-				tween(TabBtn, 0.15, {BackgroundColor3 = Theme.CardHover})
-			end
-		end)
-
-		TabBtn.MouseLeave:Connect(function()
-			if activeTabButton ~= TabBtn then
-				tween(TabBtn, 0.15, {BackgroundColor3 = Theme.Card})
-			end
-		end)
-
 		TabBtn.MouseButton1Click:Connect(setActive)
-
 		if not Tabs.ActivePage then
 			setActive()
 		end
@@ -324,12 +308,12 @@ function ModernLib:CreateMain(hubTitle)
 
 		function Elements:Section(textString)
 			local Section = Instance.new("TextLabel")
-			Section.Size = UDim2.new(1, 0, 0, 22)
+			Section.Size = UDim2.new(1, 0, 0, 20)
 			Section.BackgroundTransparency = 1
 			Section.Text = textString
 			Section.TextColor3 = Theme.Highlight
 			Section.Font = Enum.Font.GothamBold
-			Section.TextSize = 13
+			Section.TextSize = 12
 			Section.TextXAlignment = Enum.TextXAlignment.Left
 			Section.Parent = Page
 			return Section
@@ -337,12 +321,12 @@ function ModernLib:CreateMain(hubTitle)
 
 		function Elements:Label(textString)
 			local Lbl = Instance.new("TextLabel")
-			Lbl.Size = UDim2.new(1, 0, 0, 24)
+			Lbl.Size = UDim2.new(1, 0, 0, 20)
 			Lbl.BackgroundTransparency = 1
 			Lbl.Text = textString
 			Lbl.TextColor3 = Theme.Text
 			Lbl.Font = Enum.Font.Gotham
-			Lbl.TextSize = 13
+			Lbl.TextSize = 12
 			Lbl.TextXAlignment = Enum.TextXAlignment.Left
 			Lbl.Parent = Page
 			return Lbl
@@ -350,39 +334,26 @@ function ModernLib:CreateMain(hubTitle)
 
 		function Elements:Button(btnName, callback)
 			local Btn = Instance.new("TextButton")
-			Btn.Size = UDim2.new(1, 0, 0, 40)
+			Btn.Size = UDim2.new(1, 0, 0, 34)
 			Btn.BackgroundColor3 = Theme.Card
 			Btn.Text = btnName
 			Btn.TextColor3 = Theme.Accent
 			Btn.Font = Enum.Font.GothamSemibold
-			Btn.TextSize = 14
+			Btn.TextSize = 13
 			Btn.BorderSizePixel = 0
 			Btn.AutoButtonColor = false
 			Btn.Parent = Page
 			makeCorner(Btn, 10)
 			makeStroke(Btn, Theme.Accent, 1, 0.85)
-
-			Btn.MouseEnter:Connect(function()
-				tween(Btn, 0.15, {BackgroundColor3 = Theme.CardHover})
-			end)
-
-			Btn.MouseLeave:Connect(function()
-				tween(Btn, 0.15, {BackgroundColor3 = Theme.Card})
-			end)
-
 			Btn.MouseButton1Click:Connect(function()
-				tween(Btn, 0.08, {Size = UDim2.new(1, -2, 0, 38)})
-				task.wait()
-				tween(Btn, 0.08, {Size = UDim2.new(1, 0, 0, 40)})
 				if callback then callback() end
 			end)
-
 			registerAccent(Btn, "TextColor3")
 		end
 
 		function Elements:Toggle(toggleName, callback)
 			local ToggleFrame = Instance.new("Frame")
-			ToggleFrame.Size = UDim2.new(1, 0, 0, 44)
+			ToggleFrame.Size = UDim2.new(1, 0, 0, 40)
 			ToggleFrame.BackgroundColor3 = Theme.Card
 			ToggleFrame.BorderSizePixel = 0
 			ToggleFrame.Parent = Page
@@ -390,55 +361,47 @@ function ModernLib:CreateMain(hubTitle)
 			makeStroke(ToggleFrame, Theme.Accent, 1, 0.9)
 
 			local lbl = Instance.new("TextLabel")
-			lbl.Size = UDim2.new(1, -90, 1, 0)
-			lbl.Position = UDim2.new(0, 12, 0, 0)
+			lbl.Size = UDim2.new(1, -86, 1, 0)
+			lbl.Position = UDim2.new(0, 10, 0, 0)
 			lbl.BackgroundTransparency = 1
 			lbl.Text = toggleName
 			lbl.TextColor3 = Theme.Text
 			lbl.Font = Enum.Font.Gotham
-			lbl.TextSize = 13
+			lbl.TextSize = 12
 			lbl.TextXAlignment = Enum.TextXAlignment.Left
 			lbl.Parent = ToggleFrame
 
 			local Switch = Instance.new("TextButton")
-			Switch.Size = UDim2.new(0, 56, 0, 24)
-			Switch.Position = UDim2.new(1, -68, 0.5, -12)
+			Switch.Size = UDim2.new(0, 52, 0, 22)
+			Switch.Position = UDim2.new(1, -62, 0.5, -11)
 			Switch.BackgroundColor3 = Theme.Danger
 			Switch.Text = "OFF"
 			Switch.TextColor3 = Color3.new(1, 1, 1)
 			Switch.Font = Enum.Font.GothamBold
-			Switch.TextSize = 11
+			Switch.TextSize = 10
 			Switch.BorderSizePixel = 0
 			Switch.AutoButtonColor = false
 			Switch.Parent = ToggleFrame
 			makeCorner(Switch, 12)
 
 			local knob = Instance.new("Frame")
-			knob.Size = UDim2.new(0, 18, 0, 18)
-			knob.Position = UDim2.new(0, 3, 0.5, -9)
+			knob.Size = UDim2.new(0, 16, 0, 16)
+			knob.Position = UDim2.new(0, 3, 0.5, -8)
 			knob.BackgroundColor3 = Color3.new(1, 1, 1)
 			knob.BorderSizePixel = 0
 			knob.Parent = Switch
 			makeCorner(knob, 9)
 
 			local state = SavedSettings[toggleName] == true
-
 			local function setState(v)
 				state = v
 				Switch.Text = v and "ON" or "OFF"
 				Switch.BackgroundColor3 = v and Theme.Success or Theme.Danger
-				tween(knob, 0.12, {Position = v and UDim2.new(1, -21, 0.5, -9) or UDim2.new(0, 3, 0.5, -9)})
+				tween(knob, 0.12, {Position = v and UDim2.new(1, -19, 0.5, -8) or UDim2.new(0, 3, 0.5, -8)})
 				SavedSettings[toggleName] = v
 				SaveSettings()
 				if callback then callback(v) end
 			end
-
-			Switch.MouseEnter:Connect(function()
-				tween(Switch, 0.12, {BackgroundTransparency = 0.1})
-			end)
-			Switch.MouseLeave:Connect(function()
-				tween(Switch, 0.12, {BackgroundTransparency = 0})
-			end)
 
 			Switch.MouseButton1Click:Connect(function()
 				setState(not state)
@@ -453,7 +416,6 @@ function ModernLib:CreateMain(hubTitle)
 	function Tabs:SetTheme(themeName)
 		SavedSettings.ActiveTheme = themeName
 		SaveSettings()
-
 		local themes = {
 			["Ethereal Blue"] = Color3.fromRGB(0, 200, 255),
 			["Light Blue"] = Color3.fromRGB(130, 215, 255),
@@ -462,7 +424,6 @@ function ModernLib:CreateMain(hubTitle)
 			["Red"] = Color3.fromRGB(255, 75, 75),
 			["Orange"] = Color3.fromRGB(255, 140, 50)
 		}
-
 		if themeName == "Rainbow" then
 			StartCycleAccent("Rainbow")
 		elseif themeName == "Ethereal Cycle" then
@@ -479,7 +440,6 @@ function ModernLib:CreateMain(hubTitle)
 	function Tabs:SetStyle(styleName)
 		SavedSettings.ActiveStyle = styleName
 		SaveSettings()
-
 		if styleName == "Transparent" then
 			MainFrame.BackgroundTransparency = 0.25
 			TopBar.BackgroundTransparency = 0.15
@@ -499,27 +459,6 @@ function ModernLib:CreateMain(hubTitle)
 		end
 	end
 
-	local dragging, dragStart, startPos
-	TopBar.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			dragStart = input.Position
-			startPos = MainFrame.Position
-			input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then dragging = false end
-			end)
-		end
-	end)
-
-	UserInputService.InputChanged:Connect(function(input)
-		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-			local delta = input.Position - dragStart
-			tween(MainFrame, 0.08, {
-				Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-			})
-		end
-	end)
-
 	CloseBtn.MouseButton1Click:Connect(function()
 		ScreenGui:Destroy()
 	end)
@@ -528,17 +467,7 @@ function ModernLib:CreateMain(hubTitle)
 		MainFrame.Visible = not MainFrame.Visible
 	end)
 
-	task.spawn(function()
-		local theme = SavedSettings.ActiveTheme or "Ethereal Blue"
-		tabs:SetTheme(theme)
-	end)
-
-	task.spawn(function()
-		local style = SavedSettings.ActiveStyle or "Default"
-		tabs:SetStyle(style)
-	end)
-
-	return tabs
+	return Tabs
 end
 
 local Library = ModernLib:CreateMain("⚡ Avery Hub V3 | Premium Dashboard ⚡")
@@ -574,31 +503,3 @@ Credits:Label("Whitelist System")
 
 local DateTimeLabel = Credits:Label("Date & Time: Loading...")
 local LocationLabel = Credits:Label("Location: Loading...")
-
-task.spawn(function()
-	while task.wait(1) do
-		if DateTimeLabel and DateTimeLabel.Parent then
-			DateTimeLabel.Text = "Date & Time: " .. os.date("%A, %B %d %Y | %I:%M:%S %p")
-		else
-			break
-		end
-	end
-end)
-
-task.spawn(function()
-	local ok, result = pcall(function()
-		return game:HttpGet("http://ip-api.com/json/")
-	end)
-	if ok and result then
-		local decodeOk, decoded = pcall(function()
-			return HttpService:JSONDecode(result)
-		end)
-		if decodeOk and decoded and decoded.city and decoded.country then
-			LocationLabel.Text = "Location: " .. decoded.city .. ", " .. decoded.country
-		else
-			LocationLabel.Text = "Location: Unknown"
-		end
-	else
-		LocationLabel.Text = "Location: Unknown"
-	end
-end)
