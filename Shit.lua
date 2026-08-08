@@ -942,8 +942,7 @@ Misc:Button("Bp Counter",function()
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Bp%20Counter.lua"))()
 end)
 
-Misc:Toggle("Infinity Yield", function(state) 
-if state then
+Misc:Button("Infinity Yield", function() 
 	loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)		
 
@@ -967,7 +966,9 @@ Misc:Toggle("Anti Kick", function(state)
 end)
 
 Misc:Toggle("Anti Afk", function(state) 
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
+	if state then
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
+	end
 end)	
 
 Misc:Button("Battery", function()
