@@ -945,6 +945,7 @@ end)
 Misc:Toggle("Infinity Yield", function(state) 
 	if state then
 		loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+	end
 end)		
 
 Misc:Toggle("Anti Kick", function(state)
