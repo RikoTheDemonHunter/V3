@@ -638,7 +638,7 @@ function ModernLib:CreateMain(hubTitle)
 	return Tabs
 end
 
-local Library = ModernLib:CreateMain("⚡ Avery Hub V3 | Premium Dashboard ⚡")
+local Library = ModernLib:CreateMain("⚡ Avery Hub V3 |  DrinkHax ⚡")
 
 local AutoFarm = Library:Tab("AutoDrink")
 local LocalPlayer = Library:Tab("LocalPlayer")
