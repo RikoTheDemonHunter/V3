@@ -967,9 +967,7 @@ Misc:Toggle("Anti Kick", function(state)
 end)
 
 Misc:Toggle("Anti Afk", function(state) 
-	if state then
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
-	end
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/RikoTheDemonHunter/V3/refs/heads/main/Anti%20Afk"))()
 end)	
 
 Misc:Button("Battery", function()
