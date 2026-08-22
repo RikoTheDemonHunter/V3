@@ -1,34 +1,61 @@
-# ⚠️ LEGAL NOTICE & TERMS OF USE
+<div align="center">
 
-> **Copyright © 2026 Avery / RikoTheDemonHunter. All Rights Reserved.**  
-> **CRITICAL:** Read before downloading, executing, or inspecting the source code within this repository.
+# ⚡ AVERY HUB | V3 ⚡
+### Official Terms of Use & Intellectual Property Protection
 
----
-
-### 🛡️ Intellectual Property & Rights
-All assets, UI frameworks, Lua scripts, algorithms, and documentation contained in this repository are the sole, exclusive intellectual property of **Avery (RikoTheDemonHunter)**. This codebase is protected under domestic and international intellectual property laws. Access to this repository does **not** grant an open-source license, transfer of title, or distribution rights.
-
-### 🔒 Permitted Scope of Use
-You are granted a non-exclusive, non-transferable, revocable personal license to view, download, and execute this code **solely for private, personal, non-commercial evaluation**.
-
-### 🚫 Strict Prohibitions
-By accessing, pulling, or cloning this repository, you explicitly agree **NOT** to:
-
-* **No Re-branding / "Skidding":** Copying, extracting, or repurposing any portion of this system to release, present, or claim as your own work. Stripping creator tags, headers, or credit notices is strictly prohibited.
-* **No Unauthorized Redistribution:** Re-hosting, mirror-hosting, embedding raw loader links, or bundling this script into third-party hubs or execution menus without explicit written permission.
-* **No Commercialization:** Monetizing, placing behind key-systems/ad-links (e.g., Linkvertise), or selling access to this code or derivative versions.
-* **No Unauthorized Modification:** Modifying, decompiling, or creating derivative works for public release.
+![License](https://img.shields.io/badge/LICENSE-ALL_RIGHTS_RESERVED-red?style=for-the-badge&logo=github)
+![Security System](https://img.shields.io/badge/SECURITY-AVERY_BOT_MONITORED-00F0FF?style=for-the-badge&logo=discord&logoColor=white)
+![Status](https://img.shields.io/badge/SYSTEM_STATUS-ACTIVE_&_PROTECTED-00FF66?style=for-the-badge)
 
 ---
 
-### 🚨 Enforcement & Warning System
+### 💬 Community & Direct Support
+Have questions or need authorized execution access? Join the official developer network:
 
-If you plan to use, fork, or inspect this codebase, review the official enforcement policies and statutory documentation below:
-
-[![Read Copyright Warning](https://img.shields.io/badge/⚠️_READ-COPYRIGHT_WARNING-red?style=for-the-badge&logo=shield)](https://rikothedemonhunter.github.io/V3/COPYRIGHT_WARNING.html)
-[![Official Copyright Documentation](https://img.shields.io/badge/📜_GOVT-COPYRIGHT_DOCS-blue?style=for-the-badge&logo=government)](https://www.copyright.gov/title17/)
-[![Report Violation / DMCA](https://img.shields.io/badge/📢_REPORT-VIOLATION-orange?style=for-the-badge&logo=github)](https://github.com/RikoTheDemonHunter/V3/issues)
+[![Join Official Discord](https://img.shields.io/badge/JOIN_OFFICIAL_DISCORD-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/T6ET788nvZ)
 
 ---
 
-> **Notice:** Infringing repositories, unauthorized mirrors, or stolen code implementations will be subject to immediate DMCA Takedown Requests, platform abuse reports, and account suspension proceedings.
+</div>
+
+<br/>
+
+### 🛡️ 1. Intellectual Property & Rights
+All contents within this repository—including but not limited to Lua codebases, custom UI frameworks, interface assets, modular logic, and system documentation—are the sole and exclusive property of **Avery (RikoTheDemonHunter)**. 
+
+Public visibility on GitHub **does not** constitute an open-source release, waiver of rights, or grant of public distribution.
+
+---
+
+### 🔒 2. Permitted Scope of Use
+You are granted a non-exclusive, non-transferable, and revocable personal license to view and execute this code **strictly for private, individual evaluation**. 
+
+---
+
+### 🚫 3. Strict Prohibitions
+By accessing, pulling, or inspecting this repository, you explicitly agree **NOT** to:
+
+> ❌ **No "Skidding" or Re-Branding** — Ripping, extracting, or repurposing any portion of this interface, logic, or script structure to release under a different name. Stripping headers or creator signatures is strictly prohibited.
+>
+> ❌ **No Unauthorized Mirroring** — Re-hosting raw execution links (`raw.githubusercontent.com`), embedding inside third-party script loaders, or running public mirrors without explicit written consent.
+>
+> ❌ **No Commercialization** — Monetizing, locking behind paywalls, routing through ad-link gateways (e.g., Linkvertise, Workink), or reselling access to this code or any derivative.
+
+---
+
+### 📜 4. Official Copyright Documentation
+This work is fully backed by international copyright frameworks and statutory protections. For standard statutory reference:
+
+* **Official Copyright Framework:** [US Copyright Office - Title 17 Documentation](https://www.copyright.gov/title17/)
+
+---
+
+<br/>
+
+> ### 🛰️ AUTOMATED MONITORING & ENFORCEMENT NOTICE
+>
+> 🟢 **Avery Bot System Status:** `ONLINE & ACTIVE`
+>
+> **CRITICAL:** This repository, along with all associated raw loader endpoints, is actively monitored 24/7 by **Avery Bot** via Discord integration. 
+>
+> Any unauthorized re-hosting, web-scraping, stolen code signatures, or unauthorized public executions detected by the system will trigger **automatic DMCA Takedown Notices**, immediate raw link revocation, and platform abuse reporting against offending accounts/servers without prior warning.
