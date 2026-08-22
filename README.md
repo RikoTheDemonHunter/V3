@@ -1,62 +1,34 @@
-====================================================================================================
-                        TERMS OF USE, COPYRIGHT NOTICE & LEGAL DISCLAIMER
-====================================================================================================
+# ⚠️ LEGAL NOTICE & TERMS OF USE
 
-Copyright (c) 2026 Avery / RikoTheDemonHunter. All Rights Reserved.
+> **Copyright © 2026 Avery / RikoTheDemonHunter. All Rights Reserved.**  
+> **CRITICAL:** Read before downloading, executing, or inspecting the source code within this repository.
 
-CRITICAL NOTICE: READ BEFORE ACCESSING, DOWNLOADING, OR EXECUTING THIS SOURCE CODE.
+---
 
-----------------------------------------------------------------------------------------------------
-1. INTELLECTUAL PROPERTY & OWNERSHIP
-----------------------------------------------------------------------------------------------------
-All contents within this repository—including but not limited to source code, Lua scripts, custom
-UI element frameworks, algorithms, assets, design systems, and documentation—are the sole, exclusive
-intellectual property of Avery (RikoTheDemonHunter). 
+### 🛡️ Intellectual Property & Rights
+All assets, UI frameworks, Lua scripts, algorithms, and documentation contained in this repository are the sole, exclusive intellectual property of **Avery (RikoTheDemonHunter)**. This codebase is protected under domestic and international intellectual property laws. Access to this repository does **not** grant an open-source license, transfer of title, or distribution rights.
 
-This work is fully protected under global copyright laws, international treaties, and applicable 
-intellectual property statutes. Access to this repository does NOT constitute a transfer of title, 
-a waiver of intellectual property rights, or an open-source grant.
+### 🔒 Permitted Scope of Use
+You are granted a non-exclusive, non-transferable, revocable personal license to view, download, and execute this code **solely for private, personal, non-commercial evaluation**.
 
-----------------------------------------------------------------------------------------------------
-2. PERMITTED USE
-----------------------------------------------------------------------------------------------------
-You are granted a limited, non-exclusive, non-transferable, and revocable personal license to view, 
-download, and execute this code solely for private, personal, and non-commercial evaluation.
+### 🚫 Strict Prohibitions
+By accessing, pulling, or cloning this repository, you explicitly agree **NOT** to:
 
-----------------------------------------------------------------------------------------------------
-3. STRICT PROHIBITIONS & WARNINGS
-----------------------------------------------------------------------------------------------------
-BY ACCESSING THIS FILE, YOU AGREE THAT YOU SHALL NOT, DIRECTLY OR INDIRECTLY:
+* **No Re-branding / "Skidding":** Copying, extracting, or repurposing any portion of this system to release, present, or claim as your own work. Stripping creator tags, headers, or credit notices is strictly prohibited.
+* **No Unauthorized Redistribution:** Re-hosting, mirror-hosting, embedding raw loader links, or bundling this script into third-party hubs or execution menus without explicit written permission.
+* **No Commercialization:** Monetizing, placing behind key-systems/ad-links (e.g., Linkvertise), or selling access to this code or derivative versions.
+* **No Unauthorized Modification:** Modifying, decompiling, or creating derivative works for public release.
 
-  [!] NO RE-BRANDING / "SKIDDING": You are strictly forbidden from copying, ripping, or extracting 
-      any portion of this code, interface, or logic to release, present, or claim as your own work. 
-      Stripping creator signatures, credit tags, or obfuscating source headers is a direct violation.
+---
 
-  [!] NO UNAUTHORIZED REDISTRIBUTION: Re-hosting, mirror-hosting, embedding raw githubusercontent 
-      loader links, or bundling this script inside third-party hubs, execution menus, or loaders 
-      without explicit written permission is strictly prohibited.
+### 🚨 Enforcement & Warning System
 
-  [!] NO COMMERCIAL USE: Selling, monetizing, placing behind paywalls, ad-links (e.g., Linkvertise), 
-      or using this software for financial gain or commercial services is strictly forbidden.
+If you plan to use, fork, or inspect this codebase, review the official enforcement policies and statutory documentation below:
 
-  [!] NO REVERSE ENGINEERING OR DERIVATIVE WORKS: Modifying, adapting, altering, translating, 
-      decompiling, or creating derivative works based upon this source code is explicitly banned.
+[![Read Copyright Warning](https://img.shields.io/badge/⚠️_READ-COPYRIGHT_WARNING-red?style=for-the-badge&logo=shield)](https://rikothedemonhunter.github.io/V3/COPYRIGHT_WARNING.html)
+[![Official Copyright Documentation](https://img.shields.io/badge/📜_GOVT-COPYRIGHT_DOCS-blue?style=for-the-badge&logo=government)](https://www.copyright.gov/title17/)
+[![Report Violation / DMCA](https://img.shields.io/badge/📢_REPORT-VIOLATION-orange?style=for-the-badge&logo=github)](https://github.com/RikoTheDemonHunter/V3/issues)
 
-----------------------------------------------------------------------------------------------------
-4. ENFORCEMENT & DMCA POLICY
-----------------------------------------------------------------------------------------------------
-Any violation of these terms constitutes direct copyright infringement and software piracy. 
+---
 
-The copyright owner actively monitors public repositories, script hubs, and online communities. 
-Infringing repositories, mirrors, and unauthorized re-uploads WILL be subject to immediate DMCA 
-Takedown Notices, platform abuse reports, and account termination requests via relevant hosting 
-services and platform providers.
-
-----------------------------------------------------------------------------------------------------
-OFFICIAL COPYRIGHT DOCUMENTATION & REPOSITORY LAWS:
-For full international copyright framework and documentation guidelines, visit:
-https://www.copyright.gov/title17/
-
-====================================================================================================
-               UNAUTHORIZED COPYING, MODIFICATION, OR REDISTRIBUTION IS A VIOLATION.
-====================================================================================================
+> **Notice:** Infringing repositories, unauthorized mirrors, or stolen code implementations will be subject to immediate DMCA Takedown Requests, platform abuse reports, and account suspension proceedings.
