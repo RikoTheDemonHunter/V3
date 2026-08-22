@@ -58,7 +58,7 @@ This work is fully backed by international copyright frameworks and statutory pr
 >
 > **CRITICAL:** This repository, along with all associated raw loader endpoints, is actively monitored 24/7 by **Avery Bot** via Discord integration. 
 >
-> Any unauthorized re-hosting, web-scraping, stolen code signatures, or unauthorized public executions detected by the system will
+> Any unauthorized re-hosting, web-scraping, stolen code signatures, or unauthorized public executions detected by the system will Terminate the Access
 >
 ><div align="center">
 
