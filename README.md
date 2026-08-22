@@ -58,4 +58,49 @@ This work is fully backed by international copyright frameworks and statutory pr
 >
 > **CRITICAL:** This repository, along with all associated raw loader endpoints, is actively monitored 24/7 by **Avery Bot** via Discord integration. 
 >
-> Any unauthorized re-hosting, web-scraping, stolen code signatures, or unauthorized public executions detected by the system will trigger **automatic DMCA Takedown Notices**, immediate raw link revocation, and platform abuse reporting against offending accounts/servers without prior warning.
+> Any unauthorized re-hosting, web-scraping, stolen code signatures, or unauthorized public executions detected by the system will
+>
+><div align="center">
+
+# ⚡ RIKOTHEDEMONHUNTER
+### Lead Developer • UI Architect • Automation Specialist
+
+![Profile Banner](https://img.shields.io/badge/DEVELOPER-AVERY_%2F_RIKO-00F0FF?style=for-the-badge&logo=visualstudiocode&logoColor=white)
+![Core Focus](https://img.shields.io/badge/FOCUS-CUSTOM_UI_%26_LUA_SYSTEMS-5865F2?style=for-the-badge&logo=lua&logoColor=white)
+![Status](https://img.shields.io/badge/DEVELOPMENT-ACTIVE_&_BUILDING-00FF66?style=for-the-badge)
+
+---
+
+### 🌐 Official Network & Developer Links
+Connect directly with the main profile, join the development network, or inspect active projects:
+
+[![Follow on GitHub](https://img.shields.io/badge/FOLLOW_ON_GITHUB-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/RikoTheDemonHunter)
+[![Join Official Discord](https://img.shields.io/badge/JOIN_OFFICIAL_DISCORD-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/T6ET788nvZ)
+
+---
+
+</div>
+
+<br/>
+
+## 👤 About the Developer
+
+**RikoTheDemonHunter** (also known in developer circles as **Avery**) is an independent developer, UI architect, and script engineer specializing in lightweight, high-performance Lua frameworks, custom interface design, and client-side automation tools. 
+
+Best known for flagship projects like **Avery Hub (V3)**, his work focuses on building clean, modular UI libraries that bridge the gap between complex backend script logic and intuitive, user-friendly control panels.
+
+---
+
+## 🎯 Core Engineering Philosophy
+
+The development methodology across all of RikoTheDemonHunter’s repositories is built on four core pillars:
+
+```text
+  ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
+  │ 1. UTILITY FIRST │ ─►│ 2. ZERO BLOAT    │ ─►│ 3. TOTAL CONTROL │ ─►│ 4. CODE DEFENSE  │
+  │    & PRECISION   │   │    & SPEED       │   │    & MODULARITY  │   │    & INTEGRITY   │
+  └──────────────────┘   └──────────────────┘   └──────────────────┘   └──────────────────┘
+>
+>
+>
+> trigger **automatic DMCA Takedown Notices**, immediate raw link revocation, and platform abuse reporting against offending accounts/servers without prior warning.
