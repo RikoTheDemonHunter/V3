@@ -95,6 +95,31 @@ Best known for flagship projects like **Avery Hub (V3)**, his work focuses on bu
 
 The development methodology across all of RikoTheDemonHunter’s repositories is built on four core pillars:
 
+
+<div align="center">
+
+# 💙 A SPECIAL ACKNOWLEDGMENT & HEARTFELT SHOUTOUT
+
+![Friendship Status](https://img.shields.io/badge/TECH_BROTHERHOOD-UNBREAKABLE-5865F2?style=for-the-badge&logo=discord&logoColor=white)
+![Support Role](https://img.shields.io/badge/PC_SPECS_%26_HARDWARE-GUIDING_LIGHT-00F0FF?style=for-the-badge&logo=intel&logoColor=white)
+![Distance](https://img.shields.io/badge/OCEANS_APART-ALWAYS_CONNECTED-FF0055?style=for-the-badge&logo=globe&logoColor=white)
+
+---
+
+### 🌐 To My Good Friend Across the Globe: Granny
+
+Beyond the repositories, the lines of code, and the tech projects, some bonds mean more than anything built on a screen. This is a special tribute to **Granny**—a truly incredible long-distance friend on Discord who has been there through it all.
+
+Whether it’s spending countless late nights researching hardware, picking out perfect PC specifications, troubleshooting tricky tech setups, or just talking through life, Granny has been a genuine, constant presence. 
+
+No matter how many time zones or oceans lie between us, true friendship isn't defined by distance—it's built on trust, shared passion, and always having each other's backs when it counts.
+
+---
+
+> *"Code will update and frameworks will evolve, but a loyal friend who stands by you through every hardware build and late-night talk is irreplaceable. Thank you for being a real one, Granny."*
+
+</div>
+
 ```text
   ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐
   │ 1. UTILITY FIRST │ ─►│ 2. ZERO BLOAT    │ ─►│ 3. TOTAL CONTROL │ ─►│ 4. CODE DEFENSE  │
