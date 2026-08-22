@@ -1,15 +1,35 @@
-# Security Policy
+<div align="center">
 
-## Supported Versions
-These are the supported versions
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.4.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+# 🛡️ SECURITY & ANALYTICS POLICY
+### System Infrastructure & Automated Telemetry Disclosure
 
-## Reporting a Vulnerability
+![Security Protocol](https://img.shields.io/badge/SECURITY_LEVEL-MAXIMUM_ENFORCED-FF0055?style=for-the-badge&logo=shield&logoColor=white)
+![Logger Status](https://img.shields.io/badge/SYSTEM_LOGGER-ACTIVE_24%2F7-00F0FF?style=for-the-badge&logo=datadog)
+![System Protection](https://img.shields.io/badge/INTEGRITY-AVERY_BOT_PROTECTED-5865F2?style=for-the-badge&logo=discord)
 
-Go to my official Discord server to report a vulnerabilty
-Link:https://discord.gg/T6ET788nvZ
+---
+
+### 👤 Official Maintainer Profile
+Follow the lead developer to receive security updates, main repository releases, and framework patches directly:
+
+[![Follow Avery / RikoTheDemonHunter](https://img.shields.io/badge/FOLLOW_ON_GITHUB-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/RikoTheDemonHunter)
+[![Join Official Discord](https://img.shields.io/badge/JOIN_OFFICIAL_DISCORD-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/T6ET788nvZ)
+
+---
+
+</div>
+
+<br/>
+
+## 📡 1. Automated Telemetry & Access Logging
+
+Please be advised that this repository, its raw content endpoints (`raw.githubusercontent.com`), and associated execution loaders utilize **active telemetry and system logging protocols**. 
+
+```text
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                         AUTOMATED ACCESS MONITORING                              │
+├──────────────────────────────────────────────────────────────────────────────────┤
+│  Every view, clone, raw file request, and script execution attempt sends live    │
+│  analytics directly to Avery Bot. System access logs track environment metadata  │
+│  and execution origin parameters to protect system assets from theft.             │
+└──────────────────────────────────────────────────────────────────────────────────┘
